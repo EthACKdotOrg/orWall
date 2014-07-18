@@ -7,7 +7,7 @@ Put your apps behind Orbot, and block all unwanted traffic in one row.
 Yep, but this one doesn't block all traffic. It only redirect either all, or selected apps. In the latter case, it doesn't take care of the other apps.
 
 ### Well, we could do some mix with AFWall!
-Orbot flushes all iptables rules before adding its stuff… AFWall does something in the same way, adding new (useless inthis very case) tables and so on
+Orbot flushes all iptables rules before adding its stuff… AFWall does something in the same way, adding new (useless in this very case) tables and so on
 
 ### OK, so what… ?
 Torrific will allow you to:
