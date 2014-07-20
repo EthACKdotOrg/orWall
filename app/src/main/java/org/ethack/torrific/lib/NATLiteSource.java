@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,11 +74,18 @@ public class NATLiteSource {
      */
     public List<NATLite> getAllNats() {
         List<NATLite> nated = new ArrayList<NATLite>();
-        Cursor cursor = database.query(NATDBLite.TABLE_NAT, allColumns, null, null, null, null, null);
+        String[] columns = {NATDBLite.COLUMN_APPUID, NATDBLite.COLUMN_APPNAME};
+        Cursor cursor = database.query(NATDBLite.TABLE_NAT, columns, null, null, null, null, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            NATLite NATLite = cursorToPref(cursor);
-            nated.add(NATLite);
+            NATLite natLite = new NATLite();
+
+            natLite.setAppName(cursor.getString(1));
+            natLite.setAppUID(cursor.getLong(0));
+
+            Log.d("UID", Long.toString(natLite.getAppUID()));
+            Log.d("Name", natLite.getAppName());
+            nated.add(natLite);
             cursor.moveToNext();
         }
         cursor.close();
@@ -106,9 +114,9 @@ public class NATLiteSource {
      * @return NATLite object
      */
     private NATLite cursorToPref(Cursor cursor) {
-        NATLite pref = new NATLite();
-        pref.setAppUID(cursor.getLong(0));
-        pref.setAppName(cursor.getString(1));
-        return pref;
+        NATLite nat = new NATLite();
+        nat.setAppUID(cursor.getLong(0));
+        nat.setAppName(cursor.getString(1));
+        return nat;
     }
 }
