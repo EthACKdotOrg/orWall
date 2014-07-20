@@ -57,6 +57,7 @@ public class InitializeIptables {
         String[] rules = {
                 "-A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT",
                 String.format("-A OUTPUT -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
+                String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
                 "-A OUTPUT -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
                 "-A OUTPUT -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
                 "-A OUTPUT -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
@@ -73,42 +74,34 @@ public class InitializeIptables {
 
     public void installInitScript(Context context) {
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
-        final String dir_dst = "/data/local/userinit.d";
-        final String dst_file = String.format("%s/torrific.sh", dir_dst);
+        final String dir_dst = "/data/local";
+        final String dst_file = String.format("%s/userinit.sh", dir_dst);
         final Shell shell = new Shell();
 
         if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
             Log.d("Init", "We're fucked… unable to extract userinit.sh script");
         }
 
-        File dst = new File(dir_dst);
-        String CMD = String.format("mkdir -p %s", dir_dst);
-        boolean dst_exists = (dst.exists() || shell.suExec(CMD));
 
-        if (dst_exists) {
+        CheckSum check_src = new CheckSum(src_file);
+        CheckSum check_dst = new CheckSum(dst_file);
 
-            CheckSum check_src = new CheckSum(src_file);
-            CheckSum check_dst = new CheckSum(dst_file);
-
-            if (check_dst.hash().equals(check_src.hash())) {
-                Log.d("Init", "Nothing to do with init script");
-            } else {
-
-                CMD = String.format("cp %s %s", src_file, dst_file);
-                if (shell.suExec(CMD)) {
-                    Log.d("Init", "Successfully installed userinit.sh script");
-                    CMD = String.format("chmod 0755 %s", dst_file);
-                    if (shell.suExec(CMD)) {
-                        Log.d("Init", "Successfully chmod file");
-                    } else {
-                        Log.e("Init", "ERROR while doing chmod on initscript");
-                    }
-                } else {
-                    Log.e("Init", "ERROR while copying file to " + dst_file);
-                }
-            }
+        if (check_dst.hash().equals(check_src.hash())) {
+            Log.d("Init", "Nothing to do with init script");
         } else {
-            Log.e("Init", "Seems there is NO way to install the init-script in " + dst);
+
+            String CMD = String.format("cp %s %s", src_file, dst_file);
+            if (shell.suExec(CMD)) {
+                Log.d("Init", "Successfully installed userinit.sh script");
+                CMD = String.format("chmod 0755 %s", dst_file);
+                if (shell.suExec(CMD)) {
+                    Log.d("Init", "Successfully chmod file");
+                } else {
+                    Log.e("Init", "ERROR while doing chmod on initscript");
+                }
+            } else {
+                Log.e("Init", "ERROR while copying file to " + dst_file);
+            }
         }
     }
 
@@ -143,8 +136,8 @@ public class InitializeIptables {
      * @param mode  file permissions (E.g.: "755")
      * @throws IOException          on error
      * @throws InterruptedException when interrupted
-     *
-     * Thanks AFWall source code
+     *                              <p/>
+     *                              Thanks AFWall source code
      */
     private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();
