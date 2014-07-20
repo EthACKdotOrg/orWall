@@ -49,7 +49,7 @@ public class BootBroadcast extends BroadcastReceiver {
         for (NATLite nat : natLites) {
             Log.d(
                     BootBroadcast.class.getName(),
-                    String.format("Applying NAT for %s", nat.getAppName())
+                    String.format("Applying NAT for %s (%s)",nat.getAppUID(), nat.getAppName())
             );
             iptRules.natApp(nat.getAppUID(), 'A', nat.getAppName());
         }
