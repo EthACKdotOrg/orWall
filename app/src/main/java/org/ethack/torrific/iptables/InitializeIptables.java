@@ -68,28 +68,37 @@ public class InitializeIptables {
 
     public void installInitScript(Context context) {
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
-        final String dst_file = "/data/local/userinit.sh";
+        final String dir_dst = "/data/local/userinit.d";
+        final String dst_file = String.format("%s/torrific.sh", dir_dst);
 
-        CheckSum check_src = new CheckSum(src_file);
-        CheckSum check_dst = new CheckSum(dst_file);
+        File dst = new File(dir_dst);
+        boolean dst_exists = (dst.exists() || dst.mkdir());
 
-        if(check_dst.hash().equals(check_src.hash())) {
-            Log.d("Init", "Nothing to do with init script");
-        } else {
+        if (dst_exists) {
 
-            Shell shell = new Shell();
-            String CMD = String.format("cp %s ", src_file, dst_file);
-            if (shell.suExec(CMD)) {
-                Log.d("Init", "Successfully installed userinit.sh script");
-                CMD = String.format("chmod 0755 %s", dst_file);
-                if (shell.suExec(CMD)) {
-                    Log.d("Init", "Successfully chmod file");
-                } else {
-                    Log.e("Init", "ERROR while doing chmod on initscript");
-                }
+            CheckSum check_src = new CheckSum(src_file);
+            CheckSum check_dst = new CheckSum(dst_file);
+
+            if (check_dst.hash().equals(check_src.hash())) {
+                Log.d("Init", "Nothing to do with init script");
             } else {
-                Log.e("Init", "ERROR while copying file to " + dst_file);
+
+                Shell shell = new Shell();
+                String CMD = String.format("cp %s ", src_file, dst_file);
+                if (shell.suExec(CMD)) {
+                    Log.d("Init", "Successfully installed userinit.sh script");
+                    CMD = String.format("chmod 0755 %s", dst_file);
+                    if (shell.suExec(CMD)) {
+                        Log.d("Init", "Successfully chmod file");
+                    } else {
+                        Log.e("Init", "ERROR while doing chmod on initscript");
+                    }
+                } else {
+                    Log.e("Init", "ERROR while copying file to " + dst_file);
+                }
             }
+        } else {
+            Log.e("Init", "Seems there is NO way to install the init-script in "+dst);
         }
     }
 }
