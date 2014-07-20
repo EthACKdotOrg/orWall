@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Torrific</string>
+    <string name="action_settings">Settings</string>
+    <string name="tell_us_what_you_do">Force your apps through Orbot, and prevent network leaks</string>
+    <string name="Search">Search application</string>
+
+</resources>
