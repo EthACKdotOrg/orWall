@@ -94,7 +94,7 @@ public class InitializeIptables {
                 Log.d("Init", "Nothing to do with init script");
             } else {
 
-                CMD = String.format("cp %s ", src_file, dst_file);
+                CMD = String.format("cp %s %s", src_file, dst_file);
                 if (shell.suExec(CMD)) {
                     Log.d("Init", "Successfully installed userinit.sh script");
                     CMD = String.format("chmod 0755 %s", dst_file);
