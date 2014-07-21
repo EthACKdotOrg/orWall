@@ -8,6 +8,13 @@ Put your apps behind Orbot and block all unwanted traffic in one go.
 
 Important note: this application does NOT (and will never) replace Orbot.
 
+## How to use
+
+  * Run Orbot, and deactivate its root access as well as its transparent proxy stuff
+  * Start Torridic, select apps you're wanting to redirect to Orbot
+  * Reboot
+  * Enjoy privacy!
+
 ## FAQ
 
 ### What's the point, we already have Orbot!
