@@ -9,15 +9,6 @@ $IPTABLES -F LAN
 
 $IPTABLES -t nat -F OUTPUT
 
-# allow local inputs
-$IPTABLES -A INPUT -i lo -j ACCEPT
-$IPTABLES -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
-$IPTABLES -A INPUT -j bw_INPUT
-$IPTABLES -A INPUT -j fw_INPUT
-
-# NAT to TOR: only for apps we really want
-
 $IPTABLES -t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports 5400
 $IPTABLES -t nat -A OUTPUT -d 10.0.0.0/8 -j RETURN
 $IPTABLES -t nat -A OUTPUT -d 172.16.0.0/12 -j RETURN
@@ -35,3 +26,10 @@ $IPTABLES -A LAN -j ACCEPT
 $IPTABLES -P OUTPUT DROP
 $IPTABLES -P INPUT DROP
 $IPTABLES -P FORWARD ACCEPT
+
+# ensure there is really NO output
+$IPTABLES -A OUTPUT -j REJECT
+# Well, some rules are added to INPUT in order to accept stuff? No, sorry. You can't!
+$IPTABLES -I INPUT 1 -j REJECT
+$IPTABLES -I INPUT 1 -i lo -j ACCEPT
+$IPTABLES -I INPUT 1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT

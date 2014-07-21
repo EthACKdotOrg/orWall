@@ -44,7 +44,7 @@ public class IptRules {
     public boolean LanNoNat(final String lan) {
         RULE = "%s -t nat -A OUTPUT -d %s -j RETURN";
         if (applyRule(String.format(RULE, IPTABLES, lan))) {
-            RULE = "%s -A OUTPUT -d %s -j LAN";
+            RULE = "%s -I OUTPUT 2 -d %s -j LAN";
             return applyRule(String.format(RULE, IPTABLES, lan));
         }
         return false;
