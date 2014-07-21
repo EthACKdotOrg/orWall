@@ -3,9 +3,11 @@ package org.ethack.torrific.lib;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by cedric on 7/18/14.
@@ -42,33 +44,46 @@ public class Shell {
                     prepend = "";
             }
         }
+        List<String> stderr = Collections.synchronizedList(new ArrayList<String>());
+        List<String> stdout = Collections.synchronizedList(new ArrayList<String>());
 
         try {
             Process process;
             process = Runtime.getRuntime().exec("su");
 
             DataOutputStream STDIN = new DataOutputStream(process.getOutputStream());
-            DataInputStream STDOUT = new DataInputStream(process.getInputStream());
-            DataInputStream STDERR = new DataInputStream(process.getErrorStream());
+            StreamBuffer STDOUT = new StreamBuffer(process.getInputStream(), stdout);
+            StreamBuffer STDERR = new StreamBuffer(process.getErrorStream(), stderr);
 
-            STDIN.writeChars(prepend + cmd + "\nexit\n");
+            STDERR.start();
+            STDOUT.start();
+
+            STDIN.write((prepend + cmd + "\n").getBytes("UTF-8"));
+            STDIN.flush();
+            STDIN.write(("exit\n").getBytes("UTF-8"));
             STDIN.flush();
 
-            if (STDERR.available() != 0) {
-                Log.e(Shell.class.getName(), STDERR.readLine());
-                STDERR.close();
-                STDOUT.close();
-                STDIN.close();
-                return false;
-            }
-            STDERR.close();
-            STDOUT.close();
-            STDIN.close();
-            return true;
+            process.waitFor();
 
+            try {
+                STDIN.close();
+            } catch (IOException e) {
+            }
+            STDOUT.join();
+            STDERR.join();
+
+            process.destroy();
+
+            for (String err: stderr) {
+                Log.d("STDERR", err);
+            }
+
+            return (process.exitValue() == 0);
 
         } catch (IOException e) {
             Log.e(Shell.class.getName(), e.getMessage());
+            return false;
+        } catch (InterruptedException e) {
             return false;
         }
     }
