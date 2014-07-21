@@ -1,5 +1,6 @@
 package org.ethack.torrific.lib;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -30,7 +31,17 @@ public class Shell {
      */
     public boolean suExec(String cmd) {
 
-        // Log.d(Shell.class.getName(), cmd);
+        String prepend = "";
+
+        if(!cmd.startsWith("/system/bin/iptables")) {
+            switch (Build.VERSION.SDK_INT) {
+                case 16:
+                    prepend = "/system/bin/busybox ";
+                    break;
+                default:
+                    prepend = "";
+            }
+        }
 
         try {
             Process process;
@@ -40,7 +51,7 @@ public class Shell {
             DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
             DataInputStream errorStream = new DataInputStream(process.getErrorStream());
 
-            outputStream.writeBytes(cmd + "\nexit\n");
+            outputStream.writeChars(prepend + cmd + "\nexit\n");
             outputStream.flush();
 
             if (errorStream.available() != 0) {
