@@ -1,7 +1,14 @@
 #Torrific
 
-
 Put your apps behind Orbot and block all unwanted traffic in one go.
+
+## Prerequisites
+    * Root access on your device
+    * Orbot
+
+Important note: this application does NOT (and will never) replace Orbot.
+
+## FAQ
 
 ### What's the point, we already have Orbot!
 Yep, but it doesn't block all traffic. It only redirects either all apps or selected ones. In the latter case, it doesn't take care of the other apps.
