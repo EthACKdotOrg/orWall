@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -89,6 +90,8 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.text_view.setText(label);
         if (isSystemPackage(pkg)) {
             holder.text_view.setTextColor(Color.RED);
+        } else {
+            holder.text_view.setTextColor(Color.WHITE);
         }
         holder.text_view.setCompoundDrawables(appIcon, null,null,null);
         holder.text_view.setCompoundDrawablePadding(15);
@@ -131,6 +134,6 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
      * @return true if package is a system app
      */
     private boolean isSystemPackage(PackageInfo pkgInfo) {
-        return ((pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
+        return ((pkgInfo.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0);
     }
 }
