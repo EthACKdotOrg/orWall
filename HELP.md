@@ -2,25 +2,25 @@
 
 Wait, calm down.
 
-## All is broken, I can't access network anymore!
+## Everything is broken, I can't access the network anymore!
 
-Breath, all will be ok. In order to get back your network, you have to:
+Keep breathing, everything is going to be OK. In order to get your network back, you have to:
   * uninstall the Torrific app
-  ° remove the init-script located in /usr/local/userinit.sh
+  * remove the init-script located in /usr/local/userinit.sh
   * reboot your phone
 
-## Seems the init-script isn't used
+## It seems like the init-script isn't being used.
 
-May happen — on SlimKat, there's a /etc/init.d/90userinit script allowing to put
-user init script in a nice location, /data/loca/userinit.sh
+That may happen — on SlimKat, there's a /etc/init.d/90userinit script allowing to put the
+user init script in a nice location: /data/loca/userinit.sh
 
-Do you have such support? If not, please fill an issue with your Android version/flavour.
+Do you have any such support? If not, please fill in an issue for your Android version/flavor.
 We'll try to get it working :).
 
 ## You override my own userinit.sh script!
 
-Errr… yes… unfortunately, we tried to get the userinit.d directory working, but it seems
-it's a bit crappy now :(. Best shot was this other one…
+Errr… Yes… Unfortunately, we tried to get the userinit.d directory working, but it seems like 
+it's a bit crappy now :(. Best shot was for this one…
 
-We can, maybe, put the init-script in /etc/init.d/ directory. But it's read-only… Meaning some
+Maybe we can put the init-script in the /etc/init.d/ directory. But it's read-only… Meaning some
 more crap in the shell commands, and we'd like to avoid that…
