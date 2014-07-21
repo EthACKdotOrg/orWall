@@ -1,5 +1,5 @@
 #!/bin/sh
-convert ~/Torrific/Logo/Shield.png -resize 144x drawable-xxhdpi/torrific.png
-convert ~/Torrific/Logo/Shield.png -resize 96x drawable-xhdpi/torrific.png
-convert ~/Torrific/Logo/Shield.png -resize 72x drawable-hdpi/torrific.png
-convert ~/Torrific/Logo/Shield.png -resize 48x drawable-mdpi/torrific.png
+convert $1 -resize 144x drawable-xxhdpi/$(basename $1)
+convert $1 -resize 96x drawable-xhdpi/$(basename $1)
+convert $1 -resize 72x drawable-hdpi/$(basename $1)
+convert $1 -resize 48x drawable-mdpi/$(basename $1)
