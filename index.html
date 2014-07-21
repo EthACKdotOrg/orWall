@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Torrific — Block leaks, go through Orbot</title>
+    <meta name="application-name" content="Torrific">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <meta name="description" content="Torrific helps you keeping things private.">
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap-theme.min.css">
+    <style type="text/css">
+      body { margin-top: 60px; }
+      footer {
+        width:100%;
+        padding-top:10px;
+        padding-bottom:10px;
+        margin-top:20px;
+        background-color: #f5f5f5;
+        text-align:center;
+      }
+      .jumbotron {
+        background-image:url('online-v2.png');
+        background-repeat:no-repeat;
+        background-position:10px 70px;
+      }
+      .jumbotron>div {
+        padding-left:60px;
+      }
+      .bs-callout {
+        padding: 20px;
+        margin: 20px 0px;
+        border-width: 1px 1px 1px 5px;
+        border-style: solid;
+        border-color: #EEE;
+        -moz-border-top-colors: none;
+        -moz-border-right-colors: none;
+        -moz-border-bottom-colors: none;
+        -moz-border-left-colors: none;
+        border-image: none;
+        border-radius: 3px;
+      }
+      .bs-callout-warning {
+        border-left-color: #F0AD4E;
+      }
+      .bs-callout-warning h4 {
+        color: #F0AD4E;
+      }
+      .bs-callout h4 {
+        margin-top: 0px;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">Torrific</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="https://github.com/EthACKdotOrg/Torrific">Get sources</a></li>
+            <li><a href="https://github.com/EthACKdotOrg/Torrific/releases">Releases</a></li>
+            <li><a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">Issues</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="jumbotron">
+        <div>
+          <h1>Torrific</h1>
+          <p>
+          Put your apps behind <a href="https://guardianproject.info/apps/orbot/">Orbot</a>,
+          and block all unwanted traffic in one row.
+          </p>
+        </div>
+      </div>
+      <div>
+        <h3>How does it work?</h3>
+        <p>
+        Torrific will force the selected application through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>,
+        while preventing unchecked applications to have network access.<br>
+        In order to do so, it will call iptables binary. This binary, present on your Android, request a Superuser access (aka root). It's
+        the application that manages the firewall on Linux and, by extension, on Android.
+        </p>
+        <p>
+        In short, it will add special iptables rules in order to redirect traffic for application through Tor; it will also add required rules in
+        order to block other apps traffic.<br>
+        The redirection is based on the application user id. Each android application runs as a dedicated user. And iptables has support for traffic
+        filtering based on the process owner, meaning it's really easy and pretty safe to do this kind of thing on an Android device.
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>What Torrific is</h3>
+          <ul>
+            <li>A firewall configurator: it allows you to set up your device in order to force apps through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
+            <li>A way to prevent unwanted network accesses: only the apps you select access the Net. Through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
+            <li>An app you should use with caution: if you don't understand what it's doing, you may have some bad surprises.</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3>What Torrific isn't</h3>
+          <ul>
+            <li>Replacement for Orbot: you still need Orbot on your device.</li>
+            <li>Replacement for AFWall/DroidWall: but it may lead to some weird problems if you're using both.</li>
+            <li>The Answer to the Ultimate Question of Live, the Universe and Everything: everybody knows it's 42.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Prerequistes</h3>
+          <ul>
+            <li>Root access</li>
+            <li><a href="https://guardianproject.info/apps/orbot/">Orbot</a></li>
+          </ul>
+          <div class="bs-callout bs-callout-warning">
+            <h4> Warning! <small>As we're still in alpha, the following stuff may be useful</small></h4>
+            <ul>
+              <li>A computer.</li>
+              <li>USB cable in order to connect your device to the computer.</li>
+              <li>Android SDK and, espcially, adb.</li>
+              <li>Some knowledge about shell commands (iptables, mostly).</li>
+              <li>A towel.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h3>How to use</h3>
+          <ul class="list-unstyled">
+            <li>Ensure you have <span class="text-danger">Root access</span> on your device.</li>
+            <li>Ensure you have <span class="text-danger"><a href="https://guardianproject.info/apps/orbot/">Orbot</a> installed</span>.</li>
+            <li>Ensure Orbot has <span class="text-danger">no Transparent Proxy enabled</span>, like on the screenshot:<br>
+            <a href="orbot-configuration.png"><img src="orbot-configuration-mini.png" alt="orbot-config"></a></li>
+            <li>Start Torrific, select apps you're wanting to redirect to Orbot.</li>
+            <li>Reboot.</li>
+            <li>Enjoy more privacy!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <footer>
+    Application provided by <a href="https://www.ethack.org/">EthACK, the Swiss Privacy Basecamp</a>.
+    Application is under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>,
+    as well as the present page.
+    Logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.
+    </footer>
+    <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
