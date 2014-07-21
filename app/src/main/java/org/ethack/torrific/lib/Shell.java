@@ -47,23 +47,23 @@ public class Shell {
             Process process;
             process = Runtime.getRuntime().exec("su");
 
-            DataInputStream inputStream = new DataInputStream(process.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
-            DataInputStream errorStream = new DataInputStream(process.getErrorStream());
+            DataOutputStream STDIN = new DataOutputStream(process.getOutputStream());
+            DataInputStream STDOUT = new DataInputStream(process.getInputStream());
+            DataInputStream STDERR = new DataInputStream(process.getErrorStream());
 
-            outputStream.writeChars(prepend + cmd + "\nexit\n");
-            outputStream.flush();
+            STDIN.writeChars(prepend + cmd + "\nexit\n");
+            STDIN.flush();
 
-            if (errorStream.available() != 0) {
-                Log.e(Shell.class.getName(), errorStream.readLine());
-                errorStream.close();
-                inputStream.close();
-                outputStream.close();
+            if (STDERR.available() != 0) {
+                Log.e(Shell.class.getName(), STDERR.readLine());
+                STDERR.close();
+                STDOUT.close();
+                STDIN.close();
                 return false;
             }
-            errorStream.close();
-            inputStream.close();
-            outputStream.close();
+            STDERR.close();
+            STDOUT.close();
+            STDIN.close();
             return true;
 
 
