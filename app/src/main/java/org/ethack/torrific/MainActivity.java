@@ -75,44 +75,54 @@ public class MainActivity extends Activity {
                 orbot_id = packageManager.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.e(BootBroadcast.class.getName(), "Unable to get Orbot APK info - is it installed?");
-                Toast.makeText(this, (String) "Unable to get Orbot APK info - is it installed?", Toast.LENGTH_LONG).show();
-                android.os.Process.killProcess(android.os.Process.myPid());
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setMessage("You must have Orbot installed!");
+                alert.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+                });
+                alert.show();
             }
 
-            isFirstRun = getSharedPreferences("PREFERENCES", MODE_PRIVATE).getBoolean("isFirstRun", true);
+            if (orbot_id != null) {
 
-            InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
-            if (isFirstRun) {
-                Log.d(MainActivity.class.getName(), "First run detected!");
-                // get Orbot uid and save it in prefs so that we can reach it anytime
-                getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putLong("orbot_uid", orbot_id.uid).commit();
-                // set boolean to false in order to prevent useless accesses
-                getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).commit();
-                Toast.makeText(this, (String)"Installed init-script", Toast.LENGTH_LONG).show();
-            }
-            // install the initscript — there is a check in the function in order to avoid useless writes.;
-            initializeIptables.installInitScript(this);
+                isFirstRun = getSharedPreferences("PREFERENCES", MODE_PRIVATE).getBoolean("isFirstRun", true);
 
-            List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
-            finalList = new ArrayList<PackageInfo>();
+                InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
+                if (isFirstRun) {
+                    Log.d(MainActivity.class.getName(), "First run detected!");
+                    // get Orbot uid and save it in prefs so that we can reach it anytime
+                    getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putLong("orbot_uid", orbot_id.uid).commit();
+                    // set boolean to false in order to prevent useless accesses
+                    getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).commit();
+                    Toast.makeText(this, (String) "Installed init-script", Toast.LENGTH_LONG).show();
+                }
+                // install the initscript — there is a check in the function in order to avoid useless writes.;
+                initializeIptables.installInitScript(this);
 
-            for (PackageInfo applicationInfo : packageList) {
-                String[] permissions = applicationInfo.requestedPermissions;
-                if (permissions != null) {
-                    for (String perm : permissions) {
-                        if (perm.equals("android.permission.INTERNET")) {
-                            finalList.add(applicationInfo);
-                            break;
+                List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+                finalList = new ArrayList<PackageInfo>();
+
+                for (PackageInfo applicationInfo : packageList) {
+                    String[] permissions = applicationInfo.requestedPermissions;
+                    if (permissions != null) {
+                        for (String perm : permissions) {
+                            if (perm.equals("android.permission.INTERNET")) {
+                                finalList.add(applicationInfo);
+                                break;
+                            }
                         }
                     }
                 }
+
+                Collections.sort(finalList, new PackageComparator(packageManager));
+
+
+                listview = (ListView) findViewById(R.id.applist);
+                listview.setAdapter(new RowAdapter(this, finalList, packageManager, natLiteSource));
             }
-
-            Collections.sort(finalList, new PackageComparator(packageManager));
-
-
-            listview = (ListView) findViewById(R.id.applist);
-            listview.setAdapter(new RowAdapter(this, finalList, packageManager, natLiteSource));
         }
 
 
