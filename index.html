@@ -150,6 +150,24 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Troubleshooting</h3>
+        <ul class="list-unistyled">
+          <li><strong>No network anymore:</strong> do you have started Orbot? Do you have selected applications? Do you have network (i.e. wireless, 3G and so on)?</li>
+          <li><strong>Application crashes with no message:</strong> Please fire up adb logcat and fill a <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">new issue</a> :)</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h3>Uninstall</h3>
+        <ul>
+          <li>Uninstall the App as usual.</li>
+          <li>Remove /data/local/userinit.sh.</li>
+          <li>Reboot.</li>
+        </ul>
+        We cannot catch Uninstall event in order to make things, meaning you have to remove the init-script by hand.
+      </div>
+    </div>
     <footer>
     Application provided by <a href="https://www.ethack.org/">EthACK, the Swiss Privacy Basecamp</a>.
     Application is under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>,
