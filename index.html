@@ -85,29 +85,29 @@
         <div>
           <h1>Torrific</h1>
           <p>
-          Put your apps behind <a href="https://guardianproject.info/apps/orbot/">Orbot</a>,
-          and block all unwanted traffic in one row.
+          Put your apps behind <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
+          and block all unwanted traffic in one go.
           </p>
         </div>
       </div>
       <div>
         <h3>How does it work?</h3>
         <p>
-        Torrific will force the selected application through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>,
+        Torrific will force applications selected through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
         while preventing unchecked applications to have network access.<br>
-        In order to do so, it will call iptables binary. This binary, present on your Android, request a Superuser access (aka root). It's
+        In order to do so, it will call the iptables binary. This binary, present on your Android device, requires superuser access (aka root). It's
         the application that manages the firewall on Linux and, by extension, on Android.
         </p>
         <p>
-        In short, it will add special iptables rules in order to redirect traffic for application through Tor; it will also add required rules in
-        order to block other apps traffic.<br>
-        The redirection is based on the application user id. Each android application runs as a dedicated user. And iptables has support for traffic
+        In short, Torrific will add special iptables rules in order to redirect traffic for applications through Tor; it will also add required rules in
+        order to block traffic for other apps.<br>
+        The redirection is based on the application user id. Each android application runs as a dedicated user, and iptables has support for traffic
         filtering based on the process owner, meaning it's really easy and pretty safe to do this kind of thing on an Android device.
         </p>
         <div class="bs-callout bs-callout-warning">
           <h4>Limitations</h4>
           <p>
-          This application takes care of IP connection only, not GSM. It won't protect you if an attacker sends commands to your baseband through SMS for
+          This application takes care of IP connections only, not GSM. It won't protect you if an attacker sends commands to your baseband through SMS, for
           example.
           </p>
         </div>
@@ -117,16 +117,16 @@
           <h3>What Torrific is</h3>
           <ul>
             <li>A firewall configurator: it allows you to set up your device in order to force apps through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
-            <li>A way to prevent unwanted network accesses: only the apps you select access the Net. Through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
+            <li>A way to prevent unwanted network access: only the apps you select access the Net through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
             <li>An app you should use with caution: if you don't understand what it's doing, you may have some bad surprises.</li>
           </ul>
         </div>
         <div class="col-md-6">
           <h3>What Torrific isn't</h3>
           <ul>
-            <li>Replacement for Orbot: you still need Orbot on your device.</li>
-            <li>Replacement for AFWall/DroidWall: but it may lead to some weird problems if you're using both.</li>
-            <li>The Answer to the Ultimate Question of Live, the Universe and Everything: everybody knows it's 42.</li>
+            <li>A replacement for Orbot: you still need Orbot on your device.</li>
+            <li>A replacement for AFWall/DroidWall – but it may lead to weird problems if you're using both.</li>
+            <li>The Answer to the Ultimate Question of Life, the Universe and Everything: everybody knows it's 42.</li>
           </ul>
         </div>
       </div>
@@ -138,24 +138,24 @@
             <li><a href="https://guardianproject.info/apps/orbot/">Orbot</a></li>
           </ul>
           <div class="bs-callout bs-callout-warning">
-            <h4> Warning! <small>As we're still in alpha, the following stuff may be useful</small></h4>
+            <h4> Warning! <small>As we're still in alpha, the following stuff may be useful:</small></h4>
             <ul>
-              <li>A computer.</li>
-              <li>USB cable in order to connect your device to the computer.</li>
-              <li>Android SDK and, espcially, adb.</li>
-              <li>Some knowledge about shell commands (iptables, mostly).</li>
+              <li>A computer;</li>
+              <li>USB cable in order to connect your device to the computer;</li>
+              <li>Android SDK and, espcially, Android Debug Bridge (ADB);</li>
+              <li>Some knowledge about shell commands (iptables, mostly);</li>
               <li>A towel.</li>
             </ul>
           </div>
         </div>
         <div class="col-md-6">
-          <h3>How to use</h3>
+          <h3>How to use Torrific</h3>
           <ul class="list-unstyled">
             <li>Ensure you have <span class="text-danger">Root access</span> on your device.</li>
             <li>Ensure you have <span class="text-danger"><a href="https://guardianproject.info/apps/orbot/">Orbot</a> installed</span>.</li>
             <li>Ensure Orbot has <span class="text-danger">no Transparent Proxy enabled</span>, like on the screenshot:<br>
             <a href="orbot-configuration.png"><img src="orbot-configuration-mini.png" alt="orbot-config"></a></li>
-            <li>Start Torrific, select apps you're wanting to redirect to Orbot.</li>
+            <li>Start Torrific, select the apps you want to redirect to Orbot.</li>
             <li>Reboot.</li>
             <li>Enjoy more privacy!</li>
           </ul>
@@ -165,18 +165,18 @@
         <div class="col-md-6">
           <h3>Troubleshooting</h3>
           <ul class="list-unistyled">
-            <li><strong>No network anymore:</strong> do you have started Orbot? Do you have selected applications? Do you have network (i.e. wireless, 3G and so on)?</li>
-            <li><strong>Application crashes with no message:</strong> Please fire up adb logcat and fill a <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">new issue</a> :)</li>
+            <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
+            <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">fill in a new issue</a>. :)</li>
           </ul>
         </div>
         <div class="col-md-6">
-          <h3>Uninstall</h3>
+          <h3>How to uninstall Torrific</h3>
           <ul>
-            <li>Uninstall the App as usual.</li>
+            <li>Uninstall the app as usual.</li>
             <li>Remove /data/local/userinit.sh.</li>
             <li>Reboot.</li>
           </ul>
-          We cannot catch Uninstall event in order to make things, meaning you have to remove the init-script by hand.
+          We cannot catch the uninstall event in order to make things, meaning you have to remove the init-script by hand.
         </div>
       </div>
       <div>
@@ -205,9 +205,9 @@ pkts  bytes target     prot opt in     out     source               destination
       </div>
     </div>
     <footer>
-      Provided by <a href="https://www.ethack.org/"><img src="ethack.png" alt=""> EthACK, the Swiss Privacy Basecamp</a>.
-      Application is under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>.<br>
-      Logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.
+      Provided by <a href="https://www.ethack.org/"><img src="ethack.png" alt="">EthACK, the Swiss Privacy Basecamp</a>.
+      This application is available under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>.<br>
+      The logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.
     </footer>
     <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
