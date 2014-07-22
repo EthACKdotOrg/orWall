@@ -161,6 +161,28 @@
             <li><strong>No network anymore:</strong> do you have started Orbot? Do you have selected applications? Do you have network (i.e. wireless, 3G and so on)?</li>
             <li><strong>Application crashes with no message:</strong> Please fire up adb logcat and fill a <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">new issue</a> :)</li>
           </ul>
+          Here's what you should have in your iptables:
+<code><pre>
+iptables -vnL OUTPUT
+Chain OUTPUT (policy DROP 0 packets, 0 bytes)
+pkts  bytes target     prot opt in     out     source               destination         
+0     0     ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            owner UID match 10094 /* Allow Orbot output */
+0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:9050flags: 0x17/0x02 /* Local traffic to SOCKSPort */
+0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:9040flags: 0x17/0x02 /* Local traffic to TransPort */
+0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:8118flags: 0x17/0x02 /* Local traffic to Polipo */
+0     0     ACCEPT     udp  --  *      *       0.0.0.0/0            127.0.0.1            udp dpt:5400 /* DNS Requests on Tor DNSPort */
+0     0     ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED
+0     0     LAN        all  --  *      *       0.0.0.0/0            10.0.0.0/8          
+0     0     LAN        all  --  *      *       0.0.0.0/0            172.16.0.0/12       
+0     0     LAN        all  --  *      *       0.0.0.0/0            192.168.0.0/16      
+0     0     REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-port-unreachable
+0     0     oem_out    all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+0     0     fw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0
+</pre></code>
+          The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
+          try to reboot.<br>
+          Also, <span class="text-danger">ensure you did NOT check Orbot in Torrific</span>!
         </div>
         <div class="col-md-6">
           <h3>Uninstall</h3>
