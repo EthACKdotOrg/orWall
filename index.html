@@ -161,7 +161,19 @@
             <li><strong>No network anymore:</strong> do you have started Orbot? Do you have selected applications? Do you have network (i.e. wireless, 3G and so on)?</li>
             <li><strong>Application crashes with no message:</strong> Please fire up adb logcat and fill a <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">new issue</a> :)</li>
           </ul>
-          Here's what you should have in your iptables:
+        </div>
+        <div class="col-md-6">
+          <h3>Uninstall</h3>
+          <ul>
+            <li>Uninstall the App as usual.</li>
+            <li>Remove /data/local/userinit.sh.</li>
+            <li>Reboot.</li>
+          </ul>
+          We cannot catch Uninstall event in order to make things, meaning you have to remove the init-script by hand.
+        </div>
+      </div>
+      <div>
+        Here's what you should have in your iptables:
 <code><pre>
 iptables -vnL OUTPUT
 Chain OUTPUT (policy DROP 0 packets, 0 bytes)
@@ -180,19 +192,9 @@ pkts  bytes target     prot opt in     out     source               destination
 0     0     fw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
 0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0
 </pre></code>
-          The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
-          try to reboot.<br>
-          Also, <span class="text-danger">ensure you did NOT check Orbot in Torrific</span>!
-        </div>
-        <div class="col-md-6">
-          <h3>Uninstall</h3>
-          <ul>
-            <li>Uninstall the App as usual.</li>
-            <li>Remove /data/local/userinit.sh.</li>
-            <li>Reboot.</li>
-          </ul>
-          We cannot catch Uninstall event in order to make things, meaning you have to remove the init-script by hand.
-        </div>
+        The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
+        try to reboot.<br>
+        Also, <span class="text-danger">ensure you did NOT check Orbot in Torrific</span>!
       </div>
     </div>
     <footer>
