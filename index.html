@@ -192,9 +192,11 @@ pkts  bytes target     prot opt in     out     source               destination
 0     0     fw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
 0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0
 </pre></code>
+        <p>
         The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
         try to reboot.<br>
         Also, <span class="text-danger">ensure you did NOT check Orbot in Torrific</span>!
+        </p>
       </div>
     </div>
     <footer>
