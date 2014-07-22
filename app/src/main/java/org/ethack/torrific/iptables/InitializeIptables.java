@@ -43,6 +43,10 @@ public class InitializeIptables {
                 "192.168.0.0/16"
         };
         if (allow) {
+            iptRules.genericRule("-N LAN");
+            iptRules.genericRule("-A LAN -p tcp -m tcp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
+            iptRules.genericRule("-A LAN -p udp -m udp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
+            iptRules.genericRule("-A LAN -j ACCEPT");
             for (String lan : lans) {
                 if (!iptRules.LanNoNat(lan)) {
                     Log.e(
@@ -55,13 +59,16 @@ public class InitializeIptables {
 
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
-                "-I OUTPUT 1 -m state --state ESTABLISHED,RELATED -j ACCEPT",
-                String.format("-I OUTPUT 1 -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
+                // Remove the first reject we installed with the init-script
+                "-D OUTPUT -j REJECT",
+                "-t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports 5400",
                 String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
-                "-I OUTPUT 2 -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
-                "-I OUTPUT 2 -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
-                "-I OUTPUT 2 -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
-                "-I OUTPUT 2 -d 127.0.0.1/32 -p tcp -m tcp --dport 9050 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\""
+                String.format("-I OUTPUT 2 -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9050 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"",
+                "-A OUTPUT -j REJECT",
         };
         Log.d(InitializeIptables.class.getName(), "Orbot: " + orbot_uid);
         for (String rule : rules) {
