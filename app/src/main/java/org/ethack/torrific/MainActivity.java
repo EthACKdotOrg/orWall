@@ -131,6 +131,24 @@ public class MainActivity extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_about:
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle("About Torrific");
+                String versionName = null;
+                try {
+                    versionName = packageManager.getPackageInfo(this.getPackageName(), 0).versionName;
+                } catch (PackageManager.NameNotFoundException e) {
+
+                }
+                String about = "Torrific %s — GPLv2\n\nProvided by EthACK, the Swiss Privacy Basecamp\n\nhttp://torrific.ethack.org/ - https://www.ethack.org/";
+                alert.setMessage(String.format(about,versionName));
+                alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // do nothing
+                    }
+                });
+                alert.show();
             case R.id.action_search:
                 TextWatcher filterTextWatcher = new TextWatcher() {
 
@@ -177,7 +195,6 @@ public class MainActivity extends Activity {
                         return true; // Return true to expand action view
                     }
                 });
-
 
             default:
                 return super.onOptionsItemSelected(item);
