@@ -23,10 +23,15 @@
       .jumbotron {
         background-image:url('online-v2.png');
         background-repeat:no-repeat;
-        background-position:10px 70px;
+        background-position:10px 50%;
       }
       .jumbotron>div {
         padding-left:60px;
+      }
+      @media (max-width: 640px) {
+        .jumbotron>div {
+          padding-left:100px;
+        }
       }
       .bs-callout {
         padding: 20px;
