@@ -174,8 +174,7 @@
       </div>
       <div>
         Here's what you should have in your iptables:
-<code><pre>
-iptables -vnL OUTPUT
+<code><pre>iptables -vnL OUTPUT
 Chain OUTPUT (policy DROP 0 packets, 0 bytes)
 pkts  bytes target     prot opt in     out     source               destination         
 0     0     ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            owner UID match 10094 /* Allow Orbot output */
@@ -190,8 +189,7 @@ pkts  bytes target     prot opt in     out     source               destination
 0     0     REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-port-unreachable
 0     0     oem_out    all  --  *      *       0.0.0.0/0            0.0.0.0/0           
 0     0     fw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
-0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0
-</pre></code>
+0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0</pre></code>
         <p>
         The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
         try to reboot.<br>
