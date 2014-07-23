@@ -28,7 +28,14 @@ public class BootBroadcast extends BroadcastReceiver {
 
         PackageManager packageManager = context.getPackageManager();
 
-        long orbot_uid = context.getSharedPreferences("PREFERENCES", Activity.MODE_PRIVATE).getLong("orbot_uid", 0);
+        long orbot_real_id = 0;
+        try {
+            orbot_real_id = packageManager.getApplicationInfo("org.torproject.android", 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+
 
         try {
             natLiteSource.open();
@@ -40,7 +47,7 @@ public class BootBroadcast extends BroadcastReceiver {
         }
 
         InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
-        initializeIptables.initOutputs(orbot_uid);
+        initializeIptables.initOutputs(orbot_real_id);
 
 
 
