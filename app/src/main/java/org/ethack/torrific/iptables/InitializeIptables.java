@@ -59,17 +59,18 @@ public class InitializeIptables {
 
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
+                String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
+                "-t nat -I OUTPUT 2 ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports 5400",
+                "-I OUTPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+                String.format("-I OUTPUT 2 -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
+                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9050 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"",
                 // Remove the first reject we installed with the init-script
                 "-D OUTPUT -j REJECT",
-                String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
-                "-t nat -A OUTPUT ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports 5400",
-                String.format("-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT", orbot_uid),
-                String.format("-A OUTPUT -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
-                "-A OUTPUT -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
-                "-A OUTPUT -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
-                "-A OUTPUT -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
-                "-A OUTPUT -d 127.0.0.1/32 -p tcp -m tcp --dport 9050 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"",
-                "-A OUTPUT -j REJECT",
+                // This will *break* quota management. But we have no choice, the POLICY is bypassed by quota chains :(.
+                "-I OUTPUT 7 -j REJECT",
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
