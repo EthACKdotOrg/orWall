@@ -93,8 +93,6 @@ public class MainActivity extends Activity {
                 InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
                 if (isFirstRun) {
                     Log.d(MainActivity.class.getName(), "First run detected!");
-                    // get Orbot uid and save it in prefs so that we can reach it anytime
-                    getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putLong("orbot_uid", orbot_id.uid).commit();
                     // set boolean to false in order to prevent useless accesses
                     getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).commit();
                     Toast.makeText(this, (String) "Installed init-script", Toast.LENGTH_LONG).show();
