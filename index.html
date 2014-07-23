@@ -169,6 +169,7 @@
           <h3>Troubleshooting</h3>
           <ul class="list-unistyled">
             <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
+            <li><strong>No network anymore (bis):</strong> <span class="text-danger">ensure you did NOT check Orbot in Torrific</span></li>
             <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">fill in a new issue</a>. :)</li>
           </ul>
         </div>
@@ -182,29 +183,26 @@
           We cannot catch the uninstall event in order to make things, meaning you have to remove the init-script by hand.
         </div>
       </div>
-      <div>
-        Here's what you should have in your iptables:
-<code><pre>iptables -vnL OUTPUT
-Chain OUTPUT (policy DROP 0 packets, 0 bytes)
-pkts  bytes target     prot opt in     out     source               destination         
-0     0     ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            owner UID match 10094 /* Allow Orbot output */
-0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:9050flags: 0x17/0x02 /* Local traffic to SOCKSPort */
-0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:9040flags: 0x17/0x02 /* Local traffic to TransPort */
-0     0     ACCEPT     tcp  --  *      *       0.0.0.0/0            127.0.0.1            tcp dpt:8118flags: 0x17/0x02 /* Local traffic to Polipo */
-0     0     ACCEPT     udp  --  *      *       0.0.0.0/0            127.0.0.1            udp dpt:5400 /* DNS Requests on Tor DNSPort */
-0     0     ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED
-0     0     LAN        all  --  *      *       0.0.0.0/0            10.0.0.0/8          
-0     0     LAN        all  --  *      *       0.0.0.0/0            172.16.0.0/12       
-0     0     LAN        all  --  *      *       0.0.0.0/0            192.168.0.0/16      
-0     0     REJECT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            reject-with icmp-port-unreachable
-0     0     oem_out    all  --  *      *       0.0.0.0/0            0.0.0.0/0           
-0     0     fw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
-0     0     bw_OUTPUT  all  --  *      *       0.0.0.0/0            0.0.0.0/0</pre></code>
-        <p>
-        The table nat (-t nat) should list your applications in the OUTPUT chain. If you don't have those rules, especially the one allowing Orbot to go out,
-        try to reboot.<br>
-        Also, <span class="text-danger">ensure you did NOT check Orbot in Torrific</span>!
-        </p>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>How to request support?</h3>
+          Please <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">open an issue</a> with the following information:
+          <ul>
+            <li>Device model;</li>
+            <li>Android version;</li>
+            <li>Torrific version;</li>
+            <li>Steps to reproduce the problem;</li>
+            <li>LogCat output;</li>
+            <li>screenshots (if possible);</li>
+            <li>Output of <code>iptables -vnL</code> and <code>iptables -vnL -t nat</code>;</li>
+          </ul>
+          Yes, that's a lot of things, but we do not possess a crystal ball allowing us to guess your problem…
+        </div>
+        <div class="col-md-6">
+          <h3>I want to take part!</h3>
+          Great news, thanks! Just <a href="https://github.com/EthACKdotOrg/Torrific/fork">create a fork</a> and submit pull-requests.
+          We're opened for new features, bug corrections and so on, feel free to help.
+        </div>
       </div>
     </div>
     <footer>
