@@ -3,7 +3,7 @@
 Put your apps behind Orbot and block all unwanted traffic in one go.
 
 ## Website
-http://torrific.ethack.org/
+https://torrific.ch/
 
 ## Prerequisites
     * Root access on your device
