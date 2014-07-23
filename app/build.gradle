@@ -8,8 +8,8 @@ android {
         applicationId "org.ethack.torrific"
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 6
-        versionName "0.5.1-alpha"
+        versionCode 7
+        versionName "0.5.2-alpha"
     }
     buildTypes {
         release {
