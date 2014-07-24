@@ -56,28 +56,38 @@
         margin-top: 0px;
         margin-bottom: 5px;
       }
+      #qr_bitcoin, #qr_litecoin {
+        display: none;
+        position: absolute;
+        z-index:10;
+        margin-top:20px;
+      }
     </style>
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href=""><img src="head-logo.png" alt=""> Torrific</a>
-        </div>
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific"><img src="github.png" alt=""> Get sources</a></li>
-            <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/releases"><span class="glyphicon glyphicon-download"></span> Releases</a></li>
-            <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/issues?state=open"><span class="glyphicon glyphicon-exclamation-sign"></span> Issues</a></li>
-          </ul>
-        </div>
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href=""><img src="head-logo.png" alt=""> Torrific</a>
       </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific"><img src="github.png" alt=""> Get sources</a></li>
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/releases"><span class="glyphicon glyphicon-download"></span> Releases</a></li>
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/issues?state=open"><span class="glyphicon glyphicon-exclamation-sign"></span> Issues</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="bitcoin"><a href="bitcoin:1Kriu9owRhEsFkj8Lc6Wr5xTv8YTNphhXn"><img src="bitcoin.png" alt="qr" id="qr_bitcoin">Bitcoin</a></li>
+          <li id="litecoin"><a href="litecoin:LXjW5tKRHbrbxwTZmitj4JeBqcm4xpqvJ2"><img src="litecoin.png" alt="qr" id="qr_litecoin">Litecoin</a></li>
+        </ul>
+      </div>
+    </div>
     </nav>
 
     <div class="container">
@@ -224,11 +234,23 @@
       </div>
     </div>
     <footer>
-      Provided by <a href="https://www.ethack.org/"><img src="ethack.png" alt="">EthACK, the Swiss Privacy Basecamp</a>.
-      This application is available under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>.<br>
-      The logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.
+    Provided by <a href="https://www.ethack.org/"><img src="ethack.png" alt="">EthACK, the Swiss Privacy Basecamp</a>.
+    This application is available under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv2</a>.<br>
+    The logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.
     </footer>
     <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $('#bitcoin').hover(function() {
+        $('#qr_bitcoin').show();
+      }, function() {
+        $('#qr_bitcoin').hide();
+      });
+      $('#litecoin').hover(function() {
+        $('#qr_litecoin').show();
+      }, function() {
+        $('#qr_litecoin').hide();
+      });
+    </script>
   </body>
 </html>
