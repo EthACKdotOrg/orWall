@@ -138,7 +138,7 @@ public class MainActivity extends Activity {
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
-                String about = "Torrific %s — GPLv2\n\nProvided by EthACK, the Swiss Privacy Basecamp\n\nhttp://torrific.ethack.org/ - https://www.ethack.org/";
+                String about = "Torrific %s — GPLv3\n\nProvided by EthACK, the Swiss Privacy Basecamp\n\nhttp://torrific.ethack.org/ - https://www.ethack.org/";
                 alert.setMessage(String.format(about,versionName));
                 alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                     @Override

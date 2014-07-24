@@ -52,3 +52,6 @@ Yep.
 
 ### What's the Answer to the Ultimate Question of Life, the Universe, and Everything?
 Easy: 42. But you already knew that right?
+
+## License
+GPLv3
