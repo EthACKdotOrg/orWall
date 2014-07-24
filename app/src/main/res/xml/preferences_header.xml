@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header android:fragment="org.ethack.torrific.PreferencesActivity$NetworkPrefs"
+        android:icon="@drawable/ic_action_secure"
+        android:title="@string/init_script"
+        android:summary="@string/summary_manage_init_script" />
+<!--
+    <header android:fragment="org.ethack.torrific.PreferencesActivity$OtherPrefs"
+        android:icon="@drawable/ic_action_settings"
+        android:title="Prefs 2"
+        android:summary="Some other preferences you can see.">
+    </header>
+    -->
+</preference-headers>
