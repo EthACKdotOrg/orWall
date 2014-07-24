@@ -32,6 +32,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
     /**
      * Class builder
+     *
      * @param context
      * @param pkgs
      * @param packageManager
@@ -51,15 +52,8 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
     }
 
     /**
-     * View holder, used in order to optimize speed and display
-     */
-    static class ViewHolder {
-        private TextView text_view;
-        private CheckBox check_box;
-    }
-
-    /**
      * Override getView
+     *
      * @param position
      * @param convertView
      * @param parent
@@ -92,7 +86,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         } else {
             holder.text_view.setTextColor(Color.WHITE);
         }
-        holder.text_view.setCompoundDrawables(appIcon, null,null,null);
+        holder.text_view.setCompoundDrawables(appIcon, null, null, null);
         holder.text_view.setCompoundDrawablePadding(15);
 
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
@@ -106,7 +100,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
                 try {
                     apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
                 } catch (PackageManager.NameNotFoundException e) {
-                    Log.e("onClick", "Application "+appName+" not found");
+                    Log.e("onClick", "Application " + appName + " not found");
                     apk = null;
                 }
                 if (apk != null) {
@@ -129,10 +123,19 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
     /**
      * Just check if package is System or not.
+     *
      * @param pkgInfo
      * @return true if package is a system app
      */
     private boolean isSystemPackage(PackageInfo pkgInfo) {
         return ((pkgInfo.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0);
+    }
+
+    /**
+     * View holder, used in order to optimize speed and display
+     */
+    static class ViewHolder {
+        private TextView text_view;
+        private CheckBox check_box;
     }
 }

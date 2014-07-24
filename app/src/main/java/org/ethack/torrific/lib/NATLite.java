@@ -9,6 +9,7 @@ public class NATLite {
 
     /**
      * Getter for appUID
+     *
      * @return long appUID
      */
     public long getAppUID() {
@@ -16,15 +17,8 @@ public class NATLite {
     }
 
     /**
-     * Getter for appName
-     * @return String appName
-     */
-    public String getAppName() {
-        return appName;
-    }
-
-    /**
      * Setter for appUID
+     *
      * @param appUID
      */
     public void setAppUID(long appUID) {
@@ -32,7 +26,17 @@ public class NATLite {
     }
 
     /**
+     * Getter for appName
+     *
+     * @return String appName
+     */
+    public String getAppName() {
+        return appName;
+    }
+
+    /**
      * Setter for appName
+     *
      * @param appName
      */
     public void setAppName(String appName) {
@@ -41,6 +45,7 @@ public class NATLite {
 
     /**
      * Override toString() method
+     *
      * @return String appName
      */
     @Override

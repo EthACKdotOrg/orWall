@@ -15,12 +15,13 @@ import java.util.List;
 public class Shell {
     /**
      * Check if we can access root.
+     *
      * @return true if success
      */
     public boolean checkSu() {
         Log.d(Shell.class.getName(), "Starting");
-        if(!suExec("echo foo")) {
-            Log.e(Shell.class.getName(),"No root access");
+        if (!suExec("echo foo")) {
+            Log.e(Shell.class.getName(), "No root access");
             return false;
         }
         return true;
@@ -28,6 +29,7 @@ public class Shell {
 
     /**
      * Execute cmd as root
+     *
      * @param cmd
      * @return true if success
      */
@@ -35,7 +37,7 @@ public class Shell {
 
         String prepend = "";
 
-        if(!cmd.startsWith("/system/bin/iptables")) {
+        if (!cmd.startsWith("/system/bin/iptables")) {
             switch (Build.VERSION.SDK_INT) {
                 case 16:
                     prepend = "/system/bin/busybox ";
@@ -74,7 +76,7 @@ public class Shell {
 
             process.destroy();
 
-            for (String err: stderr) {
+            for (String err : stderr) {
                 Log.d("STDERR", err);
             }
 

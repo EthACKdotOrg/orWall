@@ -156,11 +156,11 @@ public class MainActivity extends Activity {
 
                 }
                 String about = "Torrific %s — GPLv2\n\n" +
-                                "Provided by EthACK, the Swiss Privacy Basecamp\n\n" +
-                                "http://torrific.ethack.org/ - https://www.ethack.org/\n\n\n" +
-                                "This product is produced independently from the Tor® anonymity software " +
-                                "and carries no guarantee from The Tor Project about quality, suitability or anything else.";
-                alert.setMessage(String.format(about,versionName));
+                        "Provided by EthACK, the Swiss Privacy Basecamp\n\n" +
+                        "http://torrific.ethack.org/ - https://www.ethack.org/\n\n\n" +
+                        "This product is produced independently from the Tor® anonymity software " +
+                        "and carries no guarantee from The Tor Project about quality, suitability or anything else.";
+                alert.setMessage(String.format(about, versionName));
                 alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -173,7 +173,7 @@ public class MainActivity extends Activity {
                 TextWatcher filterTextWatcher = new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
-                        showApplications(s.toString(),false);
+                        showApplications(s.toString(), false);
                     }
 
                     public void beforeTextChanged(CharSequence s, int start, int count,
@@ -182,7 +182,7 @@ public class MainActivity extends Activity {
 
                     public void onTextChanged(CharSequence s, int start, int before,
                                               int count) {
-                        showApplications(s.toString(),false);
+                        showApplications(s.toString(), false);
                     }
 
                 };
@@ -265,7 +265,7 @@ public class MainActivity extends Activity {
         boolean enable_lan = sharedPreferences.getBoolean("enable_lan", false);
         InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
         Log.d("ActivityResult", "Passing in here");
-        if(enforce_init) {
+        if (enforce_init) {
             initializeIptables.installInitScript(this);
         }
         if (!enforce_init && remove_init) {
@@ -279,16 +279,16 @@ public class MainActivity extends Activity {
         List<PackageInfo> searchApp = new ArrayList<PackageInfo>();
 
         if (searchStr != null && searchStr.length() > 0) {
-            for (PackageInfo pkg: finalList) {
+            for (PackageInfo pkg : finalList) {
                 String[] names = {
                         pkg.packageName,
                         packageManager.getApplicationLabel(pkg.applicationInfo).toString()
                 };
-                for (String name: names) {
+                for (String name : names) {
                     if ((name.contains(searchStr.toLowerCase()) ||
-                        name.toLowerCase().contains(searchStr.toLowerCase())) &&
-                        ! searchApp.contains(pkg)
-                        ) {
+                            name.toLowerCase().contains(searchStr.toLowerCase())) &&
+                            !searchApp.contains(pkg)
+                            ) {
                         searchApp.add(pkg);
                         isMatchFound = true;
                     }
@@ -297,7 +297,7 @@ public class MainActivity extends Activity {
         }
 
         List<PackageInfo> apps2;
-        if(showAll || (searchStr != null && searchStr.equals(""))) {
+        if (showAll || (searchStr != null && searchStr.equals(""))) {
             apps2 = finalList;
         } else if (isMatchFound || searchApp.size() > 0) {
             apps2 = searchApp;

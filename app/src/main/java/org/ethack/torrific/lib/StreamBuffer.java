@@ -29,10 +29,12 @@ public class StreamBuffer extends Thread {
                 Log.d(StreamBuffer.class.getName(), line);
                 if (outputList != null) outputList.add(line);
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
 
         try {
             bufferedReader.close();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
     }
 }

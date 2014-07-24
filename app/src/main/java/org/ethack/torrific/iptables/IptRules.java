@@ -14,6 +14,7 @@ public class IptRules {
 
     /**
      * Apply an IPTables rule
+     *
      * @param rule
      * @return true if success
      */
@@ -22,13 +23,14 @@ public class IptRules {
         if (shell.suExec(rule)) {
             return true;
         } else {
-            Log.e(IptRules.class.getName(), "FAILED to apply "+rule);
+            Log.e(IptRules.class.getName(), "FAILED to apply " + rule);
             return false;
         }
     }
 
     /**
      * Build an iptables call in order to either create or remove NAT rule
+     *
      * @param appUID
      * @param action
      * @param appName
@@ -46,7 +48,7 @@ public class IptRules {
         } else {
             RULE = "%s -D OUTPUT -d %s -j LAN";
         }
-        return  (applyRule(String.format(RULE, IPTABLES, lan)));
+        return (applyRule(String.format(RULE, IPTABLES, lan)));
     }
 
     public boolean genericRule(final String rule) {

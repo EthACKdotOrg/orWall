@@ -20,6 +20,17 @@ public class PreferencesActivity extends PreferenceActivity {
         loadHeadersFromResource(R.xml.preferences_header, target);
     }
 
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        String prepend = "org.ethack.torrific.PreferencesActivity$";
+        String[] fragments = {
+                prepend + "OtherPrefs",
+                prepend + "NetworkPrefs",
+        };
+
+        return Arrays.asList(fragments).contains(fragmentName);
+    }
+
     public static class NetworkPrefs extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -37,16 +48,5 @@ public class PreferencesActivity extends PreferenceActivity {
             PreferenceManager.setDefaultValues(getActivity(), R.xml.other_preferences, true);
             addPreferencesFromResource(R.xml.fragment_other_prefs);
         }
-    }
-
-    @Override
-    protected boolean isValidFragment(String fragmentName) {
-        String prepend = "org.ethack.torrific.PreferencesActivity$";
-        String[] fragments = {
-                prepend +"OtherPrefs",
-                prepend +"NetworkPrefs",
-        };
-
-        return Arrays.asList(fragments).contains(fragmentName);
     }
 }

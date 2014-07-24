@@ -31,14 +31,14 @@ public class CheckSum {
         try {
             md = MessageDigest.getInstance(method);
         } catch (NoSuchAlgorithmException e) {
-            Log.e("Hash", "No such algorithm: "+method);
+            Log.e("Hash", "No such algorithm: " + method);
             return "E_NOSUCHALGORITHM";
         }
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
-        } catch(FileNotFoundException e) {
-            Log.e("Hash", "No such file: "+file);
+        } catch (FileNotFoundException e) {
+            Log.e("Hash", "No such file: " + file);
             return "E_NOSUCHFILE";
         }
 
@@ -56,7 +56,7 @@ public class CheckSum {
         byte[] mdbytes = md.digest();
 
         StringBuffer sb = new StringBuffer();
-        for (byte mdb: mdbytes) {
+        for (byte mdb : mdbytes) {
             sb.append(Integer.toHexString(0xFF & mdb));
         }
         Log.d("Checksum", sb.toString());

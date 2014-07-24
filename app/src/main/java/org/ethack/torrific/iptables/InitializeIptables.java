@@ -37,6 +37,56 @@ public class InitializeIptables {
         this.iptRules = new IptRules();
     }
 
+    /**
+     * Thanks to AFWall :)
+     *
+     * @param ctx
+     * @param resId
+     * @param filename
+     * @return
+     */
+    private static boolean installBinary(Context ctx, int resId, String filename) {
+        try {
+            File f = new File(ctx.getDir("bin", 0), filename);
+            if (f.exists()) {
+                f.delete();
+            }
+            copyRawFile(ctx, resId, f, "0755");
+            return true;
+        } catch (Exception e) {
+            Log.e(InitializeIptables.class.getName(), "installBinary failed: " + e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Copies a raw resource file, given its ID to the given location
+     *
+     * @param ctx   context
+     * @param resid resource id
+     * @param file  destination file
+     * @param mode  file permissions (E.g.: "755")
+     * @throws IOException          on error
+     * @throws InterruptedException when interrupted
+     *                              <p/>
+     *                              Thanks AFWall source code
+     */
+    private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
+        final String abspath = file.getAbsolutePath();
+        // Write the iptables binary
+        final FileOutputStream out = new FileOutputStream(file);
+        final InputStream is = ctx.getResources().openRawResource(resid);
+        byte buf[] = new byte[1024];
+        int len;
+        while ((len = is.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        out.close();
+        is.close();
+        // Change the permissions
+        Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
+    }
+
     public void LANPolicy(boolean allow) {
         String[] lans = {
                 "10.0.0.0/8",
@@ -120,56 +170,6 @@ public class InitializeIptables {
         } else {
             Log.e("Init", "ERROR while removing file");
         }
-    }
-
-    /**
-     * Thanks to AFWall :)
-     *
-     * @param ctx
-     * @param resId
-     * @param filename
-     * @return
-     */
-    private static boolean installBinary(Context ctx, int resId, String filename) {
-        try {
-            File f = new File(ctx.getDir("bin", 0), filename);
-            if (f.exists()) {
-                f.delete();
-            }
-            copyRawFile(ctx, resId, f, "0755");
-            return true;
-        } catch (Exception e) {
-            Log.e(InitializeIptables.class.getName(), "installBinary failed: " + e.getLocalizedMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Copies a raw resource file, given its ID to the given location
-     *
-     * @param ctx   context
-     * @param resid resource id
-     * @param file  destination file
-     * @param mode  file permissions (E.g.: "755")
-     * @throws IOException          on error
-     * @throws InterruptedException when interrupted
-     *                              <p/>
-     *                              Thanks AFWall source code
-     */
-    private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
-        final String abspath = file.getAbsolutePath();
-        // Write the iptables binary
-        final FileOutputStream out = new FileOutputStream(file);
-        final InputStream is = ctx.getResources().openRawResource(resid);
-        byte buf[] = new byte[1024];
-        int len;
-        while ((len = is.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
-        is.close();
-        // Change the permissions
-        Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
     }
 
 

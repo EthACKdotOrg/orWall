@@ -7,18 +7,18 @@ import android.util.Log;
 
 /**
  * Database helper class
+ *
  * @see SQLiteOpenHelper
  */
 public class NATDBLite extends SQLiteOpenHelper {
     public static final String TABLE_NAT = "nat";
     public static final String COLUMN_APPUID = "appUID";
     public static final String COLUMN_APPNAME = "appName";
-    public static final String DATABASE_NAME = "firewall.db";
-    public static final int DATABASE_VERSION = 1;
-
     private static final String DATABASE_CREATE =
             String.format("create table %s (%s integer primary key, %s varchar not null)",
                     TABLE_NAT, COLUMN_APPUID, COLUMN_APPNAME);
+    public static final String DATABASE_NAME = "firewall.db";
+    public static final int DATABASE_VERSION = 1;
 
     public NATDBLite(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,6 +26,7 @@ public class NATDBLite extends SQLiteOpenHelper {
 
     /**
      * Override onCreate SQLiteOpenHelper
+     *
      * @param database
      */
     @Override
@@ -36,6 +37,7 @@ public class NATDBLite extends SQLiteOpenHelper {
     /**
      * Override onUpgrade SQLiteOpenHelper
      * Maybe a bit harsh as it doesn't migrate data to new model for now.
+     *
      * @param database
      * @param oldVersion
      * @param newVersion

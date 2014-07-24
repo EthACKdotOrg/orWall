@@ -24,6 +24,7 @@ public class NATLiteSource {
 
     /**
      * Constructor
+     *
      * @param context
      */
     public NATLiteSource(Context context) {
@@ -32,6 +33,7 @@ public class NATLiteSource {
 
     /**
      * Open database read-write
+     *
      * @throws SQLException
      */
     public void open() throws SQLException {
@@ -47,6 +49,7 @@ public class NATLiteSource {
 
     /**
      * Create a NAT preference and add it to DB
+     *
      * @param appUID
      * @param appName
      */
@@ -59,6 +62,7 @@ public class NATLiteSource {
 
     /**
      * Delete a NAT preference
+     *
      * @param appUID
      */
     public void deleteNAT(long appUID) {
@@ -70,6 +74,7 @@ public class NATLiteSource {
 
     /**
      * Get all NAT from DB
+     *
      * @return List
      */
     public List<NATLite> getAllNats() {
@@ -94,6 +99,7 @@ public class NATLiteSource {
 
     /**
      * Check if NAT exists in DB
+     *
      * @param appUID
      * @return true if exists
      */
@@ -101,7 +107,7 @@ public class NATLiteSource {
         Cursor cursor = database.query(
                 NATDBLite.TABLE_NAT, allColumns,
                 String.format("%s = %d", NATDBLite.COLUMN_APPUID, appUID),
-                null,null,null,null
+                null, null, null, null
         );
         long num_rows = cursor.getCount();
         cursor.close();
@@ -110,6 +116,7 @@ public class NATLiteSource {
 
     /**
      * Internal helper, transform a cursor to NATLite object
+     *
      * @param cursor
      * @return NATLite object
      */
