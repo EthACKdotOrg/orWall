@@ -67,6 +67,7 @@ public class BootBroadcast extends BroadcastReceiver {
                 .setContentText(
                         String.format("You have %d application forced through Orbot", natLites.size())
                 );
+        notification.notify();
     }
 
 }
