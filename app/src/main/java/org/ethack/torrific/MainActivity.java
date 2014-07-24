@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -36,6 +40,7 @@ public class MainActivity extends Activity {
     private PackageManager packageManager;
     private NATLiteSource natLiteSource;
     private boolean isFirstRun;
+    private boolean newIntent;
     private List<PackageInfo> finalList;
 
     private ListView listview;
@@ -98,7 +103,16 @@ public class MainActivity extends Activity {
                     Toast.makeText(this, (String) "Installed init-script", Toast.LENGTH_LONG).show();
                 }
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
-                initializeIptables.installInitScript(this);
+                boolean enforceInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("enforce_init_script", true);
+                boolean disableInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("deactivate_init_script", false);
+                if (isFirstRun || enforceInit) {
+                    Log.d("Main", "Enforcing or installing init-script");
+                    initializeIptables.installInitScript(this);
+                }
+                if (disableInit && !enforceInit) {
+                    Log.d("Main", "Disabling init-script");
+                    initializeIptables.removeIniScript(this);
+                }
 
                 List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
                 finalList = new ArrayList<PackageInfo>();
@@ -129,6 +143,10 @@ public class MainActivity extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_settings:
+                newIntent = true;
+                showPreferences();
+                return true;
             case R.id.action_about:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("About Torrific");
@@ -138,7 +156,11 @@ public class MainActivity extends Activity {
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
-                String about = "Torrific %s — GPLv2\n\nProvided by EthACK, the Swiss Privacy Basecamp\n\nhttp://torrific.ethack.org/ - https://www.ethack.org/";
+                String about = "Torrific %s — GPLv2\n\n" +
+                                "Provided by EthACK, the Swiss Privacy Basecamp\n\n" +
+                                "http://torrific.ethack.org/ - https://www.ethack.org/\n\n\n" +
+                                "This product is produced independently from the Tor® anonymity software " +
+                                "and carries no guarantee from The Tor Project about quality, suitability or anything else.";
                 alert.setMessage(String.format(about,versionName));
                 alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                     @Override
@@ -147,6 +169,7 @@ public class MainActivity extends Activity {
                     }
                 });
                 alert.show();
+                return true;
             case R.id.action_search:
                 TextWatcher filterTextWatcher = new TextWatcher() {
 
@@ -193,6 +216,7 @@ public class MainActivity extends Activity {
                         return true; // Return true to expand action view
                     }
                 });
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -221,10 +245,34 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         // prevent App crash when root permission is requested…
-        if (!isFirstRun) {
+        if (!isFirstRun && !newIntent) {
             natLiteSource.close();
         }
         super.onResume();
+    }
+
+    private void showPreferences() {
+        Intent intent = new Intent(this, PreferencesActivity.class);
+        startActivityForResult(intent, 1);
+        newIntent = false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean remove_init = sharedPreferences.getBoolean("deactivate_init_script", false);
+        boolean enforce_init = sharedPreferences.getBoolean("enforce_init_script", true);
+        boolean enable_lan = sharedPreferences.getBoolean("enable_lan", false);
+        InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
+        Log.d("ActivityResult", "Passing in here");
+        if(enforce_init) {
+            initializeIptables.installInitScript(this);
+        }
+        if (!enforce_init && remove_init) {
+            initializeIptables.removeIniScript(this);
+        }
+        initializeIptables.LANPolicy(enable_lan);
     }
 
     private void showApplications(final String searchStr, boolean showAll) {
