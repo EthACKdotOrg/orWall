@@ -23,7 +23,7 @@ public class IptRules {
         if (shell.suExec(rule)) {
             return true;
         } else {
-            Log.e(IptRules.class.getName(), "FAILED to apply");
+            Log.e(IptRules.class.getName(), "FAILED to apply "+rule);
             return false;
         }
     }
@@ -41,14 +41,13 @@ public class IptRules {
         return applyRule(String.format(RULE, IPTABLES, action, appUID, appName));
     }
 
-    public boolean LanNoNat(final String lan) {
-        String RULE2;
-        if (applyRule(String.format(RULE, IPTABLES, lan))) {
-            RULE = "%s -I OUTPUT 3 -d %s -j LAN";
-            RULE2 = "%s -t nat -A OUTPUT -d %s -j RETURN";
-            return applyRule(String.format(RULE, IPTABLES, lan)) && applyRule(String.format(RULE2, IPTABLES, lan));
+    public boolean LanNoNat(final String lan, final boolean allow) {
+        if (allow) {
+            RULE = "%s -I OUTPUT 1 -d %s -j LAN";
+        } else {
+            RULE = "%s -D OUTPUT -d %s -j LAN";
         }
-        return false;
+        return  (applyRule(String.format(RULE, IPTABLES, lan)));
     }
 
     public boolean genericRule(final String rule) {
