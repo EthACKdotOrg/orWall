@@ -25,6 +25,9 @@ public class InitializeIptables {
 
     private final NATLiteSource natLiteSource;
     private final IptRules iptRules;
+    private final String dir_dst = "/data/local";
+    private final String dst_file = String.format("%s/userinit.sh", dir_dst);
+    private final Shell shell = new Shell();
 
     /**
      * Construtor
@@ -43,16 +46,19 @@ public class InitializeIptables {
                 "192.168.0.0/16"
         };
         if (allow) {
-            iptRules.genericRule("-N LAN");
-            iptRules.genericRule("-A LAN -p tcp -m tcp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
-            iptRules.genericRule("-A LAN -p udp -m udp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
-            iptRules.genericRule("-A LAN -j ACCEPT");
-            for (String lan : lans) {
-                if (!iptRules.LanNoNat(lan)) {
-                    Log.e(
-                            InitializeIptables.class.getName(),
-                            String.format("Unable to bypass NAT for %s", lan));
-                }
+            if (iptRules.genericRule("-N LAN")) {
+                iptRules.genericRule("-A LAN -p tcp -m tcp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
+                iptRules.genericRule("-A LAN -p udp -m udp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
+                iptRules.genericRule("-A LAN -j ACCEPT");
+            }
+        } else {
+            iptRules.genericRule("-X LAN");
+        }
+        for (String lan : lans) {
+            if (!iptRules.LanNoNat(lan, allow)) {
+                Log.e(
+                        InitializeIptables.class.getName(),
+                        String.format("Unable to bypass NAT for %s", lan));
             }
         }
     }
@@ -82,22 +88,17 @@ public class InitializeIptables {
     }
 
     public void installInitScript(Context context) {
-        final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
-        final String dir_dst = "/data/local";
-        final String dst_file = String.format("%s/userinit.sh", dir_dst);
-        final Shell shell = new Shell();
 
         if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
             Log.d("Init", "We're fucked… unable to extract userinit.sh script");
         }
 
+        final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
 
         CheckSum check_src = new CheckSum(src_file);
         CheckSum check_dst = new CheckSum(dst_file);
 
-        if (check_dst.hash().equals(check_src.hash())) {
-            Log.d("Init", "Nothing to do with init script");
-        } else {
+        if (!check_dst.hash().equals(check_src.hash())) {
 
             String CMD = String.format("cp %s %s", src_file, dst_file);
             if (shell.suExec(CMD)) {
@@ -111,6 +112,15 @@ public class InitializeIptables {
             } else {
                 Log.e("Init", "ERROR while copying file to " + dst_file);
             }
+        }
+    }
+
+    public void removeIniScript(Context context) {
+        String CMD = String.format("rm -f %s", dst_file);
+        if (shell.suExec(CMD)) {
+            Log.d("Init", "file removed");
+        } else {
+            Log.e("Init", "ERROR while removing file");
         }
     }
 
