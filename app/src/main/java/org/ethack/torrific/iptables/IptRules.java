@@ -1,6 +1,5 @@
 package org.ethack.torrific.iptables;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.ethack.torrific.lib.Shell;

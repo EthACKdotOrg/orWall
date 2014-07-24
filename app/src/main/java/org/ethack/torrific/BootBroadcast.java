@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.app.Activity;
-
 
 import org.ethack.torrific.iptables.InitializeIptables;
 import org.ethack.torrific.iptables.IptRules;
@@ -16,7 +14,6 @@ import org.ethack.torrific.lib.NATLiteSource;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 public class BootBroadcast extends BroadcastReceiver {
     public BootBroadcast() {

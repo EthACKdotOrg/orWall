@@ -11,7 +11,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;

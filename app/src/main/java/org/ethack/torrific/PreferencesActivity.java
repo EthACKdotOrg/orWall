@@ -1,18 +1,10 @@
 package org.ethack.torrific;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 
-import org.ethack.torrific.R;
-
-import java.nio.BufferUnderflowException;
 import java.util.Arrays;
 import java.util.List;
 

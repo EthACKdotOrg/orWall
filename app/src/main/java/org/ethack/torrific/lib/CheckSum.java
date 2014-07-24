@@ -1,9 +1,7 @@
 package org.ethack.torrific.lib;
 
-import android.os.Message;
 import android.util.Log;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
