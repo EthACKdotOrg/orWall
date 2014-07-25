@@ -62,6 +62,11 @@
         z-index:10;
         margin-top:20px;
       }
+      @media (min-width: 800px) {
+        #release a {
+          margin-top:90%;
+        }
+      }
     </style>
   </head>
   <body>
@@ -91,14 +96,18 @@
     </nav>
 
     <div class="container">
-      <div class="jumbotron">
-        <div>
+      <div class="row jumbotron">
+        <div class="col-md-10">
           <h1>Torrific</h1>
           <p>
           Put your apps behind <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
           and block all unwanted traffic in one go.
           </p>
         </div>
+        <div class="col-md-2" id="release">
+        </div>
+      </div>
+      <div class="text-center bg-danger">
         <small>
           This product is produced independently from the <a href="https://www.torproject.org/">Tor®</a> anonymity
           software and carries no guarantee from The Tor Project about quality, suitability or anything else.
@@ -254,6 +263,13 @@
         $('#qr_litecoin').show();
       }, function() {
         $('#qr_litecoin').hide();
+      });
+      $.getJSON('https://api.github.com/repos/EthACKdotOrg/Torrific/releases', function(data) {
+          latest_release = data[0];
+          url = latest_release['assets'][0]['url']
+          $.getJSON(url, function(apk) {
+            $('#release').html('<a class="btn btn-primary btn-lg" href="'+apk['browser_download_url']+'">Get '+latest_release['name']+'</a>');
+          });
       });
     </script>
   </body>
