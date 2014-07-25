@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,6 +22,7 @@ import android.widget.Toast;
 
 import org.ethack.torrific.adapter.RowAdapter;
 import org.ethack.torrific.iptables.InitializeIptables;
+import org.ethack.torrific.lib.InstallScripts;
 import org.ethack.torrific.lib.NATLiteSource;
 import org.ethack.torrific.lib.PackageComparator;
 import org.ethack.torrific.lib.Shell;
@@ -38,7 +37,6 @@ public class MainActivity extends Activity {
     public final static String TAG = "Torrific";
     private PackageManager packageManager;
     private NATLiteSource natLiteSource;
-    private boolean isFirstRun;
     private boolean newIntent;
     private List<PackageInfo> finalList;
 
@@ -92,25 +90,20 @@ public class MainActivity extends Activity {
 
             if (orbot_id != null) {
 
-                isFirstRun = getSharedPreferences("PREFERENCES", MODE_PRIVATE).getBoolean("isFirstRun", true);
-
                 InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
-                if (isFirstRun) {
-                    Log.d(MainActivity.class.getName(), "First run detected!");
-                    // set boolean to false in order to prevent useless accesses
-                    getSharedPreferences("PREFERENCES", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).commit();
-                    Toast.makeText(this, (String) "Installed init-script", Toast.LENGTH_LONG).show();
-                }
+
+                InstallScripts installScripts = new InstallScripts(this);
+                installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
                 boolean enforceInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("enforce_init_script", true);
                 boolean disableInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("deactivate_init_script", false);
-                if (isFirstRun || enforceInit) {
+                if (enforceInit) {
                     Log.d("Main", "Enforcing or installing init-script");
                     initializeIptables.installInitScript(this);
                 }
                 if (disableInit && !enforceInit) {
                     Log.d("Main", "Disabling init-script");
-                    initializeIptables.removeIniScript(this);
+                    initializeIptables.removeIniScript();
                 }
 
                 List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
@@ -244,7 +237,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         // prevent App crash when root permission is requested…
-        if (!isFirstRun && !newIntent) {
+        if (!newIntent) {
             natLiteSource.close();
         }
         super.onResume();
@@ -254,24 +247,6 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, PreferencesActivity.class);
         startActivityForResult(intent, 1);
         newIntent = false;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean remove_init = sharedPreferences.getBoolean("deactivate_init_script", false);
-        boolean enforce_init = sharedPreferences.getBoolean("enforce_init_script", true);
-        boolean enable_lan = sharedPreferences.getBoolean("enable_lan", false);
-        InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
-        Log.d("ActivityResult", "Passing in here");
-        if (enforce_init) {
-            initializeIptables.installInitScript(this);
-        }
-        if (!enforce_init && remove_init) {
-            initializeIptables.removeIniScript(this);
-        }
-        initializeIptables.LANPolicy(enable_lan);
     }
 
     private void showApplications(final String searchStr, boolean showAll) {
