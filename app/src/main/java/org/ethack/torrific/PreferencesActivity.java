@@ -29,14 +29,15 @@ public class PreferencesActivity extends PreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         String prepend = "org.ethack.torrific.PreferencesActivity$";
         String[] fragments = {
-                prepend + "OtherPrefs",
+                prepend + "ScriptPrefs",
+                prepend + "SpecialApps",
                 prepend + "NetworkPrefs",
         };
 
         return Arrays.asList(fragments).contains(fragmentName);
     }
 
-    public static class NetworkPrefs extends PreferenceFragment {
+    public static class ScriptPrefs extends PreferenceFragment {
 
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -70,7 +71,34 @@ public class PreferencesActivity extends PreferenceActivity {
         }
     }
 
-    public static class OtherPrefs extends PreferenceFragment {
+    public static class SpecialApps extends PreferenceFragment {
+        private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+                InitializeIptables iptables = new InitializeIptables(new NATLiteSource(getActivity()));
+
+            }
+        };
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //PreferenceManager.setDefaultValues(getActivity(), R.xml.fragment_apps_prefs, true);
+            addPreferencesFromResource(R.xml.fragment_apps_prefs);
+        }
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
+        }
+    }
+
+    public static class NetworkPrefs extends PreferenceFragment {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {

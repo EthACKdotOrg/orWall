@@ -22,5 +22,9 @@
     <string name="enable_captive_detection">Enable captive portal detection</string>
     <string name="summary_enable_captive_detection">Caution! This may leads to data leakage as the OS will probe network each time you connect to the Wireless!</string>
     <string name="captive_portal">Captive portal detection</string>
+    <string name="authorize_browser">Authorize Browser</string>
+    <string name="special_apps">Special applications</string>
+    <string name="summary_special_apps">Select applications with special rights, like your preferred browser app for Captive Portal authentication, or VoIP</string>
+    <string name="portal_browser">Browser for Portal login</string>
 
 </resources>

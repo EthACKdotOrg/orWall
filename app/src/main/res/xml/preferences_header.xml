@@ -2,15 +2,19 @@
 <preference-headers
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <header android:fragment="org.ethack.torrific.PreferencesActivity$NetworkPrefs"
+    <header android:fragment="org.ethack.torrific.PreferencesActivity$ScriptPrefs"
         android:icon="@drawable/ic_action_secure"
         android:title="@string/init_script"
         android:summary="@string/summary_manage_init_script" />
 
-    <header android:fragment="org.ethack.torrific.PreferencesActivity$OtherPrefs"
+    <header android:fragment="org.ethack.torrific.PreferencesActivity$NetworkPrefs"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/network"
         android:summary="@string/summary_network">
     </header>
+    <header android:fragment="org.ethack.torrific.PreferencesActivity$SpecialApps"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/special_apps"
+        android:summary="@string/summary_special_apps" />
 
 </preference-headers>
