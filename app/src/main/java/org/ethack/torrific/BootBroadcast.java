@@ -1,6 +1,7 @@
 package org.ethack.torrific;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -58,13 +59,6 @@ public class BootBroadcast extends BroadcastReceiver {
             );
             iptRules.natApp(nat.getAppUID(), 'A', nat.getAppName());
         }
-
-        Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle("NAT has been applied")
-                .setContentText(
-                        String.format("You have %d application forced through Orbot", natLites.size())
-                );
-        notification.notify();
     }
 
 }
