@@ -135,6 +135,9 @@ public class MainActivity extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.authorize_browser:
+                Log.d("Menu Action","TODO :)");
+                return true;
             case R.id.action_settings:
                 newIntent = true;
                 showPreferences();

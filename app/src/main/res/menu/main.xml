@@ -15,4 +15,8 @@
         android:title="@string/action_about"
         android:icon="@drawable/ic_action_about"
         android:showAsAction="never" />
+    <item android:id="@+id/authorize_browser"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/authorize_browser"
+        android:showAsAction="never" />
 </menu>
