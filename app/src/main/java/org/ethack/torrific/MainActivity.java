@@ -148,12 +148,14 @@ public class MainActivity extends Activity {
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
+
                 String about = "Torrific %s — GPLv2\n\n" +
                         "Provided by EthACK, the Swiss Privacy Basecamp\n\n" +
                         "http://torrific.ethack.org/ - https://www.ethack.org/\n\n\n" +
                         "This product is produced independently from the Tor® anonymity software " +
                         "and carries no guarantee from The Tor Project about quality, suitability or anything else.";
                 alert.setMessage(String.format(about, versionName));
+
                 alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
