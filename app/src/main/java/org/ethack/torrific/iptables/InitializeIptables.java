@@ -1,6 +1,7 @@
 package org.ethack.torrific.iptables;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.ethack.torrific.R;
@@ -37,57 +38,9 @@ public class InitializeIptables {
         this.iptRules = new IptRules();
     }
 
-    /**
-     * Thanks to AFWall :)
-     *
-     * @param ctx
-     * @param resId
-     * @param filename
-     * @return
-     */
-    private static boolean installBinary(Context ctx, int resId, String filename) {
-        try {
-            File f = new File(ctx.getDir("bin", 0), filename);
-            if (f.exists()) {
-                f.delete();
-            }
-            copyRawFile(ctx, resId, f, "0755");
-            return true;
-        } catch (Exception e) {
-            Log.e(InitializeIptables.class.getName(), "installBinary failed: " + e.getLocalizedMessage());
-            return false;
-        }
-    }
 
-    /**
-     * Copies a raw resource file, given its ID to the given location
-     *
-     * @param ctx   context
-     * @param resid resource id
-     * @param file  destination file
-     * @param mode  file permissions (E.g.: "755")
-     * @throws IOException          on error
-     * @throws InterruptedException when interrupted
-     *                              <p/>
-     *                              Thanks AFWall source code
-     */
-    private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
-        final String abspath = file.getAbsolutePath();
-        // Write the iptables binary
-        final FileOutputStream out = new FileOutputStream(file);
-        final InputStream is = ctx.getResources().openRawResource(resid);
-        byte buf[] = new byte[1024];
-        int len;
-        while ((len = is.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
-        is.close();
-        // Change the permissions
-        Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
-    }
 
-    public void LANPolicy(boolean allow) {
+    public void LANPolicy(final boolean allow) {
         String[] lans = {
                 "10.0.0.0/8",
                 "172.16.0.0/12",
@@ -99,8 +52,6 @@ public class InitializeIptables {
                 iptRules.genericRule("-A LAN -p udp -m udp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
                 iptRules.genericRule("-A LAN -j ACCEPT");
             }
-        } else {
-            iptRules.genericRule("-X LAN");
         }
         for (String lan : lans) {
             if (!iptRules.LanNoNat(lan, allow)) {
@@ -108,6 +59,10 @@ public class InitializeIptables {
                         InitializeIptables.class.getName(),
                         String.format("Unable to bypass NAT for %s", lan));
             }
+        }
+        if (!allow) {
+            iptRules.genericRule("-F LAN");
+            iptRules.genericRule("-X LAN");
         }
     }
 
@@ -135,11 +90,7 @@ public class InitializeIptables {
         }
     }
 
-    public void installInitScript(Context context) {
-
-        if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
-            Log.d("Init", "We're fucked… unable to extract userinit.sh script");
-        }
+    public void installInitScript(final Context context) {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
 
@@ -163,12 +114,31 @@ public class InitializeIptables {
         }
     }
 
-    public void removeIniScript(Context context) {
+    public void removeIniScript() {
         String CMD = String.format("rm -f %s", dst_file);
         if (shell.suExec(CMD)) {
             Log.d("Init", "file removed");
         } else {
             Log.e("Init", "ERROR while removing file");
+        }
+    }
+
+    public void enableTethering(boolean status) {
+        // TODO: find how it works
+    }
+
+    public void enableCaptiveDetection(boolean status, Context context) {
+        // TODO: find a way to disable it on android <4.4
+        if (Build.VERSION.SDK_INT > 18) {
+
+            String CMD;
+            if (status) {
+                CMD = new File(context.getDir("bin", 0), "activate_portal.sh").getAbsolutePath();;
+            } else {
+                CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();;
+            }
+            Shell threaded = new Shell("sh "+CMD);
+            threaded.run();
         }
     }
 
