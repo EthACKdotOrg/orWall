@@ -12,7 +12,20 @@ import java.util.List;
 /**
  * Created by cedric on 7/18/14.
  */
-public class Shell {
+public class Shell extends Thread{
+    private String cmd;
+    public Shell(String cmd) {
+        this.cmd = cmd;
+    }
+
+    public Shell() {
+        return;
+    }
+
+    @Override
+    public void run() {
+        suExec(this.cmd);
+    }
     /**
      * Check if we can access root.
      *
