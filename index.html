@@ -105,6 +105,7 @@
           </p>
         </div>
         <div class="col-md-2" id="release">
+          <a id="latest_rel" class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/Torrific/releases">Get latest release</a>
         </div>
       </div>
       <div class="text-center bg-danger">
@@ -254,6 +255,7 @@
     <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+      $('#latest_rel').hide();
       $('#bitcoin').hover(function() {
         $('#qr_bitcoin').show();
       }, function() {
