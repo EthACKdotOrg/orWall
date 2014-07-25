@@ -4,18 +4,16 @@
     <PreferenceCategory android:title="@string/init_script">
         <CheckBoxPreference
             android:disableDependentsState="true"
+            android:defaultValue="true"
             android:key="enforce_init_script"
             android:title="@string/enforce_init_script"
             android:summary="@string/summary_enforce_init_script" />
 
         <CheckBoxPreference
             android:dependency="enforce_init_script"
+            android:defaultValue="false"
             android:key="deactivate_init_script"
             android:title="@string/deactivate_init_script"
             android:summary="@string/summary_deactivate_init_script" />
-        <CheckBoxPreference
-            android:key="enable_lan"
-            android:title="@string/enable_lan"
-            android:summary="@string/summary_enable_lan" />
     </PreferenceCategory>
 </PreferenceScreen>

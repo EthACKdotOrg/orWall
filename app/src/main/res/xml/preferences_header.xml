@@ -6,11 +6,11 @@
         android:icon="@drawable/ic_action_secure"
         android:title="@string/init_script"
         android:summary="@string/summary_manage_init_script" />
-<!--
+
     <header android:fragment="org.ethack.torrific.PreferencesActivity$OtherPrefs"
         android:icon="@drawable/ic_action_settings"
-        android:title="Prefs 2"
-        android:summary="Some other preferences you can see.">
+        android:title="@string/network"
+        android:summary="@string/summary_network">
     </header>
-    -->
+
 </preference-headers>
