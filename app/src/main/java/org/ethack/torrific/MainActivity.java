@@ -218,16 +218,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onResume();
-    }
-
     private void showPreferences() {
         Intent intent = new Intent(this, PreferencesActivity.class);
         startActivityForResult(intent, 1);
