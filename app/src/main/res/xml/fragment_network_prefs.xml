@@ -10,6 +10,7 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="enable_tethering"
+        android:enabled="false"
         android:title="@string/enable_tethering"
         android:summary="@string/summary_enable_tethering" />
     </PreferenceCategory>
