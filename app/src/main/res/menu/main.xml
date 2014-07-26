@@ -6,17 +6,25 @@
         android:showAsAction="always|collapseActionView"
         android:title=""
         />
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:icon="@drawable/ic_action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-    <item android:id="@+id/action_about"
-        android:title="@string/action_about"
-        android:icon="@drawable/ic_action_about"
-        android:showAsAction="never" />
+
     <item android:id="@+id/authorize_browser"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/authorize_browser"
+        android:enabled="false"
+        android:showAsAction="never" />
+    <item android:id="@+id/enable_sip"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/enable_sip"
+        android:enabled="false"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/action_about"
+        android:title="@string/action_about"
+        android:icon="@drawable/ic_action_about"
         android:showAsAction="never" />
 </menu>
