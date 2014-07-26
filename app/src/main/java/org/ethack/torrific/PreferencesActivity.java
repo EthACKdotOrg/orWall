@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.ethack.torrific.iptables.InitializeIptables;
 
@@ -75,10 +76,7 @@ public class PreferencesActivity extends PreferenceActivity {
     public static class SpecialApps extends PreferenceFragment {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables();
-
-            }
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) { return; }
         };
 
         @Override
