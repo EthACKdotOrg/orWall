@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <ScrollView
+        android:id="@+id/about_scrollview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="15dp"
+            android:layout_height="fill_parent">
+            <TextView
+                android:text="@string/app_name"
+                android:textStyle="bold"
+                android:textColor="#fade22"
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_torrific"
+                android:paddingLeft="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="Version: "
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:textColor="#fade22"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="- Unknown -"
+                android:id="@+id/about_version"
+                android:paddingLeft="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_urls"
+                android:textColor="#fade22"
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_links"
+                android:autoLink="web"
+                android:paddingLeft="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_license"
+                android:textColor="#fade22"
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="GPLv3"
+                android:paddingLeft="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_author"
+                android:textColor="#fade22"
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_author_list"
+                android:autoLink="web"
+                android:paddingLeft="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_torproject"
+                android:textColor="#fade22"
+                android:paddingTop="15dp"
+                android:paddingLeft="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/about_legal_tor"
+                android:layout_width="fill_parent"
+                android:paddingLeft="30dp"
+                android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+
+</LinearLayout>

@@ -14,11 +14,14 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.ethack.torrific.adapter.RowAdapter;
 import org.ethack.torrific.iptables.InitializeIptables;
@@ -149,29 +152,20 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.action_about:
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("About " + R.string.app_name);
-                String versionName = null;
+                LayoutInflater li = LayoutInflater.from(this);
+                View view = li.inflate(R.layout.about, null);
+                String versionName = "";
                 try {
                     versionName = packageManager.getPackageInfo(this.getPackageName(), 0).versionName;
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
-
-                String about = "Torrific %s — GPLv2\n\n" +
-                        "Provided by EthACK, the Swiss Privacy Basecamp\n\n" +
-                        "http://torrific.ethack.org/ - https://www.ethack.org/\n\n\n" +
-                        "This product is produced independently from the Tor® anonymity software " +
-                        "and carries no guarantee from The Tor Project about quality, suitability or anything else.";
-                alert.setMessage(String.format(about, versionName));
-
-                alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // do nothing
-                    }
-                });
-                alert.show();
+                TextView version = (TextView)view.findViewById(R.id.about_version);
+                version.setText(versionName);
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.action_about))
+                        .setView(view)
+                        .show();
                 return true;
 
             case R.id.action_search:
