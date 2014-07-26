@@ -150,7 +150,7 @@ public class MainActivity extends Activity {
 
             case R.id.action_about:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("About Torrific");
+                alert.setTitle("About " + R.string.app_name);
                 String versionName = null;
                 try {
                     versionName = packageManager.getPackageInfo(this.getPackageName(), 0).versionName;
