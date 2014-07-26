@@ -2,7 +2,13 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/portal_browser">
-    <ListPreference
-        android:key="portal_browser"/>
+        <org.ethack.torrific.lib.AppPreferenceList
+            android:title="@string/authorize_browser"
+            android:summary="@string/summary_special_apps"
+            android:key="browser_app" />
+        <org.ethack.torrific.lib.AppPreferenceList
+            android:title="@string/sip_application"
+            android:summary="@string/summary_sip_application"
+            android:key="sip_app" />
     </PreferenceCategory>
 </PreferenceScreen>

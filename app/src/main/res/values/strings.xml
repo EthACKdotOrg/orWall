@@ -24,7 +24,11 @@
     <string name="captive_portal">Captive portal detection</string>
     <string name="authorize_browser">Authorize Browser</string>
     <string name="special_apps">Special applications</string>
-    <string name="summary_special_apps">Select applications with special rights, like your preferred browser app for Captive Portal authentication, or VoIP</string>
+    <string name="summary_special_apps">Select applications with special rights, like your preferred browser app for Captive Portal authentication, or VoIP.</string>
     <string name="portal_browser">Browser for Portal login</string>
+    <string name="select_browser">Select one browser</string>
+    <string name="summary_select_browser">This browser will be authorized, on request, to bypass Tor in order to connect to a Captive Portal. You can activate the temporary bypass directly from the Menu.</string>
+    <string name="sip_application">Choose SIP application</string>
+    <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of TOR.</string>
 
 </resources>
