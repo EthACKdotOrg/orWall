@@ -36,7 +36,9 @@ public class BootBroadcast extends BroadcastReceiver {
         initializeIptables.initOutputs(orbot_real_id);
 
         boolean authorizeLAN = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE).getBoolean("enable_lan", false);
-        initializeIptables.LANPolicy(authorizeLAN);
+        if (authorizeLAN) {
+            initializeIptables.LANPolicy(authorizeLAN);
+        }
 
         IptRules iptRules = new IptRules();
         SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
