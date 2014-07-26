@@ -3,8 +3,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/portal_browser">
         <org.ethack.torrific.lib.AppPreferenceList
-            android:title="@string/authorize_browser"
-            android:summary="@string/summary_special_apps"
+            android:title="@string/select_browser"
+            android:summary="@string/summary_select_browser"
             android:key="browser_app" />
         <org.ethack.torrific.lib.AppPreferenceList
             android:title="@string/sip_application"
