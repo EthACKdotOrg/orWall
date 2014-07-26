@@ -47,7 +47,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         this.packageManager = packageManager;
         SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
         this.editor = sharedPreferences.edit();
-        this.nat_rules = sharedPreferences.getStringSet("rules", new HashSet());
+        this.nat_rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
     }
 
     /**
@@ -89,11 +89,10 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.text_view.setCompoundDrawablePadding(15);
 
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
-        try {
-            holder.check_box.setChecked(nat_rules.contains(pkg.applicationInfo.uid));
-        } catch (NullPointerException e) {
-            Log.e("RowAdapter", "Nothing in the HashSet");
+        if (!nat_rules.isEmpty()) {
+            holder.check_box.setChecked(isAppChecked(pkg, nat_rules));
         }
+
         holder.check_box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +138,16 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
      */
     private boolean isSystemPackage(PackageInfo pkgInfo) {
         return ((pkgInfo.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0);
+    }
+
+    private boolean isAppChecked(PackageInfo packageInfo, Set set) {
+        for (Object row: set) {
+            HashMap<String, Long> r = (HashMap)row;
+            if ( (Long)r.values().toArray()[0] == packageInfo.applicationInfo.uid) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
