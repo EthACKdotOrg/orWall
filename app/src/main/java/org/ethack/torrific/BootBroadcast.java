@@ -42,10 +42,10 @@ public class BootBroadcast extends BroadcastReceiver {
         SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
         Set rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
 
-        for(Object rule : rules.toArray()) {
-            HashMap<String, Long> r = (HashMap)rule;
-            Long uid = (Long)r.values().toArray()[0];
-            String name = (String)r.keySet().toArray()[0];
+        for (Object rule : rules.toArray()) {
+            HashMap<String, Long> r = (HashMap) rule;
+            Long uid = (Long) r.values().toArray()[0];
+            String name = (String) r.keySet().toArray()[0];
             iptRules.natApp(uid, 'A', name);
         }
     }

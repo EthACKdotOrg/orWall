@@ -24,12 +24,10 @@ public class InitializeIptables {
 
     /**
      * Construtor
-     *
      */
     public InitializeIptables() {
         this.iptRules = new IptRules();
     }
-
 
 
     public void LANPolicy(final boolean allow) {
@@ -125,11 +123,13 @@ public class InitializeIptables {
 
             String CMD;
             if (status) {
-                CMD = new File(context.getDir("bin", 0), "activate_portal.sh").getAbsolutePath();;
+                CMD = new File(context.getDir("bin", 0), "activate_portal.sh").getAbsolutePath();
+                ;
             } else {
-                CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();;
+                CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();
+                ;
             }
-            Shell threaded = new Shell("sh "+CMD);
+            Shell threaded = new Shell("sh " + CMD);
             threaded.run();
         }
     }

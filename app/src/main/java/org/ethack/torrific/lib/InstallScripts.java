@@ -20,19 +20,6 @@ public class InstallScripts extends Thread {
         this.context = context;
     }
 
-    @Override
-    public void run() {
-        if (!installBinary(context, R.raw.activate_portal, "activate_portal.sh")) {
-            Log.d("Init", "Unable to install activate_portal script");
-        }
-        if (!installBinary(context, R.raw.deactivate_portal, "deactivate_portal.sh")) {
-            Log.d("Init", "Unable to install deactivate_portal script");
-        }
-        if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
-            Log.d("Init", "We're fucked… unable to extract userinit.sh script");
-        }
-    }
-
     /**
      * Thanks to AFWall :)
      *
@@ -81,5 +68,18 @@ public class InstallScripts extends Thread {
         is.close();
         // Change the permissions
         Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
+    }
+
+    @Override
+    public void run() {
+        if (!installBinary(context, R.raw.activate_portal, "activate_portal.sh")) {
+            Log.d("Init", "Unable to install activate_portal script");
+        }
+        if (!installBinary(context, R.raw.deactivate_portal, "deactivate_portal.sh")) {
+            Log.d("Init", "Unable to install deactivate_portal script");
+        }
+        if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
+            Log.d("Init", "We're fucked… unable to extract userinit.sh script");
+        }
     }
 }

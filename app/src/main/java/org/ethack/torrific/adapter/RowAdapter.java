@@ -35,7 +35,8 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
     /**
      * Class builder
-     *  @param context
+     *
+     * @param context
      * @param pkgs
      * @param packageManager
      */
@@ -91,7 +92,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         try {
             holder.check_box.setChecked(nat_rules.contains(pkg.applicationInfo.uid));
         } catch (NullPointerException e) {
-            Log.e("RowAdapter","Nothing in the HashSet");
+            Log.e("RowAdapter", "Nothing in the HashSet");
         }
         holder.check_box.setOnClickListener(new View.OnClickListener() {
             @Override

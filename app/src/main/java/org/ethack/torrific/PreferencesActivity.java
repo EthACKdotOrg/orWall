@@ -50,6 +50,7 @@ public class PreferencesActivity extends PreferenceActivity {
                 }
             }
         };
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -57,6 +58,7 @@ public class PreferencesActivity extends PreferenceActivity {
             PreferenceManager.setDefaultValues(getActivity(), R.xml.network_preference, true);
             addPreferencesFromResource(R.xml.fragment_init_pref);
         }
+
         @Override
         public void onResume() {
             super.onResume();
@@ -78,12 +80,14 @@ public class PreferencesActivity extends PreferenceActivity {
 
             }
         };
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             //PreferenceManager.setDefaultValues(getActivity(), R.xml.fragment_apps_prefs, true);
             addPreferencesFromResource(R.xml.fragment_apps_prefs);
         }
+
         @Override
         public void onResume() {
             super.onResume();
@@ -114,12 +118,14 @@ public class PreferencesActivity extends PreferenceActivity {
                 }
             }
         };
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             PreferenceManager.setDefaultValues(getActivity(), R.xml.other_preferences, true);
             addPreferencesFromResource(R.xml.fragment_network_prefs);
         }
+
         @Override
         public void onResume() {
             super.onResume();
