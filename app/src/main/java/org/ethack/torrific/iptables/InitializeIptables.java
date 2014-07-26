@@ -113,6 +113,34 @@ public class InitializeIptables {
         }
     }
 
+    public void manageSip(boolean status, Long uid) {
+        String[] rules = {
+                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j ACCEPT",
+                "-%c OUTPUT -m owner --uid-owner %d -p udp -j ACCEPT",
+                "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
+        };
+        char action;
+        if (status) { action = 'I'; } else { action = 'D'; }
+
+        for (String rule: rules) {
+            iptRules.genericRule(String.format(rule, action, uid));
+        }
+    }
+
+    public void manageCaptiveBrowser(boolean status, Long uid) {
+        String[] rules = {
+                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
+                "-%c INPUT -m conntrack --ctstate ESTABLISHED -m owner --uid-owner %d -j ACCEPT",
+                "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN",
+        };
+        char action;
+        if (status) { action = 'I'; } else { action = 'D'; }
+
+        for (String rule: rules) {
+            iptRules.genericRule(String.format(rule, action, uid));
+        }
+    }
+
     public void enableTethering(boolean status) {
         // TODO: find how it works
     }
@@ -124,10 +152,8 @@ public class InitializeIptables {
             String CMD;
             if (status) {
                 CMD = new File(context.getDir("bin", 0), "activate_portal.sh").getAbsolutePath();
-                ;
             } else {
                 CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();
-                ;
             }
             Shell threaded = new Shell("sh " + CMD);
             threaded.run();
