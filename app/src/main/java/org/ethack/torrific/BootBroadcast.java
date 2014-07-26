@@ -10,38 +10,55 @@ import android.util.Log;
 import org.ethack.torrific.iptables.InitializeIptables;
 import org.ethack.torrific.iptables.IptRules;
 
+import java.lang.ref.Reference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BootBroadcast extends BroadcastReceiver {
+
+    public final static String PREFERENCE = "org.ethack.torrific_preferences";
+    public final static String PREF_KEY_SIP_APP = "sip_app";
+    public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
+
     public BootBroadcast() {
     }
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-
+        boolean authorized = false;
+        Long app_uid;
         PackageManager packageManager = context.getPackageManager();
 
-        long orbot_real_id = 0;
         try {
-            orbot_real_id = packageManager.getApplicationInfo("org.torproject.android", 0).uid;
+            app_uid = Long.valueOf(packageManager.getApplicationInfo("org.torproject.android", 0).uid);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
+            app_uid = new Long(0); // prevents stupid compiler error… never used.
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
 
         InitializeIptables initializeIptables = new InitializeIptables();
-        initializeIptables.initOutputs(orbot_real_id);
+        initializeIptables.initOutputs(app_uid);
 
-        boolean authorizeLAN = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE).getBoolean("enable_lan", false);
-        if (authorizeLAN) {
-            initializeIptables.LANPolicy(authorizeLAN);
+        authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
+        if (authorized) {
+            initializeIptables.LANPolicy(true);
         }
 
+        authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean(PREF_KEY_SIP_ENABLED, false);
+        if (authorized) {
+            app_uid = Long.valueOf(context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getString(PREF_KEY_SIP_APP, "0"));
+            if (app_uid != 0) {
+                Log.d("Boot", "Authorizing SIP");
+                initializeIptables.manageSip(true, app_uid);
+            }
+        }
+
+
         IptRules iptRules = new IptRules();
-        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
         Set rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
 
         for (Object rule : rules.toArray()) {
