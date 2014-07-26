@@ -31,4 +31,6 @@
     <string name="sip_application">Choose SIP application</string>
     <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of TOR.</string>
     <string name="enable_sip">Enable SIP</string>
+    <string name="disable_sip">Disable SIP</string>
+    <string name="disable_browser">Disable browser</string>
 </resources>
