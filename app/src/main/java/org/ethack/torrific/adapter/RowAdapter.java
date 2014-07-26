@@ -1,6 +1,7 @@
 package org.ethack.torrific.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -16,10 +17,11 @@ import android.widget.TextView;
 
 import org.ethack.torrific.R;
 import org.ethack.torrific.iptables.IptRules;
-import org.ethack.torrific.lib.NATLiteSource;
 
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * New adapter in order to create the grid for applications
@@ -28,27 +30,23 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
     private final Context context;
     private final Object[] pkgs;
     private final PackageManager packageManager;
-    private NATLiteSource natLiteSource;
+    private SharedPreferences.Editor editor;
+    private Set nat_rules;
 
     /**
      * Class builder
-     *
-     * @param context
+     *  @param context
      * @param pkgs
      * @param packageManager
-     * @param natLiteSource
      */
-    public RowAdapter(Context context, List<PackageInfo> pkgs, PackageManager packageManager, NATLiteSource natLiteSource) {
+    public RowAdapter(Context context, List<PackageInfo> pkgs, PackageManager packageManager) {
         super(context, R.layout.rowlayout, pkgs);
         this.context = context;
         this.pkgs = pkgs.toArray();
         this.packageManager = packageManager;
-        this.natLiteSource = natLiteSource;
-        try {
-            natLiteSource.open();
-        } catch (SQLException e) {
-            Log.d("FUCKING STUFF", "Why you NO working?");
-        }
+        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
+        this.editor = sharedPreferences.edit();
+        this.nat_rules = sharedPreferences.getStringSet("rules", new HashSet());
     }
 
     /**
@@ -90,7 +88,11 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.text_view.setCompoundDrawablePadding(15);
 
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
-        holder.check_box.setChecked(natLiteSource.natExists(pkg.applicationInfo.uid));
+        try {
+            holder.check_box.setChecked(nat_rules.contains(pkg.applicationInfo.uid));
+        } catch (NullPointerException e) {
+            Log.e("RowAdapter","Nothing in the HashSet");
+        }
         holder.check_box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,13 +109,20 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
                     IptRules iptRules = new IptRules();
                     long appUID = apk.applicationInfo.uid;
+                    Set current_rules = nat_rules;
+                    HashMap rule = new HashMap<String, Long>();
+                    rule.put(appName, appUID);
                     if (checked) {
                         iptRules.natApp(appUID, 'A', appName);
-                        natLiteSource.createNAT(appUID, appName);
+                        //natLiteSource.createNAT(appUID, appName);
+                        current_rules.add(rule);
                     } else {
                         iptRules.natApp(appUID, 'D', appName);
-                        natLiteSource.deleteNAT(appUID);
+                        current_rules.remove(rule);
                     }
+                    editor.putStringSet("nat_rules", current_rules);
+                    nat_rules = current_rules;
+                    editor.commit();
                 }
             }
         });

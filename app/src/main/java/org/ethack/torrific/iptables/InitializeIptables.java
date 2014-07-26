@@ -4,15 +4,10 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import org.ethack.torrific.R;
 import org.ethack.torrific.lib.CheckSum;
-import org.ethack.torrific.lib.NATLiteSource;
 import org.ethack.torrific.lib.Shell;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Initialize IPTables. The application has
@@ -22,7 +17,6 @@ import java.io.InputStream;
  */
 public class InitializeIptables {
 
-    private final NATLiteSource natLiteSource;
     private final IptRules iptRules;
     private final String dir_dst = "/data/local";
     private final String dst_file = String.format("%s/userinit.sh", dir_dst);
@@ -31,10 +25,8 @@ public class InitializeIptables {
     /**
      * Construtor
      *
-     * @param natLiteSource
      */
-    public InitializeIptables(NATLiteSource natLiteSource) {
-        this.natLiteSource = natLiteSource;
+    public InitializeIptables() {
         this.iptRules = new IptRules();
     }
 

@@ -7,7 +7,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import org.ethack.torrific.iptables.InitializeIptables;
-import org.ethack.torrific.lib.NATLiteSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +41,7 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables(new NATLiteSource(getActivity()));
+                InitializeIptables iptables = new InitializeIptables();
                 if (sharedPreferences.getBoolean(s, true) && s.equals("enforce_init_script")) {
                     iptables.installInitScript(getActivity());
                 }
@@ -75,7 +74,7 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables(new NATLiteSource(getActivity()));
+                InitializeIptables iptables = new InitializeIptables();
 
             }
         };
@@ -102,7 +101,7 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables(new NATLiteSource(getActivity()));
+                InitializeIptables iptables = new InitializeIptables();
                 if (s.equals("enable_lan")) {
                     iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
                 }

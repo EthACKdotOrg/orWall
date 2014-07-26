@@ -18,12 +18,10 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.ethack.torrific.adapter.RowAdapter;
 import org.ethack.torrific.iptables.InitializeIptables;
 import org.ethack.torrific.lib.InstallScripts;
-import org.ethack.torrific.lib.NATLiteSource;
 import org.ethack.torrific.lib.PackageComparator;
 import org.ethack.torrific.lib.Shell;
 
@@ -36,7 +34,6 @@ public class MainActivity extends Activity {
 
     public final static String TAG = "Torrific";
     private PackageManager packageManager;
-    private NATLiteSource natLiteSource;
     private boolean newIntent;
     private List<PackageInfo> finalList;
 
@@ -65,13 +62,6 @@ public class MainActivity extends Activity {
 
             ApplicationInfo orbot_id = null;
             packageManager = getPackageManager();
-            natLiteSource = new NATLiteSource(this);
-            try {
-                natLiteSource.open();
-            } catch (SQLException e) {
-                Log.e(MainActivity.class.getName(), "Unable to open database");
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
 
             try {
                 orbot_id = packageManager.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
@@ -90,13 +80,14 @@ public class MainActivity extends Activity {
 
             if (orbot_id != null) {
 
-                InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
+                InitializeIptables initializeIptables = new InitializeIptables();
 
                 InstallScripts installScripts = new InstallScripts(this);
                 installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
                 boolean enforceInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("enforce_init_script", true);
                 boolean disableInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("deactivate_init_script", false);
+
                 if (enforceInit) {
                     Log.d("Main", "Enforcing or installing init-script");
                     initializeIptables.installInitScript(this);
@@ -125,7 +116,7 @@ public class MainActivity extends Activity {
 
 
                 listview = (ListView) findViewById(R.id.applist);
-                listview.setAdapter(new RowAdapter(this, finalList, packageManager, natLiteSource));
+                listview.setAdapter(new RowAdapter(this, finalList, packageManager));
             }
         }
 
@@ -230,21 +221,11 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        try {
-            natLiteSource.open();
-        } catch (SQLException e) {
-            Log.e(MainActivity.class.getName(), "Unable to open database");
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        // prevent App crash when root permission is requested…
-        if (!newIntent) {
-            natLiteSource.close();
-        }
         super.onResume();
     }
 
@@ -287,6 +268,6 @@ public class MainActivity extends Activity {
 
         Collections.sort(apps2, new PackageComparator(packageManager));
 
-        this.listview.setAdapter(new RowAdapter(this, apps2, packageManager, natLiteSource));
+        this.listview.setAdapter(new RowAdapter(this, apps2, packageManager));
     }
 }

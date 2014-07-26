@@ -1,20 +1,20 @@
 package org.ethack.torrific;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
 import org.ethack.torrific.iptables.InitializeIptables;
 import org.ethack.torrific.iptables.IptRules;
-import org.ethack.torrific.lib.NATLite;
-import org.ethack.torrific.lib.NATLiteSource;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class BootBroadcast extends BroadcastReceiver {
     public BootBroadcast() {
@@ -22,7 +22,6 @@ public class BootBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        NATLiteSource natLiteSource = new NATLiteSource(context);
 
         PackageManager packageManager = context.getPackageManager();
 
@@ -35,29 +34,21 @@ public class BootBroadcast extends BroadcastReceiver {
         }
 
 
-        try {
-            natLiteSource.open();
-        } catch (SQLException e) {
-
-            Log.e(BootBroadcast.class.getName(), "Unable to open database");
-
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-
-        InitializeIptables initializeIptables = new InitializeIptables(natLiteSource);
+        InitializeIptables initializeIptables = new InitializeIptables();
         initializeIptables.initOutputs(orbot_real_id);
 
         boolean authorizeLAN = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE).getBoolean("enable_lan", false);
         initializeIptables.LANPolicy(authorizeLAN);
 
         IptRules iptRules = new IptRules();
-        List<NATLite> natLites = natLiteSource.getAllNats();
-        for (NATLite nat : natLites) {
-            Log.d(
-                    BootBroadcast.class.getName(),
-                    String.format("Applying NAT for %s (%s)", nat.getAppUID(), nat.getAppName())
-            );
-            iptRules.natApp(nat.getAppUID(), 'A', nat.getAppName());
+        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
+        Set rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
+
+        for(Object rule : rules.toArray()) {
+            HashMap<String, Long> r = (HashMap)rule;
+            Long uid = (Long)r.values().toArray()[0];
+            String name = (String)r.keySet().toArray()[0];
+            iptRules.natApp(uid, 'A', name);
         }
     }
 
