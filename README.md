@@ -2,6 +2,8 @@
 
 Put your apps behind Orbot and block all unwanted traffic in one go.
 
+*This product is produced independently from the Tor® anonymity software and carries no guarantee from The Tor Project about quality, suitability or anything else.*
+
 ## Website
 https://torrific.ch/
 
