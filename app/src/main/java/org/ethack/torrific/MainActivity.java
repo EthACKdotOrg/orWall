@@ -25,7 +25,6 @@ import org.ethack.torrific.lib.InstallScripts;
 import org.ethack.torrific.lib.PackageComparator;
 import org.ethack.torrific.lib.Shell;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
