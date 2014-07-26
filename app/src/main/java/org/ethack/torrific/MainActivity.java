@@ -126,6 +126,7 @@ public class MainActivity extends Activity {
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.authorize_browser:
+                // TODO: implement browser bypass
                 Log.d("Menu Action", "TODO :)");
                 return true;
             case R.id.action_settings:
