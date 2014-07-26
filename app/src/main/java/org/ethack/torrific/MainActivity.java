@@ -129,6 +129,10 @@ public class MainActivity extends Activity {
                 // TODO: implement browser bypass
                 Log.d("Menu Action", "TODO :)");
                 return true;
+            case R.id.enable_sip:
+                // TODO: implement SIP bypass
+                Log.d("Menu Action", "TODO :)");
+                return true;
             case R.id.action_settings:
                 newIntent = true;
                 showPreferences();
