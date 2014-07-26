@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -31,10 +32,15 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    public final static String TAG = "Torrific";
+    public final static String PREFERENCE = "org.ethack.torrific_preferences";
+    public final static String PREF_KEY_SIP_APP = "sip_app";
+    public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
+    public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
+    public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
     private PackageManager packageManager;
-    private boolean newIntent;
+
     private List<PackageInfo> finalList;
+    private final InitializeIptables initializeIptables = new InitializeIptables();
 
     private ListView listview;
 
@@ -79,13 +85,11 @@ public class MainActivity extends Activity {
 
             if (orbot_id != null) {
 
-                InitializeIptables initializeIptables = new InitializeIptables();
-
                 InstallScripts installScripts = new InstallScripts(this);
                 installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
-                boolean enforceInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("enforce_init_script", true);
-                boolean disableInit = getSharedPreferences("org.ethack.torrific_preferences", MODE_PRIVATE).getBoolean("deactivate_init_script", false);
+                boolean enforceInit = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("enforce_init_script", true);
+                boolean disableInit = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("deactivate_init_script", false);
 
                 if (enforceInit) {
                     Log.d("Main", "Enforcing or installing init-script");
@@ -124,19 +128,26 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
+        Long uid;
         switch (item.getItemId()) {
             case R.id.authorize_browser:
                 // TODO: implement browser bypass
+            case R.id.disable_browser:
+                // TODO: disable browser
                 Log.d("Menu Action", "TODO :)");
                 return true;
+
             case R.id.enable_sip:
-                // TODO: implement SIP bypass
-                Log.d("Menu Action", "TODO :)");
+            case R.id.disable_sip:
+                uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null));
+                initializeIptables.manageSip((item.getItemId() == R.id.enable_sip), uid);
+                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_SIP_ENABLED, (item.getItemId() == R.id.enable_sip)).commit();
                 return true;
+
             case R.id.action_settings:
-                newIntent = true;
                 showPreferences();
                 return true;
+
             case R.id.action_about:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("About Torrific");
@@ -162,6 +173,7 @@ public class MainActivity extends Activity {
                 });
                 alert.show();
                 return true;
+
             case R.id.action_search:
                 TextWatcher filterTextWatcher = new TextWatcher() {
 
@@ -223,10 +235,42 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        String sip_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null);
+        boolean sip_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_SIP_ENABLED, false);
+
+        String browser_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null);
+        boolean browser_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_BROWSER_ENABLED, false);
+
+        if(sip_app != null) {
+            MenuItem item = menu.getItem(3);
+            item.setEnabled(true);
+            if (sip_enabled) {
+                item.setVisible(false);
+                menu.getItem(4).setVisible(true);
+            } else {
+                item.setVisible(true);
+                menu.getItem(4).setVisible(false);
+            }
+        }
+        if (browser_app != null) {
+            MenuItem item = menu.getItem(1);
+            item.setEnabled(true);
+            if (browser_enabled) {
+                item.setVisible(false);
+                menu.getItem(2).setVisible(true);
+            } else {
+                item.setVisible(true);
+                menu.getItem(2).setVisible(false);
+            }
+        }
+        return true;
+    }
+
     private void showPreferences() {
         Intent intent = new Intent(this, PreferencesActivity.class);
         startActivityForResult(intent, 1);
-        newIntent = false;
     }
 
     private void showApplications(final String searchStr, boolean showAll) {
