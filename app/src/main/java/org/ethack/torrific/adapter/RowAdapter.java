@@ -120,9 +120,13 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
                         iptRules.natApp(appUID, 'D', appName);
                         current_rules.remove(rule);
                     }
-                    editor.putStringSet("nat_rules", current_rules);
                     nat_rules = current_rules;
+                    editor.remove("nat_rules");
                     editor.commit();
+                    editor.putStringSet("nat_rules", nat_rules);
+                    if (!editor.commit()) {
+                        Log.e("Rulset", "Unable to save new ruleset!");
+                    }
                 }
             }
         });
