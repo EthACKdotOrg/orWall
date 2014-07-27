@@ -5,11 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.ethack.torrific.adapter.RowAdapter;
 import org.ethack.torrific.iptables.InitializeIptables;
@@ -32,6 +33,7 @@ import org.ethack.torrific.lib.Shell;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
 
@@ -45,7 +47,10 @@ public class MainActivity extends Activity {
     private List<PackageInfo> finalList;
     private final InitializeIptables initializeIptables = new InitializeIptables();
 
+    private CountDownTimer timer;
+
     private ListView listview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,19 +136,43 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
-        Long uid;
+
         switch (item.getItemId()) {
             case R.id.authorize_browser:
-                // TODO: implement browser bypass
             case R.id.disable_browser:
-                // TODO: disable browser
-                Log.d("Menu Action", "TODO :)");
+                final Long browser_uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null));
+                final Context context = this;
+
+                initializeIptables.manageCaptiveBrowser((item.getItemId() == R.id.authorize_browser), browser_uid);
+                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_BROWSER_ENABLED, (item.getItemId() == R.id.authorize_browser)).commit();
+
+                if (item.getItemId() == R.id.authorize_browser) {
+                    this.timer = new CountDownTimer(TimeUnit.MINUTES.toMillis(5), TimeUnit.SECONDS.toMillis(30)) {
+                        public void onTick(long untilFinished) {
+
+                            long minutes = TimeUnit.MILLISECONDS.toMinutes(untilFinished);
+                            long seconds = TimeUnit.MILLISECONDS.toSeconds(untilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(untilFinished));
+
+                            CharSequence text = String.format("%d minutes, %d seconds until end of permission.", minutes, seconds);
+                            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                        }
+
+                        public void onFinish() {
+                            initializeIptables.manageCaptiveBrowser(false, browser_uid);
+                            getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_BROWSER_ENABLED, false).commit();
+                            CharSequence text = "End of Browser bypass.";
+                            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                        }
+                    }.start();
+                } else {
+                    this.timer.cancel();
+                }
                 return true;
 
             case R.id.enable_sip:
             case R.id.disable_sip:
-                uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null));
-                initializeIptables.manageSip((item.getItemId() == R.id.enable_sip), uid);
+                Long sip_uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null));
+                initializeIptables.manageSip((item.getItemId() == R.id.enable_sip), sip_uid);
                 getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_SIP_ENABLED, (item.getItemId() == R.id.enable_sip)).commit();
                 return true;
 
@@ -160,7 +189,7 @@ public class MainActivity extends Activity {
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
-                TextView version = (TextView)view.findViewById(R.id.about_version);
+                TextView version = (TextView) view.findViewById(R.id.about_version);
                 version.setText(versionName);
                 new AlertDialog.Builder(this)
                         .setTitle(getString(R.string.action_about))
@@ -237,7 +266,7 @@ public class MainActivity extends Activity {
         String browser_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null);
         boolean browser_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_BROWSER_ENABLED, false);
 
-        if(sip_app != null) {
+        if (sip_app != null) {
             MenuItem item = menu.getItem(3);
             item.setEnabled(true);
             if (sip_enabled) {
