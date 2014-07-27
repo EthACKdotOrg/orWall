@@ -8,6 +8,10 @@ import org.ethack.torrific.lib.CheckSum;
 import org.ethack.torrific.lib.Shell;
 
 import java.io.File;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.List;
 
 /**
  * Initialize IPTables. The application has
@@ -153,11 +157,45 @@ public class InitializeIptables {
     }
 
     public void enableTethering(boolean status) {
-        // TODO: find how it works
+        NetworkInterface wifi = null;
+        try {
+            wifi = NetworkInterface.getByName("wlan0");
+        } catch (SocketException e) {
+            Log.e("enableTethering", e.toString());
+        }
+
+        if (wifi != null) {
+            List<InterfaceAddress> addresses = wifi.getInterfaceAddresses();
+            InterfaceAddress address = (InterfaceAddress) addresses.toArray()[1];
+            String ipv4 = address.getAddress().getHostAddress();
+
+            String st[] = ipv4.split("\\.");
+            String subnet = st[0] + "." + st[1] + "." + st[2] + ".0/24";
+
+            char action;
+            if (status) {
+                action = 'I';
+            } else {
+                action = 'D';
+            }
+
+            String rules[] = {
+                    "-%c OUTPUT -o wlan0 -s %s -j ACCEPT", // allow incoming from wlan0
+                    "-%c OUTPUT -o wlan0 -s %s -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+                    "-t nat -%c OUTPUT -s %s -j ACCEPT",
+            };
+            for (String rule : rules) {
+                iptRules.genericRule(String.format(rule, action, subnet));
+            }
+        } else {
+            Log.e("Tethering", "Unable to get Wifi state");
+        }
     }
 
     public void enableCaptiveDetection(boolean status, Context context) {
         // TODO: find a way to disable it on android <4.4
+        // TODO: we may want to get some setting writer directly through the API.
+        // This seems to be done with a System app only. Torrify may become a system app.
         if (Build.VERSION.SDK_INT > 18) {
 
             String CMD;
