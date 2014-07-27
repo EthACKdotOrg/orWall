@@ -2,14 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.ethack.torrific" >
 
-    <!-- Dump iptables rules, or log debug information -->
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
-
-
     <!-- In order to apply NAT and other rules once boot is complete -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- We need root. For iptables, and init-script installation -->
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+
+    <!--
+    We need some network information for Tethering stuff: IP address. mostly.
+    See InitializeIptables for more information about those permission usage.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
