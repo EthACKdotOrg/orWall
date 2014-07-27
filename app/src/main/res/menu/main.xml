@@ -34,11 +34,25 @@
         android:orderInCategory="4"
         android:showAsAction="never" />
 
+    <item android:id="@+id/enable_tethering"
+        android:title="@string/enable_tethering"
+        android:icon="@drawable/ic_action_secure"
+        android:orderInCategory="5"
+        android:showAsAction="never"
+        android:enabled="false"
+        android:visible="true" />
+    <item android:id="@+id/disable_tethering"
+        android:title="@string/disable_tethering"
+        android:icon="@drawable/ic_action_secure"
+        android:orderInCategory="6"
+        android:showAsAction="never"
+        android:visible="false" />
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/ic_action_settings"
         android:orderInCategory="9"
-        android:showAsAction="never" />
+        android:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_about"
         android:title="@string/action_about"
