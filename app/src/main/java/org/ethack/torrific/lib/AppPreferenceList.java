@@ -18,6 +18,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,17 +61,24 @@ public class AppPreferenceList extends ListPreference {
 
     private CharSequence[] entries() {
         List<PackageInfo> pkgList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+        Collections.sort(pkgList, new PackageComparator(packageManager));
+
         Collection<CharSequence> list = new ArrayList<CharSequence>();
+
         for (PackageInfo pkg: pkgList) {
             if(isInternet(pkg))
                 list.add(packageManager.getApplicationLabel(pkg.applicationInfo));
         }
+
         return list.toArray(new CharSequence[list.size()]);
     }
 
     private CharSequence[] entryValues() {
         List<PackageInfo> pkgList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+        Collections.sort(pkgList, new PackageComparator(packageManager));
+
         Collection<CharSequence> list = new ArrayList<CharSequence>();
+
         for (PackageInfo pkg: pkgList) {
             if(isInternet(pkg))
                 list.add(Long.toString(pkg.applicationInfo.uid));
