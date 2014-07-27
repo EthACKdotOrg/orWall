@@ -10,7 +10,6 @@ import android.util.Log;
 import org.ethack.torrific.iptables.InitializeIptables;
 import org.ethack.torrific.iptables.IptRules;
 
-import java.lang.ref.Reference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;

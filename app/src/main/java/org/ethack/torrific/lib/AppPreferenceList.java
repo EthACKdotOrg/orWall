@@ -6,15 +6,10 @@ import android.content.pm.PackageManager;
 import android.preference.ListPreference;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import org.ethack.torrific.R;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,8 +60,8 @@ public class AppPreferenceList extends ListPreference {
 
         Collection<CharSequence> list = new ArrayList<CharSequence>();
 
-        for (PackageInfo pkg: pkgList) {
-            if(isInternet(pkg))
+        for (PackageInfo pkg : pkgList) {
+            if (isInternet(pkg))
                 list.add(packageManager.getApplicationLabel(pkg.applicationInfo));
         }
 
@@ -79,8 +74,8 @@ public class AppPreferenceList extends ListPreference {
 
         Collection<CharSequence> list = new ArrayList<CharSequence>();
 
-        for (PackageInfo pkg: pkgList) {
-            if(isInternet(pkg))
+        for (PackageInfo pkg : pkgList) {
+            if (isInternet(pkg))
                 list.add(Long.toString(pkg.applicationInfo.uid));
         }
         return list.toArray(new CharSequence[list.size()]);

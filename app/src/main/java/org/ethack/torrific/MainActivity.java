@@ -42,11 +42,9 @@ public class MainActivity extends Activity {
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
-    private PackageManager packageManager;
-
-    private List<PackageInfo> finalList;
     private final InitializeIptables initializeIptables = new InitializeIptables();
-
+    private PackageManager packageManager;
+    private List<PackageInfo> finalList;
     private CountDownTimer timer;
 
     private ListView listview;

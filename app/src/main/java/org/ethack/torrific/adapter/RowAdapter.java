@@ -141,9 +141,9 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
     }
 
     private boolean isAppChecked(PackageInfo packageInfo, Set set) {
-        for (Object row: set) {
-            HashMap<String, Long> r = (HashMap)row;
-            if ( (Long)r.values().toArray()[0] == packageInfo.applicationInfo.uid) {
+        for (Object row : set) {
+            HashMap<String, Long> r = (HashMap) row;
+            if ((Long) r.values().toArray()[0] == packageInfo.applicationInfo.uid) {
                 return true;
             }
         }

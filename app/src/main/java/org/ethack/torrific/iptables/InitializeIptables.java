@@ -120,9 +120,13 @@ public class InitializeIptables {
                 "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
         char action;
-        if (status) { action = 'I'; } else { action = 'D'; }
+        if (status) {
+            action = 'I';
+        } else {
+            action = 'D';
+        }
 
-        for (String rule: rules) {
+        for (String rule : rules) {
             iptRules.genericRule(String.format(rule, action, uid));
         }
     }
@@ -136,9 +140,13 @@ public class InitializeIptables {
                 "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN",
         };
         char action;
-        if (status) { action = 'I'; } else { action = 'D'; }
+        if (status) {
+            action = 'I';
+        } else {
+            action = 'D';
+        }
 
-        for (String rule: rules) {
+        for (String rule : rules) {
             Log.d("ManageCaptiveBrowser", String.format(rule, action, uid));
             iptRules.genericRule(String.format(rule, action, uid));
         }
