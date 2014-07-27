@@ -180,9 +180,8 @@ public class InitializeIptables {
             }
 
             String rules[] = {
-                    "-%c OUTPUT -o wlan0 -s %s -j ACCEPT", // allow incoming from wlan0
-                    "-%c OUTPUT -o wlan0 -s %s -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
-                    "-t nat -%c OUTPUT -s %s -j ACCEPT",
+                    "-%c OUTPUT -o wlan0 -s %s -j ACCEPT",
+                    "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports 9040 -m comment --comment \"Force Tether through TransPort\"",
             };
             for (String rule : rules) {
                 iptRules.genericRule(String.format(rule, action, subnet));
