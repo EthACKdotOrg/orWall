@@ -17,6 +17,7 @@
     <string name="enable_lan">Enable LAN connections</string>
     <string name="summary_enable_lan">Allows LAN to bypass the firewall and Orbot</string>
     <string name="enable_tethering">Enable Tethering</string>
+    <string name="disable_tethering">Disable Tethering</string>
     <string name="summary_enable_tethering">Caution! Enabling this means *all* your secondary device traffic will go to the wild! That means you may get compromised!</string>
     <string name="summary_network">Manage some network options. Beware, you may go insecure!</string>
     <string name="enable_captive_detection">Enable captive portal detection</string>
