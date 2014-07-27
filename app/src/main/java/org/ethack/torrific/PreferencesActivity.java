@@ -109,9 +109,9 @@ public class PreferencesActivity extends PreferenceActivity {
                     iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
                 }
 
-                if (s.equals("enable_tethering")) {
-                    iptables.enableTethering(sharedPreferences.getBoolean(s, false));
-                }
+                //if (s.equals("enable_tethering")) {
+                    //iptables.enableTethering(sharedPreferences.getBoolean(s, false));
+                //}
                 if (s.equals("enable_captive_portal")) {
                     iptables.enableCaptiveDetection(sharedPreferences.getBoolean(s, false), getActivity());
                 }
