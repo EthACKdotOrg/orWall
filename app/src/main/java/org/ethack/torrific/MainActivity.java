@@ -42,6 +42,8 @@ public class MainActivity extends Activity {
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
+    public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
+    public  final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
     private final InitializeIptables initializeIptables = new InitializeIptables();
     private PackageManager packageManager;
     private List<PackageInfo> finalList;
@@ -136,6 +138,13 @@ public class MainActivity extends Activity {
     public boolean onMenuItemSelected(int featureID, MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.enable_tethering:
+            case R.id.disable_tethering:
+                boolean enabled = (item.getItemId() == R.id.enable_tethering);
+                initializeIptables.enableTethering(enabled);
+                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_IS_TETHER_ENAVLED, enabled).commit();
+
+                return true;
             case R.id.authorize_browser:
             case R.id.disable_browser:
                 final Long browser_uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null));
@@ -264,6 +273,9 @@ public class MainActivity extends Activity {
         String browser_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null);
         boolean browser_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_BROWSER_ENABLED, false);
 
+        boolean tethering_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_TETHER_ENABLED, false);
+        boolean is_tether_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_IS_TETHER_ENAVLED, false);
+
         if (sip_app != null) {
             MenuItem item = menu.getItem(3);
             item.setEnabled(true);
@@ -285,6 +297,22 @@ public class MainActivity extends Activity {
                 item.setVisible(true);
                 menu.getItem(2).setVisible(false);
             }
+        }
+        MenuItem tether_enable = menu.getItem(5);
+        MenuItem tether_disable = menu.getItem(6);
+        if (tethering_enabled) {
+            tether_enable.setEnabled(true);
+
+            if (is_tether_enabled) {
+                tether_disable.setVisible(true);
+                tether_enable.setVisible(false);
+            } else {
+                tether_enable.setVisible(true);
+                tether_disable.setVisible(false);
+            }
+        } else {
+            tether_enable.setEnabled(false);
+            tether_disable.setVisible(false);
         }
         return true;
     }
