@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
 
-    public final static String PREFERENCE = "org.ethack.orweb_preferences";
+    public final static String PREFERENCE = "org.ethack.orwall_preferences";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
