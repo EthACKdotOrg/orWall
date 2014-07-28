@@ -2,12 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Torrific — Block leaks, go through Orbot</title>
-    <meta name="application-name" content="Torrific">
+    <title>orWall — The Onion Router Firewall</title>
+    <meta name="application-name" content="orWall">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-    <meta name="description" content="Torrific helps you keeping things private.">
+    <meta name="description" content="orWall helps you keeping things private.">
     <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="./bootstrap/css/bootstrap-theme.min.css">
     <style type="text/css">
@@ -82,7 +82,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href=""><img src="head-logo.png" alt=""> Because Tor is Terrific</a>
+        <a class="navbar-brand" href=""><img src="head-logo.png" alt=""> Because real life is a Dystopia</a>
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
@@ -101,7 +101,7 @@
     <div class="container">
       <div class="row jumbotron">
         <div class="col-md-10">
-          <h1>Torrific</h1>
+          <h1>orWall</h1>
           <p>
           Put your apps behind <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
           and block all unwanted traffic in one go.
@@ -110,22 +110,16 @@
         <div class="col-md-2" id="release">
         </div>
       </div>
-      <div class="text-center bg-danger">
-        <small>
-          This product is produced independently from the <a href="https://www.torproject.org/">Tor®</a> anonymity
-          software and carries no guarantee from The Tor Project about quality, suitability or anything else.
-        </small>
-      </div>
       <div>
         <h3>How does it work?</h3>
         <p>
-        Torrific will force applications selected through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
+        orWall will force applications selected through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
         while preventing unchecked applications to have network access.<br>
         In order to do so, it will call the iptables binary. This binary, present on your Android device, requires superuser access (aka root). It's
         the application that manages the firewall on Linux and, by extension, on Android.
         </p>
         <p>
-        In short, Torrific will add special iptables rules in order to redirect traffic for applications through Tor; it will also add required rules in
+        In short, orWall will add special iptables rules in order to redirect traffic for applications through Tor; it will also add required rules in
         order to block traffic for other apps.<br>
         The redirection is based on the application user id. Each android application runs as a dedicated user, and iptables has support for traffic
         filtering based on the process owner, meaning it's really easy and pretty safe to do this kind of thing on an Android device.
@@ -137,19 +131,19 @@
           example.
           </p>
           <p>
-          Also, on some Android versions (at least 4.1.1), the init-script will not work, meaning you may have outgoing connections before Torrific starts.
+          Also, on some Android versions (at least 4.1.1), the init-script will not work, meaning you may have outgoing connections before orWall starts.
           </p>
         </div>
         <p>
         The application works in two stages: first, an init-script will block all incoming and outgoing traffic. This should prevent leaks, knowing Android sends
         stuff before you can even access the device.<br>
-        Second stage comes once the device is fully booted: Torrific itself takes the lead on the firewall, and add required rules in order to allow Orbot traffic, and
+        Second stage comes once the device is fully booted: orWall itself takes the lead on the firewall, and add required rules in order to allow Orbot traffic, and
         redirect selected application to Orbot TransPort.
         </p>
       </div>
       <div class="row">
         <div class="col-md-6">
-          <h3>What Torrific is</h3>
+          <h3>What orWall is</h3>
           <ul>
             <li>A firewall configurator: it allows you to set up your device in order to force apps through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
             <li>A way to prevent unwanted network access: only the apps you select access the Net through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>.</li>
@@ -157,7 +151,7 @@
           </ul>
         </div>
         <div class="col-md-6">
-          <h3>What Torrific isn't</h3>
+          <h3>What orWall isn't</h3>
           <ul>
             <li>A replacement for Orbot: you still need Orbot on your device.</li>
             <li>A replacement for AFWall/DroidWall – but it may lead to weird problems if you're using both.</li>
@@ -184,12 +178,12 @@
           </div>
         </div>
         <div class="col-md-6">
-          <h3>How to use Torrific</h3>
+          <h3>How to use orWall</h3>
           <ul class="list-unstyled">
             <li>Ensure you have <span class="text-danger">Root access</span> on your device.</li>
             <li>Ensure you have <span class="text-danger"><a href="https://guardianproject.info/apps/orbot/">Orbot</a> installed</span>.</li>
             <li>Ensure Orbot has <span class="text-danger">no Transparent Proxy enabled</span>, like on the screenshot.</li>
-            <li>Start Torrific, select the apps you want to redirect to Orbot.</li>
+            <li>Start orWall , select the apps you want to redirect to Orbot.</li>
             <li>Reboot.</li>
             <li>Enjoy more privacy!</li>
           </ul>
@@ -266,15 +260,15 @@
           <h3>Troubleshooting</h3>
           <ul class="list-unistyled">
             <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
-            <li><strong>No network anymore (bis):</strong> <span class="text-danger">ensure you did NOT check Orbot in Torrific</span></li>
+            <li><strong>No network anymore (bis):</strong> <span class="text-danger">ensure you did NOT check Orbot in orWall</span></li>
             <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">fill in a new issue</a>. :)</li>
           </ul>
         </div>
         <div class="col-md-6">
-          <h3>How to uninstall Torrific</h3>
+          <h3>How to uninstall orWall</h3>
           <ul>
+            <li>Remove the init-script (from the settings)</li>
             <li>Uninstall the app as usual.</li>
-            <li>Remove /data/local/userinit.sh.</li>
             <li>Reboot.</li>
           </ul>
           We cannot catch the uninstall event in order to make things, meaning you have to remove the init-script by hand.
@@ -287,7 +281,7 @@
           <ul>
             <li>Device model;</li>
             <li>Android version;</li>
-            <li>Torrific version;</li>
+            <li>orWall version;</li>
             <li>Steps to reproduce the problem;</li>
             <li>LogCat output;</li>
             <li>screenshots (if possible);</li>
@@ -303,12 +297,12 @@
           </p>
           <p>
           We're seeking people for translations, bug swatting, read proofing.<br>
-          We're also wanting to add the following features to Torrific:
+          We're also wanting to add the following features to orWall:
           </p>
           <ul>
-            <li>Action: when we deselect an app in Torrific, it should be restarted in order to ensure network is cut.</li>
+            <li>Action: when we deselect an app in orWall, it should be restarted in order to ensure network is cut.</li>
             <li>Action: panic button: allow user to cut all connections in one shot (though it's possible to do so by cutting Orbot).</li>
-            <li>When we remove an application, it should be removed from Torrific authorization list in order to prevent UID overlaps.</li>
+            <li>When we remove an application, it should be removed from orWall authorization list in order to prevent UID overlaps.</li>
           </ul>
         </div>
       </div>
