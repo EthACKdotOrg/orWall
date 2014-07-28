@@ -132,11 +132,19 @@ public class InitializeIptables {
     }
 
     public void removeIniScript() {
-        String CMD = String.format("rm -f %s", dst_file);
-        if (shell.suExec(CMD)) {
-            Log.d("Init", "file removed");
+        if (shell.suExec("mount -o remount,rw /system")) {
+            String CMD = String.format("rm -f %s", dst_file);
+            if (shell.suExec(CMD)) {
+                Log.d("Init", "file removed");
+                Log.d("Init", "Successfully chmod file");
+                if (shell.suExec("mount -o remount,ro /system")) {
+                    Log.d("Init", "Successfully remounted ro /system");
+                }
+            } else {
+                Log.e("Init", "ERROR while removing file");
+            }
         } else {
-            Log.e("Init", "ERROR while removing file");
+            Log.e("Init", "ERROR: unable to remount rw /system");
         }
     }
 
