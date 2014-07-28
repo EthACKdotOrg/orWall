@@ -35,7 +35,7 @@
     <string name="disable_sip">Disable SIP</string>
     <string name="disable_browser">Disable browser</string>
     <string name="about_urls">Project links</string>
-    <string name="about_links">https://orwall.org/\nhttps://github.com/EthACKDotOrg/Torrific</string>
+    <string name="about_links">https://orwall.org/\nhttps://github.com/EthACKDotOrg/orWall</string>
     <string name="about_license">License</string>
     <string name="about_torproject">Unlinked to Tor Project</string>
     <string name="about_legal_tor">This product is produced independently from the Tor® anonymity software and carries no guarantee from The Tor Project about quality, suitability or anything else. </string>
