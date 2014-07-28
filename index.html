@@ -107,8 +107,12 @@
           and block all unwanted traffic in one go.
           </p>
         </div>
-        <div class="col-md-2" id="release">
-          <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
+        <div class="col-md-2">
+          <div id="release">
+            <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
+          </div>
+          <div id="sig">
+          </div>
         </div>
       </div>
       <div>
@@ -342,9 +346,13 @@
       });
       $.getJSON('https://api.github.com/repos/EthACKdotOrg/orWall/releases', function(data) {
           latest_release = data[0];
-          url = latest_release['assets'][0]['url']
-          $.getJSON(url, function(apk) {
+          url_apk = latest_release['assets'][0]['url']
+          url_sig = latest_release['assets'][1]['url']
+          $.getJSON(url_apk, function(apk, links) {
             $('#release').html('<a class="btn btn-primary btn-lg" href="'+apk['browser_download_url']+'">Get '+latest_release['name']+'</a>');
+          });
+          $.getJSON(url_sig, function(sig, links) {
+            $('#sig').html('<a href="'+sig['browser_download_url']+'">gpg signature</a>');
           });
       });
     </script>
