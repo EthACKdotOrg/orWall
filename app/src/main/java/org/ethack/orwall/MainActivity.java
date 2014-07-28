@@ -276,7 +276,7 @@ public class MainActivity extends Activity {
         boolean tethering_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_TETHER_ENABLED, false);
         boolean is_tether_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_IS_TETHER_ENAVLED, false);
 
-        if (sip_app != null) {
+        if (sip_app != null && !sip_app.equals("0")) {
             MenuItem item = menu.getItem(3);
             item.setEnabled(true);
             if (sip_enabled) {
@@ -287,7 +287,7 @@ public class MainActivity extends Activity {
                 menu.getItem(4).setVisible(false);
             }
         }
-        if (browser_app != null) {
+        if (browser_app != null && !browser_app.equals("0")) {
             MenuItem item = menu.getItem(1);
             item.setEnabled(true);
             if (browser_enabled) {
