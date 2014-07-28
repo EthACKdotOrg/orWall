@@ -9,27 +9,27 @@
 
     <item android:id="@+id/authorize_browser"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/authorize_browser"
+        android:title="@string/menu_authorize_browser"
         android:enabled="false"
         android:orderInCategory="1"
         android:showAsAction="never" />
 
     <item android:id="@+id/disable_browser"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/disable_browser"
+        android:title="@string/menu_disable_browser"
         android:visible="false"
         android:orderInCategory="2"
         android:showAsAction="never" />
 
     <item android:id="@+id/enable_sip"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/enable_sip"
+        android:title="@string/menu_enable_sip"
         android:enabled="false"
         android:orderInCategory="3"
         android:showAsAction="never" />
     <item android:id="@+id/disable_sip"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/disable_sip"
+        android:title="@string/menu_disable_sip"
         android:visible="false"
         android:orderInCategory="4"
         android:showAsAction="never" />
@@ -49,13 +49,13 @@
         android:visible="false" />
 
     <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title="@string/menu_action_settings"
         android:icon="@drawable/ic_action_settings"
         android:orderInCategory="9"
         android:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_about"
-        android:title="@string/action_about"
+        android:title="@string/menu_action_about"
         android:icon="@drawable/ic_action_about"
         android:orderInCategory="10"
         android:showAsAction="never" />
