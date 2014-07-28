@@ -1,5 +1,6 @@
 package org.ethack.orwall;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -13,7 +14,6 @@ import java.util.List;
 
 
 public class PreferencesActivity extends PreferenceActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +31,7 @@ public class PreferencesActivity extends PreferenceActivity {
                 prepend + "ScriptPrefs",
                 prepend + "SpecialApps",
                 prepend + "NetworkPrefs",
+                prepend + "ProxyPorts",
         };
 
         return Arrays.asList(fragments).contains(fragmentName);
@@ -41,7 +42,7 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables();
+                InitializeIptables iptables = new InitializeIptables(getActivity());
                 if (sharedPreferences.getBoolean(s, true) && s.equals("enforce_init_script")) {
                     iptables.installInitScript(getActivity());
                 }
@@ -104,7 +105,7 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables();
+                InitializeIptables iptables = new InitializeIptables(getActivity());
                 if (s.equals("enable_lan")) {
                     iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
                 }
@@ -135,6 +136,13 @@ public class PreferencesActivity extends PreferenceActivity {
         public void onPause() {
             super.onPause();
             getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
+        }
+    }
+    public static class ProxyPorts extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.fragment_proxy_ports);
         }
     }
 
