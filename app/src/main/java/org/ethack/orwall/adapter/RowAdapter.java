@@ -113,11 +113,11 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
                     HashMap rule = new HashMap<String, Long>();
                     rule.put(appName, appUID);
                     if (checked) {
-                        iptRules.natApp(appUID, 'A', appName);
+                        iptRules.natApp(context, appUID, 'A', appName);
                         //natLiteSource.createNAT(appUID, appName);
                         current_rules.add(rule);
                     } else {
-                        iptRules.natApp(appUID, 'D', appName);
+                        iptRules.natApp(context, appUID, 'D', appName);
                         current_rules.remove(rule);
                     }
                     nat_rules = current_rules;

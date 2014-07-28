@@ -38,7 +38,7 @@ public class BootBroadcast extends BroadcastReceiver {
         }
 
 
-        InitializeIptables initializeIptables = new InitializeIptables();
+        InitializeIptables initializeIptables = new InitializeIptables(context);
         initializeIptables.initOutputs(app_uid);
 
         authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
@@ -64,7 +64,7 @@ public class BootBroadcast extends BroadcastReceiver {
             HashMap<String, Long> r = (HashMap) rule;
             Long uid = (Long) r.values().toArray()[0];
             String name = (String) r.keySet().toArray()[0];
-            iptRules.natApp(uid, 'A', name);
+            iptRules.natApp(context, uid, 'A', name);
         }
     }
 

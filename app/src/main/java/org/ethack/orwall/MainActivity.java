@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
     public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
     public  final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
-    private final InitializeIptables initializeIptables = new InitializeIptables();
+    private InitializeIptables initializeIptables;
     private PackageManager packageManager;
     private List<PackageInfo> finalList;
     private CountDownTimer timer;
@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        initializeIptables = new InitializeIptables(this);
 
         Shell shell = new Shell();
 
@@ -199,7 +200,7 @@ public class MainActivity extends Activity {
                 TextView version = (TextView) view.findViewById(R.id.about_version);
                 version.setText(versionName);
                 new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.action_about))
+                        .setTitle(getString(R.string.menu_action_about))
                         .setView(view)
                         .show();
                 return true;
