@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
     public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
-    public  final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
+    public final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
     private InitializeIptables initializeIptables;
     private PackageManager packageManager;
     private List<PackageInfo> finalList;

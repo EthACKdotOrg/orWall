@@ -7,17 +7,14 @@ import android.util.Log;
 
 import org.ethack.orwall.lib.Shell;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Wrapper for IPTables calls.
  */
 public class IptRules {
 
     private final static String IPTABLES = "/system/bin/iptables";
-    private String RULE;
     private final static String PREF_TRANS_PORT = "proxy_transport";
+    private String RULE;
 
     /**
      * Apply an IPTables rule
@@ -37,7 +34,6 @@ public class IptRules {
 
     /**
      * Build an iptables call in order to either create or remove NAT rule
-     *
      *
      * @param context
      * @param appUID

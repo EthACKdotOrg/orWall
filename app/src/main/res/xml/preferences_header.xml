@@ -12,9 +12,15 @@
         android:title="@string/network"
         android:summary="@string/summary_network">
     </header>
+
     <header android:fragment="org.ethack.orwall.PreferencesActivity$SpecialApps"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/special_apps"
         android:summary="@string/summary_special_apps" />
+
+    <header android:fragment="org.ethack.orwall.PreferencesActivity$ProxyPorts"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/set_ports"
+        android:summary="@string/summary_set_ports" />
 
 </preference-headers>

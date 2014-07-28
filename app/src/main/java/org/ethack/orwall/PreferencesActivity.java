@@ -1,6 +1,5 @@
 package org.ethack.orwall;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -111,7 +110,7 @@ public class PreferencesActivity extends PreferenceActivity {
                 }
 
                 //if (s.equals("enable_tethering")) {
-                    //iptables.enableTethering(sharedPreferences.getBoolean(s, false));
+                //iptables.enableTethering(sharedPreferences.getBoolean(s, false));
                 //}
                 if (s.equals("enable_captive_portal")) {
                     iptables.enableCaptiveDetection(sharedPreferences.getBoolean(s, false), getActivity());
@@ -138,6 +137,7 @@ public class PreferencesActivity extends PreferenceActivity {
             getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
         }
     }
+
     public static class ProxyPorts extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
