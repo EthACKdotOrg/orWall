@@ -1,9 +1,12 @@
 package org.ethack.orwall.iptables;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.ethack.orwall.R;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Shell;
 
@@ -22,15 +25,27 @@ import java.util.List;
 public class InitializeIptables {
 
     private final IptRules iptRules;
-    private final String dir_dst = "/data/local";
-    private final String dst_file = String.format("%s/userinit.sh", dir_dst);
+    private final String dir_dst = "/system/etc/init.d";
+    private final String dst_file = String.format("%s/91firewall", dir_dst);
     private final Shell shell = new Shell();
+    private final static String PREF_TRANS_PORT = "proxy_transport";
+    private final static String PREF_DNS_PORT = "proxy_dns";
+    private final static String PREF_SOCKS = "proxy_socks";
+    private long proxy_dns;
+    private long proxy_socks;
+    private long trans_proxy;
 
     /**
      * Construtor
+     * @param context
      */
-    public InitializeIptables() {
+    public InitializeIptables(Context context) {
         this.iptRules = new IptRules();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.proxy_dns   = Long.valueOf(preferences.getString(PREF_DNS_PORT, Integer.toString(R.string.proxy_dns_value)));
+        this.proxy_socks = Long.valueOf(preferences.getString(PREF_SOCKS, Integer.toString(R.string.proxy_socks_value)));
+        this.trans_proxy = Long.valueOf(preferences.getString(PREF_TRANS_PORT, Integer.toString(R.string.proxy_transport_value)));
     }
 
 
@@ -64,13 +79,13 @@ public class InitializeIptables {
         String[] rules = {
                 "-I INPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT -m comment --comment \"Allow established and related connections\"",
                 String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
-                "-t nat -I OUTPUT 2 ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports 5400",
+                String.format("-t nat -I OUTPUT 2 ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports %d", this.proxy_dns),
                 "-I OUTPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
                 String.format("-I OUTPUT 2 -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
-                "-I OUTPUT 3 -d 127.0.0.1/32 -p udp -m udp --dport 5400 -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"",
+                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p udp -m udp --dport %d -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"", this.proxy_dns),
                 "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
-                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9040 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"",
-                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 9050 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"",
+                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport %d --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"", this.trans_proxy),
+                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport %d --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"", this.proxy_socks),
                 // Remove the first reject we installed with the init-script
                 "-D OUTPUT -j REJECT",
                 // This will *break* quota management. But we have no choice, the POLICY is bypassed by quota chains :(.
@@ -94,16 +109,23 @@ public class InitializeIptables {
         if (!check_dst.hash().equals(check_src.hash())) {
 
             String CMD = String.format("cp %s %s", src_file, dst_file);
-            if (shell.suExec(CMD)) {
-                Log.d("Init", "Successfully installed userinit.sh script");
-                CMD = String.format("chmod 0755 %s", dst_file);
+            if (shell.suExec("mount -o remount,rw /system")) {
                 if (shell.suExec(CMD)) {
-                    Log.d("Init", "Successfully chmod file");
+                    Log.d("Init", "Successfully installed userinit.sh script");
+                    CMD = String.format("chmod 0755 %s", dst_file);
+                    if (shell.suExec(CMD)) {
+                        Log.d("Init", "Successfully chmod file");
+                        if (shell.suExec("mount -o remount,ro /system")) {
+                            Log.d("Init", "Successfully remounted ro /system");
+                        }
+                    } else {
+                        Log.e("Init", "ERROR while doing chmod on initscript");
+                    }
                 } else {
-                    Log.e("Init", "ERROR while doing chmod on initscript");
+                    Log.e("Init", "ERROR while copying file to " + dst_file);
                 }
             } else {
-                Log.e("Init", "ERROR while copying file to " + dst_file);
+                Log.e("Init", "ERROR: unable to remount rw /system");
             }
         }
     }
@@ -181,7 +203,7 @@ public class InitializeIptables {
 
             String rules[] = {
                     "-%c OUTPUT -o wlan0 -s %s -j ACCEPT",
-                    "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports 9040 -m comment --comment \"Force Tether through TransPort\"",
+                    "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports "+this.trans_proxy+" -m comment --comment \"Force Tether through TransPort\"",
             };
             for (String rule : rules) {
                 iptRules.genericRule(String.format(rule, action, subnet));
