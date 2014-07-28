@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.ethack.torrific" >
+    package="org.ethack.orwall" >
 
     <!-- In order to apply NAT and other rules once boot is complete -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="org.ethack.orwall.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
         </activity>
 
         <receiver
-            android:name=".BootBroadcast"
+            android:name="org.ethack.orwall.BootBroadcast"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -43,7 +43,7 @@
         </receiver>
 
         <activity
-            android:name=".PreferencesActivity"
+            android:name="org.ethack.orwall.PreferencesActivity"
             android:hardwareAccelerated="true"
             android:label="@string/title_activity_preferences" >
         </activity>

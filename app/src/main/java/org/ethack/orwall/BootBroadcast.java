@@ -1,4 +1,4 @@
-package org.ethack.torrific;
+package org.ethack.orwall;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-import org.ethack.torrific.iptables.InitializeIptables;
-import org.ethack.torrific.iptables.IptRules;
+import org.ethack.orwall.iptables.InitializeIptables;
+import org.ethack.orwall.iptables.IptRules;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class BootBroadcast extends BroadcastReceiver {
 
-    public final static String PREFERENCE = "org.ethack.torrific_preferences";
+    public final static String PREFERENCE = "org.ethack.orwall_preferences";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
 

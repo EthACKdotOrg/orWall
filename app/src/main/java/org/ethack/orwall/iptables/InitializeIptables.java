@@ -1,11 +1,11 @@
-package org.ethack.torrific.iptables;
+package org.ethack.orwall.iptables;
 
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import org.ethack.torrific.lib.CheckSum;
-import org.ethack.torrific.lib.Shell;
+import org.ethack.orwall.lib.CheckSum;
+import org.ethack.orwall.lib.Shell;
 
 import java.io.File;
 import java.net.InterfaceAddress;

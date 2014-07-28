@@ -1,4 +1,4 @@
-package org.ethack.torrific;
+package org.ethack.orwall;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,11 +24,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.ethack.torrific.adapter.RowAdapter;
-import org.ethack.torrific.iptables.InitializeIptables;
-import org.ethack.torrific.lib.InstallScripts;
-import org.ethack.torrific.lib.PackageComparator;
-import org.ethack.torrific.lib.Shell;
+import org.ethack.orwall.adapter.RowAdapter;
+import org.ethack.orwall.iptables.InitializeIptables;
+import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.PackageComparator;
+import org.ethack.orwall.lib.Shell;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
 
-    public final static String PREFERENCE = "org.ethack.torrific_preferences";
+    public final static String PREFERENCE = "org.ethack.orweb_preferences";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";

@@ -1,9 +1,9 @@
-package org.ethack.torrific.lib;
+package org.ethack.orwall.lib;
 
 import android.content.Context;
 import android.util.Log;
 
-import org.ethack.torrific.R;
+import org.ethack.orwall.R;
 
 import java.io.File;
 import java.io.FileOutputStream;

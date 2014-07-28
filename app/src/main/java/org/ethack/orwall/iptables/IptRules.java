@@ -1,8 +1,8 @@
-package org.ethack.torrific.iptables;
+package org.ethack.orwall.iptables;
 
 import android.util.Log;
 
-import org.ethack.torrific.lib.Shell;
+import org.ethack.orwall.lib.Shell;
 
 /**
  * Wrapper for IPTables calls.

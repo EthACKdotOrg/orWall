@@ -1,4 +1,4 @@
-package org.ethack.torrific;
+package org.ethack.orwall;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-import org.ethack.torrific.iptables.InitializeIptables;
+import org.ethack.orwall.iptables.InitializeIptables;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +26,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        String prepend = "org.ethack.torrific.PreferencesActivity$";
+        String prepend = "org.ethack.orwall.PreferencesActivity$";
         String[] fragments = {
                 prepend + "ScriptPrefs",
                 prepend + "SpecialApps",

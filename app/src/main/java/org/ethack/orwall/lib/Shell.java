@@ -1,4 +1,4 @@
-package org.ethack.torrific.lib;
+package org.ethack.orwall.lib;
 
 import android.os.Build;
 import android.util.Log;

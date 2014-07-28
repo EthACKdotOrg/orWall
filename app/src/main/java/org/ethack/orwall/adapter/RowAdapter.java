@@ -1,4 +1,4 @@
-package org.ethack.torrific.adapter;
+package org.ethack.orwall.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,8 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import org.ethack.torrific.R;
-import org.ethack.torrific.iptables.IptRules;
+import org.ethack.orwall.R;
+import org.ethack.orwall.iptables.IptRules;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +45,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         this.context = context;
         this.pkgs = pkgs.toArray();
         this.packageManager = packageManager;
-        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.torrific_preferences", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.orwall_preferences", Context.MODE_PRIVATE);
         this.editor = sharedPreferences.edit();
         this.nat_rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
     }
