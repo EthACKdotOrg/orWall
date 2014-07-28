@@ -86,9 +86,9 @@
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific"><img src="github.png" alt=""> Get sources</a></li>
-          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/releases"><span class="glyphicon glyphicon-download"></span> Releases</a></li>
-          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/Torrific/issues?state=open"><span class="glyphicon glyphicon-exclamation-sign"></span> Issues</a></li>
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/orWall"><img src="github.png" alt=""> Get sources</a></li>
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/orWall/releases"><span class="glyphicon glyphicon-download"></span> Releases</a></li>
+          <li><a title="Hosted on Github" href="https://github.com/EthACKdotOrg/orWall/issues?state=open"><span class="glyphicon glyphicon-exclamation-sign"></span> Issues</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li id="bitcoin"><a href="bitcoin:1Kriu9owRhEsFkj8Lc6Wr5xTv8YTNphhXn"><img src="bitcoin.png" alt="qr" id="qr_bitcoin">Bitcoin</a></li>
@@ -108,7 +108,7 @@
           </p>
         </div>
         <div class="col-md-2" id="release">
-          <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/Torrific/releases">Get it now!</a>
+          <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
         </div>
       </div>
       <div>
@@ -263,7 +263,7 @@
             <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
             <li><strong>No network anymore (bis):</strong> <span class="text-danger">Ensure you don't have Transparent Proxy enabled in Orbot</span>.</li>
             <li><strong>No network anymore (tris):</strong> Is Orbot connected to the Tor Network?</li>
-            <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">fill in a new issue</a>. :)</li>
+            <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">fill in a new issue</a>. :)</li>
             <li><strong>Some menu entries are disabled:</strong> Did you activate those options in the settings? Did you select Browser app and/or SIP app in the settings?</li>
           </ul>
         </div>
@@ -280,7 +280,7 @@
       <div class="row">
         <div class="col-md-6">
           <h3>How to request support?</h3>
-          Please <a href="https://github.com/EthACKdotOrg/Torrific/issues?state=open">open an issue</a> with the following information:
+          Please <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">open an issue</a> with the following information:
           <ul>
             <li>Device model;</li>
             <li>Android version;</li>
@@ -295,7 +295,7 @@
         <div class="col-md-6">
           <h3>I want to take part!</h3>
           <p>
-          Great news, thanks! Just <a href="https://github.com/EthACKdotOrg/Torrific/fork">create a fork</a> and submit pull-requests.
+          Great news, thanks! Just <a href="https://github.com/EthACKdotOrg/orWall/fork">create a fork</a> and submit pull-requests.
           We're opened for new features, bug corrections and so on, feel free to help.
           </p>
           <p>
@@ -323,7 +323,7 @@
     </div>
     <footer>
     Provided by <a href="https://www.ethack.org/"><img src="ethack.png" alt="">EthACK, the Swiss Privacy Basecamp</a>.
-    This application is available under <a href="https://github.com/EthACKdotOrg/Torrific/blob/master/LICENSE">GPLv3</a>.<br>
+    This application is available under <a href="https://github.com/EthACKdotOrg/orWall/blob/master/LICENSE">GPLv3</a>.<br>
     The logo is released under <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc-by-sa 4.0</a>.<br>
     Releases on Github are signed with GPG key <a href="http://pgp.mit.edu/pks/lookup?op=get&search=0xC12DF4DA85457DDB">608B 7DD8 D7F2 34E0 8C22  0313 C12D F4DA 8545 7DDB</a>
     </footer>
@@ -340,7 +340,7 @@
       }, function() {
         $('#qr_litecoin').hide();
       });
-      $.getJSON('https://api.github.com/repos/EthACKdotOrg/Torrific/releases', function(data) {
+      $.getJSON('https://api.github.com/repos/EthACKdotOrg/orWall/releases', function(data) {
           latest_release = data[0];
           url = latest_release['assets'][0]['url']
           $.getJSON(url, function(apk) {
