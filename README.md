@@ -6,7 +6,7 @@ Because real life is a Dystopia
 https://orwall.org/
 
 ## What's this?
-orWall will force applications selected through Orbot while preventing unchecked applications to have network access.
+orWall will force selected applications through Orbot while preventing unchecked applications to have network access.
 In order to do so, it will call the iptables binary. This binary, present on your Android device, requires superuser access (aka root). It's the application that manages the firewall on Linux and, by extension, on Android.
 
 In short, orWall will add special iptables rules in order to redirect traffic for applications through Tor; it will also add required rules in order to block traffic for other apps.
