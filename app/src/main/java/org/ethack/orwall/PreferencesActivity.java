@@ -1,6 +1,10 @@
 package org.ethack.orwall;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
@@ -109,11 +113,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
                 }
 
-                //if (s.equals("enable_tethering")) {
-                //iptables.enableTethering(sharedPreferences.getBoolean(s, false));
-                //}
                 if (s.equals("enable_captive_portal")) {
-                    iptables.enableCaptiveDetection(sharedPreferences.getBoolean(s, false), getActivity());
+                    Context context = getActivity();
+                    Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+                    bgpProcess.putExtra(BackgroundProcess.PARAM_ACTIVATE, sharedPreferences.getBoolean(s, false));
+                    bgpProcess.putExtra(BackgroundProcess.ACTION, BackgroundProcess.ACTION_PORTAL);
+                    context.startService(bgpProcess);
                 }
             }
         };
@@ -144,6 +149,11 @@ public class PreferencesActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.fragment_proxy_ports);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
 }
