@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.sql.Time;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -139,7 +138,8 @@ public class InitializeIptables {
                 } finally {
                     try {
                         shell.close();
-                    } catch (IOException e) { }
+                    } catch (IOException e) {
+                    }
                 }
             }
         }
@@ -155,7 +155,7 @@ public class InitializeIptables {
         }
         if (shell != null) {
             SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
-            SimpleCommand command2 = new SimpleCommand("rm -f "+dst_file);
+            SimpleCommand command2 = new SimpleCommand("rm -f " + dst_file);
             SimpleCommand command3 = new SimpleCommand("mount -o remount,ro /system");
             try {
                 shell.add(command1).waitForFinish();

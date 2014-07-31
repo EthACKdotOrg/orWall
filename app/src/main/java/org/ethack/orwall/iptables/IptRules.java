@@ -48,7 +48,7 @@ public class IptRules {
             } finally {
                 try {
                     shell.close();
-                }catch (IOException e) {
+                } catch (IOException e) {
                     Log.e("Shell", "Error while closing the Shell");
                 }
             }
