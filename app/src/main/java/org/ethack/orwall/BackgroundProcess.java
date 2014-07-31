@@ -2,7 +2,6 @@ package org.ethack.orwall;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import org.ethack.orwall.iptables.InitializeIptables;
 
@@ -18,6 +17,7 @@ public class BackgroundProcess extends IntentService {
     public BackgroundProcess() {
         super("BackroundProcess");
     }
+
     @Override
     protected void onHandleIntent(Intent workIntent) {
         String action = workIntent.getStringExtra(ACTION);

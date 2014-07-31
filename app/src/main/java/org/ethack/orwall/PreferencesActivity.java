@@ -1,10 +1,8 @@
 package org.ethack.orwall;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
@@ -38,6 +36,11 @@ public class PreferencesActivity extends PreferenceActivity {
         };
 
         return Arrays.asList(fragments).contains(fragmentName);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public static class ScriptPrefs extends PreferenceFragment {
@@ -149,11 +152,6 @@ public class PreferencesActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.fragment_proxy_ports);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
 }
