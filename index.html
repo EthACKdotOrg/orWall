@@ -317,6 +317,7 @@
           </ul>
         </div>
       </div>
+      <div id="latest_commits"></div>
       <div class="row">
         <div class="col-md-12">
           <h3>What about the previous name, Torrific?</h3>
@@ -357,6 +358,19 @@
           });
           $.getJSON(url_sig, function(sig, links) {
             $('#sig').html('<a href="'+sig['browser_download_url']+'">gpg signature</a>');
+          });
+          });
+      $('#latest_commits').append('<h3>Latest commits</h3>');
+      $.getJSON('https://api.github.com/repos/EthACKdotOrg/orWall/commits', function(commits) {
+          $.each(commits, function(i) {
+            commit = commits[i];
+            content  = '<div class="row">';
+            content += '<div class="col-md-2"><a href="'+commit['html_url']+'">'+commit['commit']['author']['date']+'</a></div>';
+            content += '<div class="col-md-2">'+commit['commit']['author']['name']+'</div>';
+            content += '<div class="col-md-8">'+commit['commit']['message']+'</div>';
+            content += '</div>';
+
+            $('#latest_commits').append(content);
           });
       });
     </script>
