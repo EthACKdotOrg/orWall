@@ -1,3 +1,6 @@
 [submodule "external/super-commands"]
 	path = external/super-commands
 	url = git@github.com:ethackdotorg/superuser-commands.git
+[submodule "external/NetCipher"]
+	path = external/NetCipher
+	url = git@github.com:EthACKdotOrg/NetCipher.git

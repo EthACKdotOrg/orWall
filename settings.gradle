@@ -1,1 +1,1 @@
-include ':app', ':external:super-commands:libraries:RootCommands'
+include ':app', ':external:super-commands:libraries:RootCommands', ':external:NetCipher:libnetcipher'

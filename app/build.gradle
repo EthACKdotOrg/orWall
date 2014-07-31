@@ -28,4 +28,5 @@ dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     //compile 'com.android.support:support-v4:19.+'
     compile project(':external:super-commands:libraries:RootCommands')
+    compile project(':external:NetCipher:libnetcipher')
 }

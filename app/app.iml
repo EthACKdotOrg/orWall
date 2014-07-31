@@ -61,6 +61,11 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="prov-1.50.0.0" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
+    <orderEntry type="library" exported="" name="core-1.50.0.0" level="project" />
+    <orderEntry type="library" exported="" name="pkix-1.50.0.0" level="project" />
+    <orderEntry type="module" module-name="libnetcipher" exported="" />
     <orderEntry type="module" module-name="RootCommands" exported="" />
   </component>
 </module>
