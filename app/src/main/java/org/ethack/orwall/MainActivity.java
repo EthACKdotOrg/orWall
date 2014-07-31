@@ -28,7 +28,7 @@ import org.ethack.orwall.adapter.RowAdapter;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.InstallScripts;
 import org.ethack.orwall.lib.PackageComparator;
-import org.ethack.orwall.lib.Shell;
+import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,9 +59,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         initializeIptables = new InitializeIptables(this);
 
-        Shell shell = new Shell();
-
-        if (!shell.checkSu()) {
+        if (!RootCommands.rootAccessGiven()) {
             Log.e(MainActivity.class.getName(), "Unable to get root shell, exiting.");
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setMessage("Seems you do not have root access on this device");
