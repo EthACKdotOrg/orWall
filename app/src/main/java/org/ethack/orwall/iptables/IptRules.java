@@ -5,7 +5,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import org.ethack.orwall.lib.Shell;
+import org.sufficientlysecure.rootcommands.Shell;
+import org.sufficientlysecure.rootcommands.command.SimpleCommand;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Wrapper for IPTables calls.
@@ -23,13 +27,33 @@ public class IptRules {
      * @return true if success
      */
     private boolean applyRule(final String rule) {
-        Shell shell = new Shell();
-        if (shell.suExec(rule)) {
-            return true;
-        } else {
-            Log.e(IptRules.class.getName(), "FAILED to apply " + rule);
-            return false;
+        Shell shell = null;
+        try {
+            shell = Shell.startRootShell();
+        } catch (IOException e) {
+            Log.e("Shell", "NO shell !");
         }
+
+        if (shell != null) {
+            SimpleCommand cmd = new SimpleCommand(rule);
+            try {
+                shell.add(cmd).waitForFinish();
+                return true;
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to run simple command");
+                Log.e("Shell", rule);
+            } catch (TimeoutException e) {
+                Log.e("Shell", "A timeout was reached");
+                Log.e("Shell", e.getMessage());
+            } finally {
+                try {
+                    shell.close();
+                }catch (IOException e) {
+                    Log.e("Shell", "Error while closing the Shell");
+                }
+            }
+        }
+        return false;
     }
 
     /**

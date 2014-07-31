@@ -8,13 +8,17 @@ import android.util.Log;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.CheckSum;
-import org.ethack.orwall.lib.Shell;
+import org.sufficientlysecure.rootcommands.Shell;
+import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.sql.Time;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Initialize IPTables. The application has
@@ -30,7 +34,6 @@ public class InitializeIptables {
     private final IptRules iptRules;
     private final String dir_dst = "/system/etc/init.d";
     private final String dst_file = String.format("%s/91firewall", dir_dst);
-    private final Shell shell = new Shell();
     private long proxy_dns;
     private long proxy_socks;
     private long trans_proxy;
@@ -108,43 +111,66 @@ public class InitializeIptables {
         CheckSum check_dst = new CheckSum(dst_file);
 
         if (!check_dst.hash().equals(check_src.hash())) {
+            Shell shell = null;
+            try {
+                shell = Shell.startRootShell();
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to get shell");
+                return;
+            }
 
-            String CMD = String.format("cp %s %s", src_file, dst_file);
-            if (shell.suExec("mount -o remount,rw /system")) {
-                if (shell.suExec(CMD)) {
-                    Log.d("Init", "Successfully installed userinit.sh script");
-                    CMD = String.format("chmod 0755 %s", dst_file);
-                    if (shell.suExec(CMD)) {
-                        Log.d("Init", "Successfully chmod file");
-                        if (shell.suExec("mount -o remount,ro /system")) {
-                            Log.d("Init", "Successfully remounted ro /system");
-                        }
-                    } else {
-                        Log.e("Init", "ERROR while doing chmod on initscript");
-                    }
-                } else {
-                    Log.e("Init", "ERROR while copying file to " + dst_file);
+            if (shell != null) {
+                String CMD = String.format("cp %s %s", src_file, dst_file);
+
+                SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
+                SimpleCommand command2 = new SimpleCommand(CMD);
+                CMD = String.format("chmod 0755 %s", dst_file);
+                SimpleCommand command3 = new SimpleCommand(CMD);
+                SimpleCommand command4 = new SimpleCommand("mount -o remount,ro /system");
+                try {
+                    shell.add(command1).waitForFinish();
+                    shell.add(command2).waitForFinish();
+                    shell.add(command3).waitForFinish();
+                    shell.add(command4).waitForFinish();
+                } catch (IOException e) {
+                    Log.e("Shell", "Unable to run simple command");
+                } catch (TimeoutException e) {
+                    Log.e("Shell", "Error while closing the Shell");
+                } finally {
+                    try {
+                        shell.close();
+                    } catch (IOException e) { }
                 }
-            } else {
-                Log.e("Init", "ERROR: unable to remount rw /system");
             }
         }
     }
 
     public void removeIniScript() {
-        if (shell.suExec("mount -o remount,rw /system")) {
-            String CMD = String.format("rm -f %s", dst_file);
-            if (shell.suExec(CMD)) {
-                Log.d("Init", "file removed");
-                Log.d("Init", "Successfully chmod file");
-                if (shell.suExec("mount -o remount,ro /system")) {
-                    Log.d("Init", "Successfully remounted ro /system");
+        Shell shell = null;
+        try {
+            shell = Shell.startRootShell();
+        } catch (IOException e) {
+            Log.e("Shell", "Unable to get shell");
+            return;
+        }
+        if (shell != null) {
+            SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
+            SimpleCommand command2 = new SimpleCommand("rm -f "+dst_file);
+            SimpleCommand command3 = new SimpleCommand("mount -o remount,ro /system");
+            try {
+                shell.add(command1).waitForFinish();
+                shell.add(command2).waitForFinish();
+                shell.add(command3).waitForFinish();
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to run simple command");
+            } catch (TimeoutException e) {
+                Log.e("Shell", "Error while closing the Shell");
+            } finally {
+                try {
+                    shell.close();
+                } catch (IOException e) {
                 }
-            } else {
-                Log.e("Init", "ERROR while removing file");
             }
-        } else {
-            Log.e("Init", "ERROR: unable to remount rw /system");
         }
     }
 
@@ -234,8 +260,30 @@ public class InitializeIptables {
             } else {
                 CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();
             }
-            Shell threaded = new Shell("sh " + CMD);
-            threaded.run();
+            Shell shell = null;
+            try {
+                shell = Shell.startRootShell();
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to get shell");
+            }
+
+            if (shell != null) {
+                SimpleCommand command = new SimpleCommand(CMD);
+                try {
+                    shell.add(command).waitForFinish();
+                } catch (IOException e) {
+                    Log.e("Shell", "IO Error");
+                } catch (TimeoutException e) {
+                    Log.e("Shell", "Timeout");
+                } finally {
+                    try {
+                        shell.close();
+                    } catch (IOException e) {
+
+                    }
+                }
+            }
+
         }
     }
 
