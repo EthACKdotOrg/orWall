@@ -17,3 +17,4 @@ Second stage comes once the device is fully booted: orWall itself takes the lead
 
 ### External libraries
 - [super-command](https://github.com/dschuermann/superuser-commands) (Apache2) for root accesses
+- [NetCipher](https://github.com/guardianproject/NetCipher) (3-clause BSD license) for some Orbot helpers as well as good proxy stuff (coming soon)
