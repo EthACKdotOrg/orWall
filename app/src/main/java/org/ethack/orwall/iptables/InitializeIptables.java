@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -75,6 +76,24 @@ public class InitializeIptables {
         if (!allow) {
             iptRules.genericRule("-F LAN");
             iptRules.genericRule("-X LAN");
+        }
+    }
+
+    public void enableADB(final boolean allow) {
+        char action;
+        if (allow) { action = 'I'; } else { action = 'D'; }
+
+        String[] rules = {
+                "-%c INPUT -p tcp --dport 5555 -j ACCEPT",
+                "-%c OUTPUT -p tcp --sport 5555 -j ACCEPT",
+                "-t nat -%c OUTPUT -p tcp --sport 5555 -j RETURN",
+        };
+
+        for (String rule: rules) {
+            if (!iptRules.genericRule(String.format(rule, action))) {
+                Log.e("enableADB", "Unable to add rule");
+                Log.e("enableADB", String.format(rule, action));
+            }
         }
     }
 
