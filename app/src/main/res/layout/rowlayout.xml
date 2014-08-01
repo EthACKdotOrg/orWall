@@ -12,15 +12,7 @@
         android:id="@+id/appCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tag="@+id/checkTag" />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingBottom="5dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="5dp"
-        android:textStyle="bold" />
+        android:tag="@+id/checkTag"
+        android:text="@+id/label"
+        />
 </LinearLayout>

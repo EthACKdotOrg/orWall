@@ -68,7 +68,6 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.rowlayout, parent, false);
             holder = new ViewHolder();
-            holder.text_view = (TextView) convertView.findViewById(R.id.label);
             holder.check_box = (CheckBox) convertView.findViewById(R.id.appCheckbox);
             convertView.setTag(holder);
         } else {
@@ -79,14 +78,14 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         Drawable appIcon = packageManager.getApplicationIcon(pkg.applicationInfo);
         appIcon.setBounds(0, 0, 40, 40);
 
-        holder.text_view.setText(label);
+        holder.check_box.setText(label);
         if (isSystemPackage(pkg)) {
-            holder.text_view.setTextColor(Color.RED);
+            holder.check_box.setTextColor(Color.RED);
         } else {
-            holder.text_view.setTextColor(Color.WHITE);
+            holder.check_box.setTextColor(Color.WHITE);
         }
-        holder.text_view.setCompoundDrawables(appIcon, null, null, null);
-        holder.text_view.setCompoundDrawablePadding(15);
+        holder.check_box.setCompoundDrawables(appIcon, null, null, null);
+        holder.check_box.setCompoundDrawablePadding(15);
 
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
         if (!nat_rules.isEmpty()) {
@@ -96,42 +95,45 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.check_box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean checked = ((CheckBox) view).isChecked();
-                String appName = view.getTag(R.id.checkTag).toString();
-                PackageInfo apk;
-                try {
-                    apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.e("onClick", "Application " + appName + " not found");
-                    apk = null;
-                }
-                if (apk != null) {
-
-                    IptRules iptRules = new IptRules();
-                    long appUID = apk.applicationInfo.uid;
-                    Set current_rules = nat_rules;
-                    HashMap rule = new HashMap<String, Long>();
-                    rule.put(appName, appUID);
-                    if (checked) {
-                        iptRules.natApp(context, appUID, 'A', appName);
-                        //natLiteSource.createNAT(appUID, appName);
-                        current_rules.add(rule);
-                    } else {
-                        iptRules.natApp(context, appUID, 'D', appName);
-                        current_rules.remove(rule);
-                    }
-                    nat_rules = current_rules;
-                    editor.remove("nat_rules");
-                    editor.commit();
-                    editor.putStringSet("nat_rules", nat_rules);
-                    if (!editor.commit()) {
-                        Log.e("Rulset", "Unable to save new ruleset!");
-                    }
-                }
+                myOnClick(view);
             }
         });
 
         return convertView;
+    }
+
+    public void myOnClick(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+        String appName = view.getTag(R.id.checkTag).toString();
+        PackageInfo apk;
+        try {
+            apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("onClick", "Application " + appName + " not found");
+            apk = null;
+        }
+        if (apk != null) {
+
+            IptRules iptRules = new IptRules();
+            long appUID = apk.applicationInfo.uid;
+            Set current_rules = nat_rules;
+            HashMap rule = new HashMap<String, Long>();
+            rule.put(appName, appUID);
+            if (checked) {
+                iptRules.natApp(context, appUID, 'A', appName);
+                current_rules.add(rule);
+            } else {
+                iptRules.natApp(context, appUID, 'D', appName);
+                current_rules.remove(rule);
+            }
+            nat_rules = current_rules;
+            editor.remove("nat_rules");
+            editor.commit();
+            editor.putStringSet("nat_rules", nat_rules);
+            if (!editor.commit()) {
+                Log.e("Rulset", "Unable to save new ruleset!");
+            }
+        }
     }
 
     /**
