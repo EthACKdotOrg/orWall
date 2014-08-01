@@ -9,23 +9,40 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by cedric on 7/20/14.
+ * Allows to checksum files.
+ * Used for init-script installation.
  */
 public class CheckSum {
 
     private String method;
     private String file;
 
+    /**
+     * Class builder
+     *
+     * @param file String, path to the file
+     * @param method String, method for checksum
+     */
     public CheckSum(String file, String method) {
         this.file = file;
         this.method = method;
     }
 
+    /**
+     * Class builder — default method is MD5
+     *
+     * @param file String, path to the file
+     */
     public CheckSum(String file) {
         this.file = file;
         this.method = "MD5";
     }
 
+    /**
+     * Create the hash
+     *
+     * @return String, file hash
+     */
     public String hash() {
         MessageDigest md;
         try {

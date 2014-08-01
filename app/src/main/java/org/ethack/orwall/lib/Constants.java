@@ -1,7 +1,7 @@
 package org.ethack.orwall.lib;
 
 /**
- * Created by cedric on 8/1/14.
+ * Constants used across the code
  */
 public class Constants {
     public final static String PREFERENCES = "org.ethack.orwall_preferences";
