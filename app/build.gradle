@@ -8,8 +8,8 @@ android {
         applicationId "org.ethack.orwall"
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 7
-        versionName "0.10-alpha"
+        versionCode 14
+        versionName "0.11-beta"
     }
     buildTypes {
         release {
