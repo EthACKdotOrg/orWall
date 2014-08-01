@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="orbot_proxy_socks_value">9050</integer>
+    <integer name="orbot_proxy_transport_value">9040</integer>
+    <integer name="orbot_proxy_dns_proxy_value">5400</integer>
+</resources>
