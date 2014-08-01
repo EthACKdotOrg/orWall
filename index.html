@@ -189,11 +189,72 @@
           <h3>How to use orWall</h3>
           <ul class="list-unstyled">
             <li>Ensure you have <span class="text-danger">Root access</span> on your device.</li>
+            <li>Ensure you don't have AFWall or other firewall manager installed, or at least deactivate them</li>
             <li>Ensure you have <span class="text-danger"><a href="https://guardianproject.info/apps/orbot/">Orbot</a> installed</span>.</li>
             <li>Ensure Orbot has <span class="text-danger">no Transparent Proxy enabled</span>, like on the screenshot.</li>
             <li>Start orWall , select the apps you want to redirect to Orbot.</li>
             <li>Reboot.</li>
             <li>Enjoy more privacy!</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Troubleshooting</h3>
+          <ul class="list-unistyled">
+            <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
+            <li><strong>No network anymore (bis):</strong> <span class="text-danger">Ensure you don't have Transparent Proxy enabled in Orbot</span>.</li>
+            <li><strong>No network anymore (tris):</strong> Is Orbot connected to the Tor Network?</li>
+            <li><strong>My apps aren't going through Tor:</strong> Are you using some other firewall application, like AFWall or DroidWall? If so, please remove it, reboot, and test again.</li>
+            <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">fill in a new issue</a>. :)</li>
+            <li><strong>Some menu entries are disabled:</strong> Did you activate those options in the settings? Did you select Browser app and/or SIP app in the settings?</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h3>How to uninstall orWall</h3>
+          <ul>
+            <li>Remove the init-script (from the settings)</li>
+            <li>Uninstall the app as usual.</li>
+            <li>Reboot.</li>
+          </ul>
+          <p>We cannot catch the uninstall event in order to make things, meaning you have to remove the init-script by hand.</p>
+          <p>In case the init-script is still present, you can remove it from the shell (ADB or any root-supporting Terminal application):</p>
+<pre>su
+mount -o remount,rw /system
+rm -f /system/etc/init.d/91firewall
+mount -o remount,ro /system
+reboot</pre>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3>How to request support?</h3>
+          Please <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">open an issue</a> with the following information:
+          <ul>
+            <li>Device model;</li>
+            <li>Android version;</li>
+            <li>orWall version;</li>
+            <li>Steps to reproduce the problem;</li>
+            <li>LogCat output;</li>
+            <li>screenshots (if possible);</li>
+            <li>Output of <code>iptables -vnL</code> and <code>iptables -vnL -t nat</code>;</li>
+          </ul>
+          Yes, that's a lot of things, but we do not possess a crystal ball allowing us to guess your problem…
+        </div>
+        <div class="col-md-6">
+          <h3>I want to take part!</h3>
+          <p>
+          Great news, thanks! Just <a href="https://github.com/EthACKdotOrg/orWall/fork">create a fork</a> and submit pull-requests.
+          We're opened for new features, bug corrections and so on, feel free to help.
+          </p>
+          <p>
+          We're seeking people for translations, bug swatting, read proofing.<br>
+          We're also wanting to add the following features to orWall:
+          </p>
+          <ul>
+            <li>Action: when we deselect an app in orWall, it should be restarted in order to ensure network is cut.</li>
+            <li>Action: panic button: allow user to cut all connections in one shot (though it's possible to do so by cutting Orbot).</li>
+            <li>When we remove an application, it should be removed from orWall authorization list in order to prevent UID overlaps.</li>
           </ul>
         </div>
       </div>
@@ -261,60 +322,6 @@
               <p><a class="btn btn-default" role="button" href="screenshots/menu.png">Zoom</a>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <h3>Troubleshooting</h3>
-          <ul class="list-unistyled">
-            <li><strong>No network anymore:</strong> Did you start Orbot? Did you select applications? Do you have network (i.e. wireless, 3G and so on)?</li>
-            <li><strong>No network anymore (bis):</strong> <span class="text-danger">Ensure you don't have Transparent Proxy enabled in Orbot</span>.</li>
-            <li><strong>No network anymore (tris):</strong> Is Orbot connected to the Tor Network?</li>
-            <li><strong>My apps aren't going through Tor:</strong> Are you using some other firewall application, like AFWall or DroidWall? If so, please remove it, reboot, and test again.</li>
-            <li><strong>Application crashes with no message:</strong> Please fire up ADB logcat and <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">fill in a new issue</a>. :)</li>
-            <li><strong>Some menu entries are disabled:</strong> Did you activate those options in the settings? Did you select Browser app and/or SIP app in the settings?</li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <h3>How to uninstall orWall</h3>
-          <ul>
-            <li>Remove the init-script (from the settings)</li>
-            <li>Uninstall the app as usual.</li>
-            <li>Reboot.</li>
-          </ul>
-          We cannot catch the uninstall event in order to make things, meaning you have to remove the init-script by hand.
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <h3>How to request support?</h3>
-          Please <a href="https://github.com/EthACKdotOrg/orWall/issues?state=open">open an issue</a> with the following information:
-          <ul>
-            <li>Device model;</li>
-            <li>Android version;</li>
-            <li>orWall version;</li>
-            <li>Steps to reproduce the problem;</li>
-            <li>LogCat output;</li>
-            <li>screenshots (if possible);</li>
-            <li>Output of <code>iptables -vnL</code> and <code>iptables -vnL -t nat</code>;</li>
-          </ul>
-          Yes, that's a lot of things, but we do not possess a crystal ball allowing us to guess your problem…
-        </div>
-        <div class="col-md-6">
-          <h3>I want to take part!</h3>
-          <p>
-          Great news, thanks! Just <a href="https://github.com/EthACKdotOrg/orWall/fork">create a fork</a> and submit pull-requests.
-          We're opened for new features, bug corrections and so on, feel free to help.
-          </p>
-          <p>
-          We're seeking people for translations, bug swatting, read proofing.<br>
-          We're also wanting to add the following features to orWall:
-          </p>
-          <ul>
-            <li>Action: when we deselect an app in orWall, it should be restarted in order to ensure network is cut.</li>
-            <li>Action: panic button: allow user to cut all connections in one shot (though it's possible to do so by cutting Orbot).</li>
-            <li>When we remove an application, it should be removed from orWall authorization list in order to prevent UID overlaps.</li>
-          </ul>
         </div>
       </div>
       <div id="latest_commits"></div>
