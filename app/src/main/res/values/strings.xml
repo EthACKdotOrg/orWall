@@ -52,9 +52,6 @@
     <string name="proxy_socks">Proxy SOCKS port (Default: 9050)</string>
     <string name="proxy_transport">Transparent proxy port (Default: 9040)</string>
     <string name="proxy_dns">DNS Proxy port (Default: 5400)</string>
-    <string name="proxy_socks_value">9050</string>
-    <string name="proxy_transport_value">9040</string>
-    <string name="proxy_dns_value">5400</string>
 
     <string name="about_urls">Project links</string>
     <string name="about_links">https://orwall.org/\nhttps://github.com/EthACKDotOrg/orWall</string>
