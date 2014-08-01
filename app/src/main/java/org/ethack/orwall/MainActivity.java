@@ -36,8 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import info.guardianproject.onionkit.ui.OrbotHelper;
-
 public class MainActivity extends Activity {
 
     private InitializeIptables initializeIptables;

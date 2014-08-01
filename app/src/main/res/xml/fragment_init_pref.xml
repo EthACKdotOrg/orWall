@@ -3,17 +3,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/init_script">
         <CheckBoxPreference
-            android:disableDependentsState="true"
             android:defaultValue="true"
+            android:disableDependentsState="true"
             android:key="enforce_init_script"
-            android:title="@string/enforce_init_script"
-            android:summary="@string/summary_enforce_init_script" />
+            android:summary="@string/summary_enforce_init_script"
+            android:title="@string/enforce_init_script" />
 
         <CheckBoxPreference
-            android:dependency="enforce_init_script"
             android:defaultValue="false"
+            android:dependency="enforce_init_script"
             android:key="deactivate_init_script"
-            android:title="@string/deactivate_init_script"
-            android:summary="@string/summary_deactivate_init_script" />
+            android:summary="@string/summary_deactivate_init_script"
+            android:title="@string/deactivate_init_script" />
     </PreferenceCategory>
 </PreferenceScreen>

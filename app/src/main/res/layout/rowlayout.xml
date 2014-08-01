@@ -2,16 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:duplicateParentState="false"
     android:baselineAligned="true"
+    android:duplicateParentState="false"
+    android:orientation="horizontal"
     android:paddingBottom="2dp"
-    android:paddingTop="2dp"
-    android:orientation="horizontal">
+    android:paddingTop="2dp">
+
     <CheckBox
         android:id="@+id/appCheckbox"
-        android:tag="@+id/checkTag"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:tag="@+id/checkTag" />
+
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/label"
         android:layout_width="wrap_content"

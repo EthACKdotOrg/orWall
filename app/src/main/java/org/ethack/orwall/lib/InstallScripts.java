@@ -51,8 +51,8 @@ public class InstallScripts extends Thread {
      * @param mode  file permissions (E.g.: "755")
      * @throws java.io.IOException  on error
      * @throws InterruptedException when interrupted
-     *
-     * Thanks AFWall source code
+     *                              <p/>
+     *                              Thanks AFWall source code
      */
     private static void copyRawFile(Context ctx, int resid, File file, String mode) throws IOException, InterruptedException {
         final String abspath = file.getAbsolutePath();

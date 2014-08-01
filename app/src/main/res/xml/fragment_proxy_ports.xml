@@ -2,18 +2,18 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
-        android:title="@string/proxy_socks"
         android:defaultValue="@integer/orbot_proxy_socks_value"
         android:inputType="number"
-        android:key="proxy_socks" />
+        android:key="proxy_socks"
+        android:title="@string/proxy_socks" />
     <EditTextPreference
-        android:title="@string/proxy_transport"
         android:defaultValue="@integer/orbot_proxy_transport_value"
         android:inputType="number"
-        android:key="proxy_transport" />
+        android:key="proxy_transport"
+        android:title="@string/proxy_transport" />
     <EditTextPreference
-        android:title="@string/proxy_dns"
         android:defaultValue="@integer/orbot_proxy_dns_proxy_value"
         android:inputType="number"
-        android:key="proxy_dns" />
+        android:key="proxy_dns"
+        android:title="@string/proxy_dns" />
 </PreferenceScreen>

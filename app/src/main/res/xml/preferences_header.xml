@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<preference-headers
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <header android:fragment="org.ethack.orwall.PreferencesActivity$ScriptPrefs"
+    <header
+        android:fragment="org.ethack.orwall.PreferencesActivity$ScriptPrefs"
         android:icon="@drawable/ic_action_secure"
-        android:title="@string/init_script"
-        android:summary="@string/summary_manage_init_script" />
+        android:summary="@string/summary_manage_init_script"
+        android:title="@string/init_script" />
 
-    <header android:fragment="org.ethack.orwall.PreferencesActivity$NetworkPrefs"
+    <header
+        android:fragment="org.ethack.orwall.PreferencesActivity$NetworkPrefs"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/network"
-        android:summary="@string/summary_network">
-    </header>
+        android:summary="@string/summary_network"
+        android:title="@string/network"></header>
 
-    <header android:fragment="org.ethack.orwall.PreferencesActivity$SpecialApps"
+    <header
+        android:fragment="org.ethack.orwall.PreferencesActivity$SpecialApps"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/special_apps"
-        android:summary="@string/summary_special_apps" />
+        android:summary="@string/summary_special_apps"
+        android:title="@string/special_apps" />
 
-    <header android:fragment="org.ethack.orwall.PreferencesActivity$ProxyPorts"
+    <header
+        android:fragment="org.ethack.orwall.PreferencesActivity$ProxyPorts"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/set_ports"
-        android:summary="@string/summary_set_ports" />
+        android:summary="@string/summary_set_ports"
+        android:title="@string/set_ports" />
 
 </preference-headers>

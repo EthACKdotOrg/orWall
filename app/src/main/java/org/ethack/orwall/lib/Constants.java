@@ -25,7 +25,7 @@ public class Constants {
     public static final String ACTION_PORTAL = "org.ethack.orwall.backgroundProcess.action.portal";
     public static final String PARAM_ACTIVATE = "org.ethack.orwall.captive.activate";
 
-    public static final long ORBOT_SOCKS_PROXY =  R.integer.orbot_proxy_socks_value;
+    public static final long ORBOT_SOCKS_PROXY = R.integer.orbot_proxy_socks_value;
     public static final long ORBOT_TRANSPROXY = R.integer.orbot_proxy_transport_value;
     public static final long ORBOT_DNS_PROXY = R.integer.orbot_proxy_dns_proxy_value;
 }

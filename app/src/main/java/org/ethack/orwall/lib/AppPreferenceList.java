@@ -22,6 +22,7 @@ import java.util.List;
 public class AppPreferenceList extends ListPreference {
 
     private final PackageManager packageManager;
+
     public AppPreferenceList(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         this.packageManager = context.getPackageManager();

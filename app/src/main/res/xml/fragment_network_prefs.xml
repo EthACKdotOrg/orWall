@@ -5,28 +5,28 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_lan"
-            android:title="@string/enable_lan"
-            android:summary="@string/summary_enable_lan" />
+            android:summary="@string/summary_enable_lan"
+            android:title="@string/enable_lan" />
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_adb"
-            android:title="@string/enable_adb"
-            android:summary="@string/summary_enable_adb" />
+            android:summary="@string/summary_enable_adb"
+            android:title="@string/enable_adb" />
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_tethering"
             android:enabled="true"
-            android:title="@string/enable_tethering"
-            android:summary="@string/summary_enable_tethering" />
+            android:key="enable_tethering"
+            android:summary="@string/summary_enable_tethering"
+            android:title="@string/enable_tethering" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/captive_portal">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_captive_portal"
-            android:title="@string/enable_captive_detection"
-            android:summary="@string/summary_enable_captive_detection" />
+            android:summary="@string/summary_enable_captive_detection"
+            android:title="@string/enable_captive_detection" />
     </PreferenceCategory>
 </PreferenceScreen>

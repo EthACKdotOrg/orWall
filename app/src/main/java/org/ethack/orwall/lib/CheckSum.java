@@ -20,7 +20,7 @@ public class CheckSum {
     /**
      * Class builder
      *
-     * @param file String, path to the file
+     * @param file   String, path to the file
      * @param method String, method for checksum
      */
     public CheckSum(String file, String method) {

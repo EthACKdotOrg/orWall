@@ -1,96 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
     <ScrollView
         android:id="@+id/about_scrollview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_marginBottom="15dp"
-            android:layout_height="fill_parent">
+            android:orientation="vertical">
+
             <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
                 android:text="@string/app_name"
-                android:textStyle="bold"
                 android:textColor="#fade22"
-                android:paddingTop="15dp"
-                android:paddingLeft="15dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
+
             <TextView
-                android:text="@string/about_orwall"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:text="@string/about_orwall" />
+
             <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
                 android:text="Version: "
-                android:paddingTop="15dp"
-                android:paddingLeft="15dp"
-                android:textColor="#fade22"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:textColor="#fade22" />
+
             <TextView
-                android:text="- Unknown -"
                 android:id="@+id/about_version"
-                android:paddingLeft="30dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:paddingLeft="30dp"
+                android:text="- Unknown -" />
+
             <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
                 android:text="@string/about_urls"
-                android:textColor="#fade22"
-                android:paddingTop="15dp"
-                android:paddingLeft="15dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:textColor="#fade22" />
+
             <TextView
-                android:text="@string/about_links"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingLeft="30dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:text="@string/about_links" />
+
             <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
                 android:text="@string/about_license"
-                android:textColor="#fade22"
-                android:paddingTop="15dp"
-                android:paddingLeft="15dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:textColor="#fade22" />
+
             <TextView
-                android:text="GPLv3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:text="GPLv3" />
+
             <TextView
-                android:text="@string/about_author"
-                android:textColor="#fade22"
-                android:paddingTop="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:paddingTop="15dp"
+                android:text="@string/about_author"
+                android:textColor="#fade22" />
+
             <TextView
-                android:text="@string/about_author_list"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingLeft="30dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:text="@string/about_author_list" />
+
             <TextView
-                android:text="@string/about_torproject"
-                android:textColor="#fade22"
-                android:paddingTop="15dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:paddingTop="15dp"
+                android:text="@string/about_torproject"
+                android:textColor="#fade22" />
+
             <TextView
-                android:text="@string/about_legal_tor"
                 android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:layout_height="wrap_content" />
-            </LinearLayout>
-        </ScrollView>
+                android:text="@string/about_legal_tor" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

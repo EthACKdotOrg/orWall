@@ -3,12 +3,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/portal_browser">
         <org.ethack.orwall.lib.AppPreferenceList
-            android:title="@string/select_browser"
+            android:key="browser_app"
             android:summary="@string/summary_select_browser"
-            android:key="browser_app" />
+            android:title="@string/select_browser" />
         <org.ethack.orwall.lib.AppPreferenceList
-            android:title="@string/sip_application"
+            android:key="sip_app"
             android:summary="@string/summary_sip_application"
-            android:key="sip_app" />
+            android:title="@string/sip_application" />
     </PreferenceCategory>
 </PreferenceScreen>
