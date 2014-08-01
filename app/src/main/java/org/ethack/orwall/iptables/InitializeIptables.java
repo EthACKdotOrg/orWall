@@ -44,9 +44,9 @@ public class InitializeIptables {
         this.iptRules = new IptRules();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.proxy_dns = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Integer.toString(R.string.proxy_dns_value)));
-        this.proxy_socks = Long.valueOf(preferences.getString(Constants.PREF_SOCKS, Integer.toString(R.string.proxy_socks_value)));
-        this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Integer.toString(R.string.proxy_transport_value)));
+        this.proxy_dns = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
+        this.proxy_socks = Long.valueOf(preferences.getString(Constants.PREF_SOCKS, Long.toString(Constants.ORBOT_SOCKS_PROXY)));
+        this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
     }
 
 
