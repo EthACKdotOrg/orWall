@@ -19,6 +19,7 @@ public class BootBroadcast extends BroadcastReceiver {
     public final static String PREFERENCE = "org.ethack.orwall_preferences";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
+    public final static String PREF_KEY_ADB_ENABLED = "enable_adb";
 
     public BootBroadcast() {
     }
@@ -55,6 +56,8 @@ public class BootBroadcast extends BroadcastReceiver {
             }
         }
 
+        authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean(PREF_KEY_ADB_ENABLED,false);
+        initializeIptables.enableADB(authorized);
 
         IptRules iptRules = new IptRules();
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
