@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import org.ethack.orwall.adapter.RowAdapter;
 import org.ethack.orwall.iptables.InitializeIptables;
+import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
 import org.ethack.orwall.lib.PackageComparator;
 import org.sufficientlysecure.rootcommands.RootCommands;
@@ -37,13 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
 
-    public final static String PREFERENCE = "org.ethack.orwall_preferences";
-    public final static String PREF_KEY_SIP_APP = "sip_app";
-    public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
-    public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
-    public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
-    public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
-    public final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
     private InitializeIptables initializeIptables;
     private PackageManager packageManager;
     private List<PackageInfo> finalList;
@@ -95,8 +89,8 @@ public class MainActivity extends Activity {
                 InstallScripts installScripts = new InstallScripts(this);
                 installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
-                boolean enforceInit = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("enforce_init_script", true);
-                boolean disableInit = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("deactivate_init_script", false);
+                boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean("enforce_init_script", true);
+                boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean("deactivate_init_script", false);
 
                 if (enforceInit) {
                     Log.d("Main", "Enforcing or installing init-script");
@@ -141,16 +135,16 @@ public class MainActivity extends Activity {
             case R.id.disable_tethering:
                 boolean enabled = (item.getItemId() == R.id.enable_tethering);
                 initializeIptables.enableTethering(enabled);
-                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_IS_TETHER_ENAVLED, enabled).commit();
+                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENAVLED, enabled).commit();
 
                 return true;
             case R.id.authorize_browser:
             case R.id.disable_browser:
-                final Long browser_uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null));
+                final Long browser_uid = Long.valueOf(getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getString(Constants.PREF_KEY_SPEC_BROWSER, null));
                 final Context context = this;
 
                 initializeIptables.manageCaptiveBrowser((item.getItemId() == R.id.authorize_browser), browser_uid);
-                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_BROWSER_ENABLED, (item.getItemId() == R.id.authorize_browser)).commit();
+                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, (item.getItemId() == R.id.authorize_browser)).commit();
 
                 if (item.getItemId() == R.id.authorize_browser) {
                     this.timer = new CountDownTimer(TimeUnit.MINUTES.toMillis(5), TimeUnit.SECONDS.toMillis(30)) {
@@ -165,7 +159,7 @@ public class MainActivity extends Activity {
 
                         public void onFinish() {
                             initializeIptables.manageCaptiveBrowser(false, browser_uid);
-                            getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_BROWSER_ENABLED, false).commit();
+                            getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).commit();
                             CharSequence text = getResources().getString(R.string.main_end_of_browser);
                             Toast.makeText(context, text, Toast.LENGTH_LONG).show();
                         }
@@ -177,9 +171,9 @@ public class MainActivity extends Activity {
 
             case R.id.enable_sip:
             case R.id.disable_sip:
-                Long sip_uid = Long.valueOf(getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null));
+                Long sip_uid = Long.valueOf(getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, null));
                 initializeIptables.manageSip((item.getItemId() == R.id.enable_sip), sip_uid);
-                getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_SIP_ENABLED, (item.getItemId() == R.id.enable_sip)).commit();
+                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_SIP_ENABLED, (item.getItemId() == R.id.enable_sip)).commit();
                 return true;
 
             case R.id.action_settings:
@@ -266,14 +260,14 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        String sip_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SIP_APP, null);
-        boolean sip_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_SIP_ENABLED, false);
+        String sip_app = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, null);
+        boolean sip_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
 
-        String browser_app = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getString(PREF_KEY_SPEC_BROWSER, null);
-        boolean browser_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_BROWSER_ENABLED, false);
+        String browser_app = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getString(Constants.PREF_KEY_SPEC_BROWSER, null);
+        boolean browser_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false);
 
-        boolean tethering_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_TETHER_ENABLED, false);
-        boolean is_tether_enabled = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean(PREF_KEY_IS_TETHER_ENAVLED, false);
+        boolean tethering_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
+        boolean is_tether_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENAVLED, false);
 
         if (sip_app != null && !sip_app.equals("0")) {
             MenuItem item = menu.getItem(3);

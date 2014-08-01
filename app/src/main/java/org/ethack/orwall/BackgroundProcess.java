@@ -4,15 +4,12 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import org.ethack.orwall.iptables.InitializeIptables;
+import org.ethack.orwall.lib.Constants;
 
 /**
  * Created by cedric on 7/31/14.
  */
 public class BackgroundProcess extends IntentService {
-
-    public static final String ACTION = "org.ethack.orwall.backgroundProcess.action";
-    public static final String ACTION_PORTAL = "org.ethack.orwall.backgroundProcess.action.portal";
-    public static final String PARAM_ACTIVATE = "org.ethack.orwall.captive.activate";
 
     public BackgroundProcess() {
         super("BackroundProcess");
@@ -20,10 +17,10 @@ public class BackgroundProcess extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        String action = workIntent.getStringExtra(ACTION);
+        String action = workIntent.getStringExtra(Constants.ACTION);
 
-        if (action.equals(ACTION_PORTAL)) {
-            boolean activate = workIntent.getBooleanExtra(PARAM_ACTIVATE, false);
+        if (action.equals(Constants.ACTION_PORTAL)) {
+            boolean activate = workIntent.getBooleanExtra(Constants.PARAM_ACTIVATE, false);
             managePortal(activate);
         }
     }

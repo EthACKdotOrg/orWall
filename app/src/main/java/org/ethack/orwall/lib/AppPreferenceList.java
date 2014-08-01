@@ -22,18 +22,14 @@ import java.util.List;
 public class AppPreferenceList extends ListPreference {
 
     private final PackageManager packageManager;
-    private final Context context;
-
     public AppPreferenceList(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         this.packageManager = context.getPackageManager();
-        this.context = context;
     }
 
     public AppPreferenceList(Context context) {
         super(context);
         this.packageManager = context.getPackageManager();
-        this.context = context;
     }
 
     @Override

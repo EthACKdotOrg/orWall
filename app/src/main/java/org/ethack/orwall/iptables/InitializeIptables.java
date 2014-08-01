@@ -8,6 +8,7 @@ import android.util.Log;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.CheckSum;
+import org.ethack.orwall.lib.Constants;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
@@ -27,9 +28,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class InitializeIptables {
 
-    private final static String PREF_TRANS_PORT = "proxy_transport";
-    private final static String PREF_DNS_PORT = "proxy_dns";
-    private final static String PREF_SOCKS = "proxy_socks";
     private final IptRules iptRules;
     private final String dir_dst = "/system/etc/init.d";
     private final String dst_file = String.format("%s/91firewall", dir_dst);
@@ -46,9 +44,9 @@ public class InitializeIptables {
         this.iptRules = new IptRules();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.proxy_dns = Long.valueOf(preferences.getString(PREF_DNS_PORT, Integer.toString(R.string.proxy_dns_value)));
-        this.proxy_socks = Long.valueOf(preferences.getString(PREF_SOCKS, Integer.toString(R.string.proxy_socks_value)));
-        this.trans_proxy = Long.valueOf(preferences.getString(PREF_TRANS_PORT, Integer.toString(R.string.proxy_transport_value)));
+        this.proxy_dns = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Integer.toString(R.string.proxy_dns_value)));
+        this.proxy_socks = Long.valueOf(preferences.getString(Constants.PREF_SOCKS, Integer.toString(R.string.proxy_socks_value)));
+        this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Integer.toString(R.string.proxy_transport_value)));
     }
 
 

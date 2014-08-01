@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.ethack.orwall.lib.Constants;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
@@ -16,8 +17,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class IptRules {
 
-    private final static String IPTABLES = "/system/bin/iptables";
-    private final static String PREF_TRANS_PORT = "proxy_transport";
     private String RULE;
 
     /**
@@ -67,10 +66,10 @@ public class IptRules {
      */
     public boolean natApp(Context context, final long appUID, final char action, final String appName) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        long trans_port = Long.valueOf(preferences.getString(PREF_TRANS_PORT, "9040"));
+        long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, "9040"));
         RULE = "%s -t nat -%c OUTPUT ! -o lo -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"";
 
-        return applyRule(String.format(RULE, IPTABLES, action, appUID, trans_port, appName));
+        return applyRule(String.format(RULE, Constants.IPTABLES, action, appUID, trans_port, appName));
     }
 
     public boolean LanNoNat(final String lan, final boolean allow) {
@@ -79,10 +78,10 @@ public class IptRules {
         } else {
             RULE = "%s -D OUTPUT -d %s -j LAN";
         }
-        return (applyRule(String.format(RULE, IPTABLES, lan)));
+        return (applyRule(String.format(RULE, Constants.IPTABLES, lan)));
     }
 
     public boolean genericRule(final String rule) {
-        return applyRule(String.format("%s %s", IPTABLES, rule));
+        return applyRule(String.format("%s %s", Constants.IPTABLES, rule));
     }
 }
