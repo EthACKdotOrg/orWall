@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import info.guardianproject.onionkit.ui.OrbotHelper;
+
 public class MainActivity extends Activity {
 
     private InitializeIptables initializeIptables;
@@ -123,8 +125,16 @@ public class MainActivity extends Activity {
                 listview.setAdapter(new RowAdapter(this, finalList, packageManager));
             }
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        OrbotHelper oh = new OrbotHelper(this);
 
+        if(oh.isOrbotInstalled() && !oh.isOrbotRunning()) {
+            oh.requestOrbotStart(this);
+        }
     }
 
     @Override
