@@ -61,5 +61,7 @@
     <string name="about_author">Author(s)</string>
     <string name="about_author_list">EthACK (https://www.ethack.org/)\nSwissTengu (https://www.swisstengu.ch/)</string>
     <string name="about_orwall">Put your apps behind Orbot and block all unwanted traffic in one go.</string>
+    <string name="about_external_libs">External libraries</string>
+    <string name="about_external_libs_content">super-command (Apache2)\nNetCipher (3-clauses BSD license)</string>
 
 </resources>

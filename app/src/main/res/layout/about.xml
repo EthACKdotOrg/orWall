@@ -96,6 +96,19 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
+                android:text="@string/about_external_libs"
+                android:textColor="#fade22"/>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:text="@string/about_external_libs_content" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
                 android:text="@string/about_torproject"
                 android:textColor="#fade22" />
 
