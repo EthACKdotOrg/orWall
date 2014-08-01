@@ -16,6 +16,7 @@
     <string name="menu_disable_sip">Disable SIP</string>
     <string name="menu_disable_browser">Disable browser</string>
     <string name="menu_authorize_browser">Authorize Browser</string>
+    <string name="menu_select_all">Select all apps</string>
 
     <string name="title_activity_preferences">Preferences</string>
 

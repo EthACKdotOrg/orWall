@@ -63,6 +63,13 @@
         android:title="@string/menu_action_settings" />
 
     <item
+        android:id="@+id/action_select_all"
+        android:showAsAction="always"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_select_all"
+        android:title="@string/menu_select_all" />
+
+    <item
         android:id="@+id/action_about"
         android:icon="@drawable/ic_action_about"
         android:orderInCategory="10"
