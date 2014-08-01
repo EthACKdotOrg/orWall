@@ -2,17 +2,24 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/network">
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="enable_lan"
-        android:title="@string/enable_lan"
-        android:summary="@string/summary_enable_lan" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="enable_tethering"
-        android:enabled="true"
-        android:title="@string/enable_tethering"
-        android:summary="@string/summary_enable_tethering" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_lan"
+            android:title="@string/enable_lan"
+            android:summary="@string/summary_enable_lan" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_adb"
+            android:title="@string/enable_adb"
+            android:summary="@string/summary_enable_adb" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_tethering"
+            android:enabled="true"
+            android:title="@string/enable_tethering"
+            android:summary="@string/summary_enable_tethering" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/captive_portal">
