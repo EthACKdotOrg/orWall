@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -35,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import ch.boye.httpclientandroidlib.client.cache.Resource;
 
 public class MainActivity extends Activity {
 

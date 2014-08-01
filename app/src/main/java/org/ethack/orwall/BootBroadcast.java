@@ -56,7 +56,7 @@ public class BootBroadcast extends BroadcastReceiver {
             }
         }
 
-        authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean(PREF_KEY_ADB_ENABLED,false);
+        authorized = context.getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE).getBoolean(PREF_KEY_ADB_ENABLED, false);
         initializeIptables.enableADB(authorized);
 
         IptRules iptRules = new IptRules();
