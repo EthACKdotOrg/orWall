@@ -9,6 +9,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import org.ethack.orwall.iptables.InitializeIptables;
+import org.ethack.orwall.lib.Constants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -123,8 +124,8 @@ public class PreferencesActivity extends PreferenceActivity {
                 if (s.equals("enable_captive_portal")) {
                     Context context = getActivity();
                     Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-                    bgpProcess.putExtra(BackgroundProcess.PARAM_ACTIVATE, sharedPreferences.getBoolean(s, false));
-                    bgpProcess.putExtra(BackgroundProcess.ACTION, BackgroundProcess.ACTION_PORTAL);
+                    bgpProcess.putExtra(Constants.PARAM_ACTIVATE, sharedPreferences.getBoolean(s, false));
+                    bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_PORTAL);
                     context.startService(bgpProcess);
                 }
             }
