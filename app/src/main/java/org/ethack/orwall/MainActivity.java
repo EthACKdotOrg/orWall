@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import ch.boye.httpclientandroidlib.client.cache.Resource;
 
 public class MainActivity extends Activity {
 
@@ -62,8 +65,8 @@ public class MainActivity extends Activity {
         if (!RootCommands.rootAccessGiven()) {
             Log.e(MainActivity.class.getName(), "Unable to get root shell, exiting.");
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setMessage("Seems you do not have root access on this device");
-            alert.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+            alert.setMessage(R.string.main_no_root);
+            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     android.os.Process.killProcess(android.os.Process.myPid());
@@ -80,8 +83,8 @@ public class MainActivity extends Activity {
             } catch (PackageManager.NameNotFoundException e) {
                 Log.e(BootBroadcast.class.getName(), "Unable to get Orbot APK info - is it installed?");
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setMessage("You must have Orbot installed!");
-                alert.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                alert.setMessage(R.string.main_no_orbot);
+                alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         android.os.Process.killProcess(android.os.Process.myPid());
@@ -159,14 +162,14 @@ public class MainActivity extends Activity {
                             long minutes = TimeUnit.MILLISECONDS.toMinutes(untilFinished);
                             long seconds = TimeUnit.MILLISECONDS.toSeconds(untilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(untilFinished));
 
-                            CharSequence text = String.format("%d minutes, %d seconds until end of permission.", minutes, seconds);
+                            CharSequence text = String.format(getResources().getString(R.string.main_counter), minutes, seconds);
                             Toast.makeText(context, text, Toast.LENGTH_LONG).show();
                         }
 
                         public void onFinish() {
                             initializeIptables.manageCaptiveBrowser(false, browser_uid);
                             getSharedPreferences(PREFERENCE, MODE_PRIVATE).edit().putBoolean(PREF_KEY_BROWSER_ENABLED, false).commit();
-                            CharSequence text = "End of Browser bypass.";
+                            CharSequence text = getResources().getString(R.string.main_end_of_browser);
                             Toast.makeText(context, text, Toast.LENGTH_LONG).show();
                         }
                     }.start();

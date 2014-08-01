@@ -72,13 +72,13 @@ public class InstallScripts extends Thread {
     @Override
     public void run() {
         if (!installBinary(context, R.raw.activate_portal, "activate_portal.sh")) {
-            Log.d("Init", "Unable to install activate_portal script");
+            Log.e("Init", "Unable to install activate_portal script");
         }
         if (!installBinary(context, R.raw.deactivate_portal, "deactivate_portal.sh")) {
-            Log.d("Init", "Unable to install deactivate_portal script");
+            Log.e("Init", "Unable to install deactivate_portal script");
         }
         if (!installBinary(context, R.raw.userinit, "userinit.sh")) {
-            Log.d("Init", "We're fucked… unable to extract userinit.sh script");
+            Log.e("Init", "We're fucked… unable to extract userinit.sh script");
         }
     }
 }
