@@ -1,6 +1,7 @@
 package org.ethack.orwall.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -15,8 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
 import org.ethack.orwall.iptables.IptRules;
+import org.ethack.orwall.lib.Constants;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +35,8 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
     private final PackageManager packageManager;
     private SharedPreferences.Editor editor;
     private Set nat_rules;
+    private boolean check_all = false;
+    private IptRules iptRules = new IptRules();
 
     /**
      * Class builder
@@ -39,8 +44,9 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
      * @param context
      * @param pkgs
      * @param packageManager
+     * @param check_all
      */
-    public RowAdapter(Context context, List<PackageInfo> pkgs, PackageManager packageManager) {
+    public RowAdapter(Context context, List<PackageInfo> pkgs, PackageManager packageManager, boolean check_all) {
         super(context, R.layout.rowlayout, pkgs);
         this.context = context;
         this.pkgs = pkgs.toArray();
@@ -48,6 +54,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.orwall_preferences", Context.MODE_PRIVATE);
         this.editor = sharedPreferences.edit();
         this.nat_rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
+        this.check_all = check_all;
     }
 
     /**
@@ -90,6 +97,20 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
         if (!nat_rules.isEmpty()) {
             holder.check_box.setChecked(isAppChecked(pkg, nat_rules));
+            if (this.check_all && !isAppChecked(pkg, nat_rules)) {
+                holder.check_box.setChecked(this.check_all);
+                HashMap rule = new HashMap<String, Long>();
+                rule.put(pkg.packageName, Long.valueOf(pkg.applicationInfo.uid));
+                nat_rules.add(rule);
+                editor.remove("nat_rules").commit();
+                editor.putStringSet("nat_rules", nat_rules).apply();
+
+                Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+                bgpProcess.putExtra(Constants.PARAM_APPNAME, pkg.packageName);
+                bgpProcess.putExtra(Constants.PARAM_APPUID, Long.valueOf(pkg.applicationInfo.uid));
+                context.startService(bgpProcess);
+            }
         }
 
         holder.check_box.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +135,6 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         }
         if (apk != null) {
 
-            IptRules iptRules = new IptRules();
             long appUID = apk.applicationInfo.uid;
             Set current_rules = nat_rules;
             HashMap rule = new HashMap<String, Long>();
