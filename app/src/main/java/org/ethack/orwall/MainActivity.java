@@ -147,7 +147,10 @@ public class MainActivity extends Activity {
             case R.id.enable_tethering:
             case R.id.disable_tethering:
                 final boolean enabled = (item.getItemId() == R.id.enable_tethering);
-                initializeIptables.enableTethering(enabled);
+                Intent bgpProcess = new Intent(this, BackgroundProcess.class);
+                bgpProcess.putExtra(Constants.PARAM_TETHER_STATUS, enabled);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_TETHER);
+                this.startService(bgpProcess);
                 getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENAVLED, enabled).commit();
 
                 return true;
