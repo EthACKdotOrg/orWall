@@ -66,6 +66,7 @@
         android:id="@+id/action_select_all"
         android:showAsAction="always"
         android:enabled="true"
+        android:orderInCategory="9"
         android:icon="@drawable/ic_action_select_all"
         android:title="@string/menu_select_all" />
 
