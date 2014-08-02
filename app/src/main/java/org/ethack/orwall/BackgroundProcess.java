@@ -27,6 +27,9 @@ public class BackgroundProcess extends IntentService {
             long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
             String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
             addRule(appUID, appName);
+        } else if (action.equals(Constants.ACTION_TETHER)) {
+            boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
+            manageTether(activate);
         }
     }
 
@@ -38,5 +41,10 @@ public class BackgroundProcess extends IntentService {
     private void addRule(Long appUID, String appName) {
         IptRules iptRules = new IptRules();
         iptRules.natApp(this, appUID, 'A', appName);
+    }
+
+    private void manageTether(boolean activate) {
+        InitializeIptables initializeIptables = new InitializeIptables(this);
+        initializeIptables.enableTethering(activate);
     }
 }
