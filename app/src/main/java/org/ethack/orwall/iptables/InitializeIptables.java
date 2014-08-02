@@ -256,8 +256,10 @@ public class InitializeIptables {
             }
 
             String rules[] = {
+                    "-%c INPUT -i wlan0 -j ACCEPT",
                     "-%c OUTPUT -o wlan0 -s %s -j ACCEPT",
                     "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports " + this.trans_proxy + " -m comment --comment \"Force Tether through TransPort\"",
+                    "-t nat -%c OUTPUT -o wlan0 -j RETURN",
             };
             for (String rule : rules) {
                 iptRules.genericRule(String.format(rule, action, subnet));
