@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
                 InstallScripts installScripts = new InstallScripts(this);
                 installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
-                boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean("enforce_init_script", true);
+                boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
                 boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean("deactivate_init_script", false);
 
                 if (enforceInit) {
@@ -132,7 +132,7 @@ public class MainActivity extends Activity {
         super.onResume();
         OrbotHelper oh = new OrbotHelper(this);
 
-        if(oh.isOrbotInstalled() && !oh.isOrbotRunning()) {
+        if (oh.isOrbotInstalled() && !oh.isOrbotRunning()) {
             oh.requestOrbotStart(this);
         }
     }
