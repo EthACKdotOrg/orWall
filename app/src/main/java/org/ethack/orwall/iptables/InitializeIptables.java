@@ -1,11 +1,14 @@
 package org.ethack.orwall.iptables;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.ethack.orwall.R;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
 import org.sufficientlysecure.rootcommands.Shell;
@@ -129,36 +132,64 @@ public class InitializeIptables {
         CheckSum check_dst = new CheckSum(dst_file);
 
         if (!check_dst.hash().equals(check_src.hash())) {
-            Shell shell = null;
-            try {
-                shell = Shell.startRootShell();
-            } catch (IOException e) {
-                Log.e("Shell", "Unable to get shell");
-                return;
-            }
 
-            if (shell != null) {
-                String CMD = String.format("cp %s %s", src_file, dst_file);
-
-                SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
-                SimpleCommand command2 = new SimpleCommand(CMD);
-                CMD = String.format("chmod 0755 %s", dst_file);
-                SimpleCommand command3 = new SimpleCommand(CMD);
-                SimpleCommand command4 = new SimpleCommand("mount -o remount,ro /system");
-                try {
-                    shell.add(command1).waitForFinish();
-                    shell.add(command2).waitForFinish();
-                    shell.add(command3).waitForFinish();
-                    shell.add(command4).waitForFinish();
-                } catch (IOException e) {
-                    Log.e("Shell", "Unable to run simple command");
-                } catch (TimeoutException e) {
-                    Log.e("Shell", "Error while closing the Shell");
-                } finally {
-                    try {
-                        shell.close();
-                    } catch (IOException e) {
+            if (check_dst.hash().equals(Constants.E_NO_SUCH_FILE)) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                alert.setTitle(R.string.alert_install_script_title);
+                alert.setMessage(String.format(context.getString(R.string.alert_install_script_text), dst_file));
+                alert.setNegativeButton(R.string.alert_install_script_refuse, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
                     }
+                });
+
+                alert.setPositiveButton(R.string.alert_install_script_accept, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        doInstallScripts(src_file, dst_file);
+                        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
+                    }
+                });
+
+                alert.show();
+
+            } else {
+                doInstallScripts(src_file, dst_file);
+            }
+        }
+    }
+
+    private void doInstallScripts(String src_file, String dst_file) {
+        Shell shell = null;
+        try {
+            shell = Shell.startRootShell();
+        } catch (IOException e) {
+            Log.e("Shell", "Unable to get shell");
+            return;
+        }
+
+        if (shell != null) {
+            String CMD = String.format("cp %s %s", src_file, dst_file);
+
+            SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
+            SimpleCommand command2 = new SimpleCommand(CMD);
+            CMD = String.format("chmod 0755 %s", dst_file);
+            SimpleCommand command3 = new SimpleCommand(CMD);
+            SimpleCommand command4 = new SimpleCommand("mount -o remount,ro /system");
+            try {
+                shell.add(command1).waitForFinish();
+                shell.add(command2).waitForFinish();
+                shell.add(command3).waitForFinish();
+                shell.add(command4).waitForFinish();
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to run simple command");
+            } catch (TimeoutException e) {
+                Log.e("Shell", "Error while closing the Shell");
+            } finally {
+                try {
+                    shell.close();
+                } catch (IOException e) {
                 }
             }
         }
