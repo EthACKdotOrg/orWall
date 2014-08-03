@@ -1,9 +1,5 @@
 package org.ethack.orwall.lib;
 
-import android.content.Context;
-
-import org.ethack.orwall.R;
-
 /**
  * Constants used across the code
  */
@@ -19,6 +15,7 @@ public class Constants {
     public final static String PREF_DNS_PORT = "proxy_dns";
     public final static String PREF_SOCKS = "proxy_socks";
     public final static String PREF_KEY_ADB_ENABLED = "enable_adb";
+    public final static String PREF_KEY_ENFOCE_INIT = "enforce_init_script";
 
 
     public final static String IPTABLES = "/system/bin/iptables";
@@ -37,4 +34,7 @@ public class Constants {
     public static final long ORBOT_SOCKS_PROXY = 9050;
     public static final long ORBOT_TRANSPROXY = 9040;
     public static final long ORBOT_DNS_PROXY = 5400;
+
+    public final static String E_NO_SUCH_FILE = "E_NO_SUCH_FILE";
+    public final static String E_NO_SUCH_ALGO = "E_NO_SUCH_ALGO";
 }
