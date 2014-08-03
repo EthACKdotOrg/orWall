@@ -64,10 +64,10 @@
 
     <item
         android:id="@+id/action_select_all"
-        android:showAsAction="always"
         android:enabled="true"
-        android:orderInCategory="9"
         android:icon="@drawable/ic_action_select_all"
+        android:orderInCategory="9"
+        android:showAsAction="always"
         android:title="@string/menu_select_all" />
 
     <item
