@@ -65,4 +65,8 @@
     <string name="about_external_libs">External libraries</string>
     <string name="about_external_libs_content">super-command (Apache2)\nNetCipher (3-clauses BSD license)</string>
 
+    <string name="alert_install_script_title">Init script installation</string>
+    <string name="alert_install_script_text" formatted="false">This application uses an init-script.\nThis script blocks all IP communication at boot time, preventing possible leaks from your device.\nWe strongly recommend you accept this script.\n\nScript location is %s</string>
+    <string name="alert_install_script_accept">Install</string>
+    <string name="alert_install_script_refuse">Refuse</string>
 </resources>
