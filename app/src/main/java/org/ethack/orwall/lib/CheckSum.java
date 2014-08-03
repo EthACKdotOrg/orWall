@@ -49,14 +49,14 @@ public class CheckSum {
             md = MessageDigest.getInstance(method);
         } catch (NoSuchAlgorithmException e) {
             Log.e("Hash", "No such algorithm: " + method);
-            return "E_NOSUCHALGORITHM";
+            return Constants.E_NO_SUCH_ALGO;
         }
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             Log.e("Hash", "No such file: " + file);
-            return "E_NOSUCHFILE";
+            return Constants.E_NO_SUCH_FILE;
         }
 
         byte[] dataBytes = new byte[1024];
