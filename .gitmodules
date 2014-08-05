@@ -4,3 +4,6 @@
 [submodule "external/NetCipher"]
 	path = external/NetCipher
 	url = git@github.com:EthACKdotOrg/NetCipher.git
+[submodule "external/i2p"]
+	path = external/i2p
+	url = https://github.com/i2p/i2p.android.base.git
