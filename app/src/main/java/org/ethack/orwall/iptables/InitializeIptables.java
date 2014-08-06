@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -131,32 +132,49 @@ public class InitializeIptables {
         CheckSum check_src = new CheckSum(src_file);
         CheckSum check_dst = new CheckSum(dst_file);
 
-        if (!check_dst.hash().equals(check_src.hash())) {
+        File dstDir = new File(dir_dst);
 
-            if (check_dst.hash().equals(Constants.E_NO_SUCH_FILE)) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                alert.setTitle(R.string.alert_install_script_title);
-                alert.setMessage(String.format(context.getString(R.string.alert_install_script_text), dst_file));
-                alert.setNegativeButton(R.string.alert_install_script_refuse, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-                    }
-                });
+        if (dstDir.exists()) {
 
-                alert.setPositiveButton(R.string.alert_install_script_accept, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        doInstallScripts(src_file, dst_file);
-                        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
-                    }
-                });
+            if (!check_dst.hash().equals(check_src.hash())) {
 
-                alert.show();
+                if (check_dst.hash().equals(Constants.E_NO_SUCH_FILE)) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                    alert.setTitle(R.string.alert_install_script_title);
+                    alert.setMessage(String.format(context.getString(R.string.alert_install_script_text), dst_file));
+                    alert.setNegativeButton(R.string.alert_install_script_refuse, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+                        }
+                    });
 
-            } else {
-                doInstallScripts(src_file, dst_file);
+                    alert.setPositiveButton(R.string.alert_install_script_accept, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            doInstallScripts(src_file, dst_file);
+                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
+                        }
+                    });
+
+                    alert.show();
+
+                } else {
+                    doInstallScripts(src_file, dst_file);
+                }
             }
+        } else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+            alert.setTitle(R.string.alert_install_script_title);
+            alert.setMessage(R.string.alert_install_no_support);
+            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, true).apply();
+                }
+            });
+            alert.show();
         }
     }
 
