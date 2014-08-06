@@ -69,4 +69,5 @@
     <string name="alert_install_script_text" formatted="false">This application uses an init-script.\nThis script blocks all IP communication at boot time, preventing possible leaks from your device.\nWe strongly recommend you accept this script.\n\nScript location is %s</string>
     <string name="alert_install_script_accept">Install</string>
     <string name="alert_install_script_refuse">Refuse</string>
+    <string name="alert_install_no_support">This application uses an init-script\nUnfortunately, it seems your Android device doesn\'t support it.\n\n<b>You may experience data leaks at boot time.</b>\n\nWe cannot do anything against that :(.</string>
 </resources>
