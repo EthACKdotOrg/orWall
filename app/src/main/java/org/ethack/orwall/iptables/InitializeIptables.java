@@ -166,7 +166,7 @@ public class InitializeIptables {
         } else {
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
             alert.setTitle(R.string.alert_install_script_title);
-            alert.setMessage(R.string.alert_install_no_support);
+            alert.setMessage(String.format(context.getString(R.string.alert_install_no_support), dir_dst));
             alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
