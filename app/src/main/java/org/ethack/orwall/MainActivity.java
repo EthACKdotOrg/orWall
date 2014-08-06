@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
                 installScripts.run();
                 // install the initscript — there is a check in the function in order to avoid useless writes.;
                 boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-                boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean("deactivate_init_script", false);
+                boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
 
                 if (enforceInit) {
                     Log.d("Main", "Enforcing or installing init-script");
