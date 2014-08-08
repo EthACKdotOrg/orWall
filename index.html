@@ -28,11 +28,6 @@
       .jumbotron>div {
         padding-left:60px;
       }
-      @media (max-width: 800px) {
-        .jumbotron>div {
-          padding-left:100px;
-        }
-      }
       .bs-callout {
         padding: 20px;
         margin: 20px 0px;
@@ -65,6 +60,14 @@
       @media (min-width: 800px) {
         #release a {
           margin-top:40%;
+        }
+      }
+      @media (max-width: 800px) {
+        .jumbotron>div {
+          padding-left:100px;
+        }
+        #release_block {
+          display:inline;
         }
       }
       .thumbnail {
@@ -109,10 +112,11 @@
         </div>
         <div class="col-md-2">
           <a class="btn btn-primary btn-lg" href="https://f-droid.org/repository/browse/?fdid=org.ethack.orwall">On F-Droid</a>
-          <div id="release">
-            <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
-          </div>
-          <div id="sig">
+          <div id="release_block">
+            <span id="release">
+              <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
+            </span>
+            <span id="sig"></span>
           </div>
         </div>
       </div>
