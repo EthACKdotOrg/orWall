@@ -52,6 +52,11 @@ public class InitializeIptables {
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
     }
 
+    public boolean iptablesExists() {
+        File iptables = new File(Constants.IPTABLES);
+        return iptables.exists();
+    }
+
 
     public void LANPolicy(final boolean allow) {
         String[] lans = {
