@@ -55,6 +55,19 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         initializeIptables = new InitializeIptables(this);
 
+        if (!initializeIptables.iptablesExists()) {
+            Log.e("Main", "No iptables found at "+Constants.IPTABLES);
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setMessage(R.string.main_no_iptables);
+            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            });
+            alert.show();
+        }
+
         if (!RootCommands.rootAccessGiven()) {
             Log.e(MainActivity.class.getName(), "Unable to get root shell, exiting.");
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
