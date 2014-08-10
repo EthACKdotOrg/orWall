@@ -5,6 +5,7 @@
     <string name="main_no_root">Seems you do not have root access on this device</string>
     <string name="main_dismiss">Dismiss</string>
     <string name="main_no_orbot">You must have Orbot installed!</string>
+    <string name="main_no_iptables">We didn\'t found the iptables binary on this ROM… This application will not work.</string>
 
     <string name="main_counter" formatted="false">%d minutes, %d seconds until end of permission.</string>
     <string name="main_end_of_browser">End of Browser bypass.</string>
