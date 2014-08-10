@@ -34,6 +34,9 @@ public class BootBroadcast extends BroadcastReceiver {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
+        Log.d("Boot", "Deactivate some stuff at boot time in order to prevent crashes");
+        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
+
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
         initializeIptables.initOutputs(app_uid);
