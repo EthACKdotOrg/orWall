@@ -87,7 +87,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
         holder.check_box.setText(label);
         if (isSystemPackage(pkg)) {
-            holder.check_box.setTextColor(Color.RED);
+            holder.check_box.setTextColor(Color.rgb(135,206,250));
         } else {
             holder.check_box.setTextColor(Color.WHITE);
         }
