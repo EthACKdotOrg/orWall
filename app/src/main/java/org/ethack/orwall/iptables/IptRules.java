@@ -64,12 +64,42 @@ public class IptRules {
      * @param appName
      * @return true if success
      */
-    public boolean natApp(Context context, final long appUID, final char action, final String appName) {
+    public void natApp(Context context, final long appUID, final char action, final String appName) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, "9040"));
-        RULE = "%s -t nat -%c OUTPUT ! -o lo -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"";
+        long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, "5400"));
+        String[] RULES = {
+                String.format(
+                        "%s -t nat -%c OUTPUT ! -o lo -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"",
+                        Constants.IPTABLES, action, appUID, trans_port, appName
+                ),
+                String.format(
+                        "%s -%c OUTPUT -o lo -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
+                        Constants.IPTABLES, action, appUID, trans_port, appName
+                        ),
+                String.format(
+                        "%s -%c INPUT -i lo -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow local inputs for %s\"",
+                        Constants.IPTABLES, action, appUID, appName
+                        ),
+                String.format(
+                        "%s -%c INPUT -i lo -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
+                        Constants.IPTABLES, action, appUID, trans_port, appName
+                ),
+                String.format(
+                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p udp --dport %d -j ACCEPT -m comment --comment \"DNS Requests for %s on Tor DNSPort\"",
+                        Constants.IPTABLES, action, appUID, dns_port, appName
+                ),
+                String.format(
+                        "%s -t nat -%c OUTPUT ! -o lo -m owner --uid-owner %d -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Redirect DNS queries for %s\"",
+                        Constants.IPTABLES, action, appUID, dns_port, appName
+                ),
+        };
 
-        return applyRule(String.format(RULE, Constants.IPTABLES, action, appUID, trans_port, appName));
+        for (String rule: RULES) {
+            if (!applyRule(rule)) {
+                Log.e(InitializeIptables.class.getName(), rule);
+            }
+        }
     }
 
     public boolean LanNoNat(final String lan, final boolean allow) {

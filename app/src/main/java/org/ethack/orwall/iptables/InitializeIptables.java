@@ -108,19 +108,37 @@ public class InitializeIptables {
 
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
-                "-I INPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT -m comment --comment \"Allow established and related connections\"",
+                // flush all OUTPUT rules
+                "-F OUTPUT",
+                "-N accounting_OUT",
+                "-A accounting_OUT -j bw_OUTPUT",
+                "-A accounting_OUT -j RETURN",
+                "-A OUTPUT -j accounting_OUT",
+                String.format("-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot outputs\"", orbot_uid),
+                "-P OUTPUT DROP",
+                // NAT
                 String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
-                String.format("-t nat -I OUTPUT 2 ! -o lo -p udp -m udp --dport 53 -j REDIRECT --to-ports %d", this.proxy_dns),
-                "-I OUTPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
-                String.format("-I OUTPUT 2 -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow Orbot output\"", orbot_uid),
-                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p udp -m udp --dport %d -j ACCEPT -m comment --comment \"DNS Requests on Tor DNSPort\"", this.proxy_dns),
-                "-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport 8118 --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to Polipo\"",
-                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport %d --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to TransPort\"", this.trans_proxy),
-                String.format("-I OUTPUT 3 -d 127.0.0.1/32 -p tcp -m tcp --dport %d --tcp-flags FIN,SYN,RST,ACK SYN -j ACCEPT -m comment --comment \"Local traffic to SOCKSPort\"", this.proxy_socks),
-                // Remove the first reject we installed with the init-script
-                "-D OUTPUT -j REJECT",
-                // This will *break* quota management. But we have no choice, the POLICY is bypassed by quota chains :(.
-                "-I OUTPUT 7 -j REJECT",
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e(InitializeIptables.class.getName(), "Unable to initialize");
+                Log.e(InitializeIptables.class.getName(), rule);
+            }
+        }
+    }
+
+    public void initInput(final long orbot_uid) {
+        String[] rules = {
+                "-F INPUT",
+                "-N accounting_IN",
+                "-A accounting_IN -j bw_INPUT",
+                "-A accounting_IN -j RETURN",
+                "-A INPUT -j accounting_IN",
+                String.format(
+                        "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot inputs\"",
+                        orbot_uid
+                ),
+                "-P INPUT DROP",
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {

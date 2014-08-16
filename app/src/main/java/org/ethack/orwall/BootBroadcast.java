@@ -40,6 +40,7 @@ public class BootBroadcast extends BroadcastReceiver {
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
         initializeIptables.initOutputs(app_uid);
+        initializeIptables.initInput(app_uid);
 
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
         if (authorized) {
