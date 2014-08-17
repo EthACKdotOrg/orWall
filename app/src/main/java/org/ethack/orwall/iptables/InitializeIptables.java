@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -44,7 +43,8 @@ public class InitializeIptables {
     public InitializeIptables(Context context) {
         this.iptRules = new IptRules();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        ;
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
     }
 

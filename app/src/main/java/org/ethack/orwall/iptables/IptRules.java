@@ -76,11 +76,11 @@ public class IptRules {
                 String.format(
                         "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p tcp --dport %d -j accounting_OUT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
-                        ),
+                ),
                 String.format(
                         "%s -%c INPUT -i lo -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j accounting_IN -m comment --comment \"Allow local inputs for %s\"",
                         Constants.IPTABLES, action, appUID, appName
-                        ),
+                ),
                 String.format(
                         "%s -%c INPUT -i lo -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
@@ -95,7 +95,7 @@ public class IptRules {
                 ),
         };
 
-        for (String rule: RULES) {
+        for (String rule : RULES) {
             if (!applyRule(rule)) {
                 Log.e(InitializeIptables.class.getName(), rule);
             }

@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -57,7 +56,7 @@ public class MainActivity extends Activity {
         initializeIptables = new InitializeIptables(this);
 
         if (!initializeIptables.iptablesExists()) {
-            Log.e("Main", "No iptables found at "+Constants.IPTABLES);
+            Log.e("Main", "No iptables found at " + Constants.IPTABLES);
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setMessage(R.string.main_no_iptables);
             alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
@@ -117,8 +116,8 @@ public class MainActivity extends Activity {
                     initializeIptables.removeIniScript();
                 }
 
-                if(enforceInit && !initializeIptables.isInitialized()) {
-                    Log.d("INIT","IPTables was NOT initialized as expected!");
+                if (enforceInit && !initializeIptables.isInitialized()) {
+                    Log.d("INIT", "IPTables was NOT initialized as expected!");
                     AlertDialog.Builder alert = new AlertDialog.Builder(this);
                     alert.setMessage(R.string.main_reboot_required);
                     alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
