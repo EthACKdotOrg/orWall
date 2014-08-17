@@ -126,6 +126,12 @@ public class MainActivity extends Activity {
                             return;
                         }
                     });
+                    alert.setPositiveButton(R.string.main_start_iptables, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            initializeIptables.boot();
+                        }
+                    });
 
                     alert.show();
                 }

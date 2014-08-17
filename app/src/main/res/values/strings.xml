@@ -6,7 +6,15 @@
     <string name="main_dismiss">Dismiss</string>
     <string name="main_no_orbot">You must have Orbot installed!</string>
     <string name="main_no_iptables">We didn\'t found the iptables binary on this ROM… This application will not work.</string>
-    <string name="main_reboot_required">You should reboot your device in order to ensure IPTables rules are properly applied.\n\nIf you already have rebooted since orWall installation, you may have hit a bug…\nPlease contact us on github!</string>
+    <string name="main_reboot_required">
+        You should reboot your device in order to ensure IPTables rules are properly applied.
+
+        If you already have rebooted since orWall installation, you may have hit a bug…
+        Please contact us on github!
+
+        You may also want to just apply bootup rules in order to test orWall — keep in mind this MAY let some leaks!
+    </string>
+    <string name="main_start_iptables">Apply bootup rules</string>
 
     <string name="main_counter" formatted="false">%d minutes, %d seconds until end of permission.</string>
     <string name="main_end_of_browser">End of Browser bypass.</string>
