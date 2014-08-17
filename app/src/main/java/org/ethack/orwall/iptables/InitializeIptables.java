@@ -88,10 +88,14 @@ public class InitializeIptables {
         }
 
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
-        enableADB(authorized);
+        if(authorized) {
+            enableADB(authorized);
+        }
 
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
-        allowPolipo(authorized);
+        if (authorized) {
+            allowPolipo(authorized);
+        }
     }
 
     public boolean iptablesExists() {
