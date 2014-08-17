@@ -37,7 +37,7 @@ public class IptRules {
             SimpleCommand cmd = new SimpleCommand(rule);
             try {
                 shell.add(cmd).waitForFinish();
-                return true;
+                return (cmd.getExitCode() == 0);
             } catch (IOException e) {
                 Log.e("Shell", "Unable to run simple command");
                 Log.e("Shell", rule);
