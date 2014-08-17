@@ -74,11 +74,11 @@ public class IptRules {
                         Constants.IPTABLES, action, appUID, trans_port, appName
                 ),
                 String.format(
-                        "%s -%c OUTPUT -o lo -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
+                        "%s -%c OUTPUT -o lo -m owner --uid-owner %d -p tcp --dport %d -j accounting_OUT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
                         ),
                 String.format(
-                        "%s -%c INPUT -i lo -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow local inputs for %s\"",
+                        "%s -%c INPUT -i lo -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j accounting_IN -m comment --comment \"Allow local inputs for %s\"",
                         Constants.IPTABLES, action, appUID, appName
                         ),
                 String.format(

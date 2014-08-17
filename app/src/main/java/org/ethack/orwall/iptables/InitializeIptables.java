@@ -112,8 +112,7 @@ public class InitializeIptables {
                 "-F OUTPUT",
                 "-N accounting_OUT",
                 "-A accounting_OUT -j bw_OUTPUT",
-                "-A accounting_OUT -j RETURN",
-                "-A OUTPUT -j accounting_OUT",
+                "-A accounting_OUT -j ACCEPT",
                 String.format("-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot outputs\"", orbot_uid),
                 "-P OUTPUT DROP",
                 // NAT
@@ -132,8 +131,7 @@ public class InitializeIptables {
                 "-F INPUT",
                 "-N accounting_IN",
                 "-A accounting_IN -j bw_INPUT",
-                "-A accounting_IN -j RETURN",
-                "-A INPUT -j accounting_IN",
+                "-A accounting_IN -j ACCEPT",
                 String.format(
                         "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot inputs\"",
                         orbot_uid
@@ -267,13 +265,13 @@ public class InitializeIptables {
 
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
-                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j ACCEPT",
-                "-%c OUTPUT -m owner --uid-owner %d -p udp -j ACCEPT",
+                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
+                "-%c OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
                 "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
         char action;
         if (status) {
-            action = 'I';
+            action = 'A';
         } else {
             action = 'D';
         }
@@ -293,7 +291,7 @@ public class InitializeIptables {
         };
         char action;
         if (status) {
-            action = 'I';
+            action = 'A';
         } else {
             action = 'D';
         }
