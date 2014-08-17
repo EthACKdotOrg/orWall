@@ -342,7 +342,7 @@ public class InitializeIptables {
     public void enableCaptiveDetection(boolean status, Context context) {
         // TODO: find a way to disable it on android <4.4
         // TODO: we may want to get some setting writer directly through the API.
-        // This seems to be done with a System app only. Torrify may become a system app.
+        // This seems to be done with a System app only. orWall may become a system app.
         if (Build.VERSION.SDK_INT > 18) {
 
             String CMD;
