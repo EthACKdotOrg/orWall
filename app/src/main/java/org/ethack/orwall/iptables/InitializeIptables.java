@@ -34,6 +34,7 @@ public class InitializeIptables {
     private final String dir_dst = "/system/etc/init.d";
     private final String dst_file = String.format("%s/91firewall", dir_dst);
     private long trans_proxy;
+    private long polipo_port;
 
     /**
      * Construtor
@@ -44,8 +45,8 @@ public class InitializeIptables {
         this.iptRules = new IptRules();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        ;
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
+        this.polipo_port = Long.valueOf(preferences.getString(Constants.PREF_POLIPO_PORT, Long.toString(Constants.ORBOT_POLIPO_PROXY)));
     }
 
     public boolean iptablesExists() {
@@ -340,6 +341,20 @@ public class InitializeIptables {
             }
         } else {
             Log.e("Tethering", "Unable to get Wifi state");
+        }
+    }
+
+    public void allowPolipo(boolean status) {
+        String[] rules = {
+                "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED -m comment --comment \"Allow local polipo inputs\"",
+        };
+        char action = 'D';
+        if (status) {
+            action = 'A';
+        }
+
+        for (String rule: rules) {
+            iptRules.genericRule(String.format(rule, action, polipo_port));
         }
     }
 

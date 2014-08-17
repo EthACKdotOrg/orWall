@@ -20,6 +20,13 @@
             android:key="enable_tethering"
             android:summary="@string/summary_enable_tethering"
             android:title="@string/enable_tethering" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:enabled="true"
+            android:key="enable_polipo"
+            android:summary="@string/summary_enable_polipo"
+            android:title="@string/enable_polipo" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/captive_portal">

@@ -121,6 +121,10 @@ public class PreferencesActivity extends PreferenceActivity {
                     iptables.enableADB(sharedPreferences.getBoolean(s, false));
                 }
 
+                if (s.equals("enable_polipo")) {
+                    iptables.allowPolipo(sharedPreferences.getBoolean(s, false));
+                }
+
                 if (s.equals("enable_captive_portal")) {
                     Context context = getActivity();
                     Intent bgpProcess = new Intent(context, BackgroundProcess.class);
