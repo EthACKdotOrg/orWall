@@ -18,6 +18,7 @@ public class Constants {
     public final static String PREF_KEY_ENFOCE_INIT = "enforce_init_script";
     public final static String PREF_KEY_DISABLE_INIT = "deactivate_init_script";
     public final static String PREF_POLIPO_PORT = "proxy_polipo";
+    public final static String PREF_KEY_POLIPO_ENABLED = "enable_polipo";
 
     public final static String IPTABLES = "/system/bin/iptables";
 

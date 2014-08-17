@@ -59,6 +59,9 @@ public class BootBroadcast extends BroadcastReceiver {
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
         initializeIptables.enableADB(authorized);
 
+        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
+        initializeIptables.allowPolipo(authorized);
+
         IptRules iptRules = new IptRules();
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         Set rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
