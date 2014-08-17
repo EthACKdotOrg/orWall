@@ -74,7 +74,7 @@ public class IptRules {
                         Constants.IPTABLES, action, appUID, trans_port, appName
                 ),
                 String.format(
-                        "%s -%c OUTPUT -o lo -m owner --uid-owner %d -p tcp --dport %d -j accounting_OUT -m comment --comment \"Allow %s through TransPort\"",
+                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p tcp --dport %d -j accounting_OUT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
                         ),
                 String.format(
@@ -86,11 +86,11 @@ public class IptRules {
                         Constants.IPTABLES, action, appUID, trans_port, appName
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p udp --dport %d -j ACCEPT -m comment --comment \"DNS Requests for %s on Tor DNSPort\"",
+                        "%s -t nat -%c OUTPUT ! -o lo -m owner --uid-owner %d -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Redirect DNS queries for %s\"",
                         Constants.IPTABLES, action, appUID, dns_port, appName
                 ),
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -o lo -m owner --uid-owner %d -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Redirect DNS queries for %s\"",
+                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT -m comment --comment \"DNS Requests for %s on Tor DNSPort\"",
                         Constants.IPTABLES, action, appUID, dns_port, appName
                 ),
         };
