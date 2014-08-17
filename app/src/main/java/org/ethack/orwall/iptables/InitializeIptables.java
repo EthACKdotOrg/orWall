@@ -113,6 +113,10 @@ public class InitializeIptables {
                 "-N accounting_OUT",
                 "-A accounting_OUT -j bw_OUTPUT",
                 "-A accounting_OUT -j ACCEPT",
+                String.format(
+                        "-A OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT -m comment --comment \"Forward Directory traffic to accounting\"",
+                        orbot_uid
+                ),
                 String.format("-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot outputs\"", orbot_uid),
                 "-P OUTPUT DROP",
                 // NAT
