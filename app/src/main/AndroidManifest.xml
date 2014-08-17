@@ -45,7 +45,7 @@
         <activity
             android:name=".PreferencesActivity"
             android:hardwareAccelerated="true"
-            android:label="@string/title_activity_preferences"></activity>
+            android:label="@string/title_activity_preferences" />
 
         <service
             android:name=".BackgroundProcess"
