@@ -22,45 +22,9 @@ public class BootBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        boolean authorized = false;
-        Long app_uid;
-        PackageManager packageManager = context.getPackageManager();
-
-        try {
-            app_uid = Long.valueOf(packageManager.getApplicationInfo("org.torproject.android", 0).uid);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
-            app_uid = new Long(0); // prevents stupid compiler error… never used.
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-
-        Log.d("Boot", "Deactivate some stuff at boot time in order to prevent crashes");
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
-
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
-        initializeIptables.initOutputs(app_uid);
-        initializeIptables.initInput(app_uid);
-
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
-        if (authorized) {
-            initializeIptables.LANPolicy(true);
-        }
-
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
-        if (authorized) {
-            app_uid = Long.valueOf(context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, "0"));
-            if (app_uid != 0) {
-                Log.d("Boot", "Authorizing SIP");
-                initializeIptables.manageSip(true, app_uid);
-            }
-        }
-
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
-        initializeIptables.enableADB(authorized);
-
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
-        initializeIptables.allowPolipo(authorized);
+        initializeIptables.boot();
 
         IptRules iptRules = new IptRules();
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);

@@ -1,9 +1,11 @@
 package org.ethack.orwall.iptables;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class InitializeIptables {
     private final String dst_file = String.format("%s/91firewall", dir_dst);
     private long trans_proxy;
     private long polipo_port;
+    private Context context;
 
     /**
      * Construtor
@@ -47,6 +50,48 @@ public class InitializeIptables {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
         this.polipo_port = Long.valueOf(preferences.getString(Constants.PREF_POLIPO_PORT, Long.toString(Constants.ORBOT_POLIPO_PROXY)));
+        this.context = context;
+    }
+
+    public void boot() {
+        boolean authorized;
+        Long app_uid;
+        PackageManager packageManager = context.getPackageManager();
+
+        try {
+            app_uid = Long.valueOf(packageManager.getApplicationInfo("org.torproject.android", 0).uid);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
+            app_uid = new Long(0); // prevents stupid compiler error… never used.
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+
+        Log.d("Boot", "Deactivate some stuff at boot time in order to prevent crashes");
+        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
+
+
+        initOutputs(app_uid);
+        initInput(app_uid);
+
+        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
+        if (authorized) {
+            LANPolicy(true);
+        }
+
+        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
+        if (authorized) {
+            app_uid = Long.valueOf(this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, "0"));
+            if (app_uid != 0) {
+                Log.d("Boot", "Authorizing SIP");
+                manageSip(true, app_uid);
+            }
+        }
+
+        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
+        enableADB(authorized);
+
+        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
+        allowPolipo(authorized);
     }
 
     public boolean iptablesExists() {
