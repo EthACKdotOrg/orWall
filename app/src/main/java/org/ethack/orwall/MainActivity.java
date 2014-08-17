@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -114,6 +115,20 @@ public class MainActivity extends Activity {
                 if (disableInit && !enforceInit) {
                     Log.d("Main", "Disabling init-script");
                     initializeIptables.removeIniScript();
+                }
+
+                if(enforceInit && !initializeIptables.isInitialized()) {
+                    Log.d("INIT","IPTables was NOT initialized as expected!");
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setMessage(R.string.main_reboot_required);
+                    alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            return;
+                        }
+                    });
+
+                    alert.show();
                 }
 
                 List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
