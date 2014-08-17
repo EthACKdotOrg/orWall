@@ -38,6 +38,8 @@
     <string name="enable_tethering">Enable Tethering</string>
     <string name="disable_tethering">Disable Tethering</string>
     <string name="summary_enable_tethering">Caution! Enabling this means *all* your secondary device traffic will go to the wild! That means you may get compromised!</string>
+    <string name="enable_polipo">Enable Polipo access</string>
+    <string name="summary_enable_polipo">Caution! This will allow any app detecting Polipo port to connect to it and access freely to the Internet (through Orbot)!</string>
     <string name="captive_portal">Captive portal detection</string>
     <string name="enable_captive_detection">Enable captive portal detection</string>
     <string name="summary_enable_captive_detection">Caution! This may leads to data leakage as the OS will probe network each time you connect to the Wireless!</string>
@@ -55,6 +57,7 @@
     <string name="proxy_socks">Proxy SOCKS port (Default: 9050)</string>
     <string name="proxy_transport">Transparent proxy port (Default: 9040)</string>
     <string name="proxy_dns">DNS Proxy port (Default: 5400)</string>
+    <string name="proxy_polipo">Polipo port (Default: 8118)</string>
 
     <string name="about_urls">Project links</string>
     <string name="about_links">https://orwall.org/\nhttps://github.com/EthACKDotOrg/orWall</string>
