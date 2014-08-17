@@ -11,6 +11,9 @@ $IPTABLES -I INPUT -i lo -j ACCEPT
 
 $IPTABLES -P FORWARD ACCEPT
 
+$IPTABLES -N witness
+$IPTABLES -A witness -j RETURN
+
 ## Block all traffic at boot ##
 $IP6TABLES -t nat -F
 $IP6TABLES -F
