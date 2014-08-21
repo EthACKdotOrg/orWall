@@ -40,7 +40,7 @@
     <string name="network">Network</string>
     <string name="summary_network">Manage some network options. Beware, you may go insecure!</string>
     <string name="enable_lan">Enable LAN connections</string>
-    <string name="summary_enable_lan">Allows LAN to bypass the firewall and Orbot.</string>
+    <string name="summary_enable_lan">Allows LAN to bypass the firewall and Orbot.\n\nWARNING: this will allow ALL apps to access LAN. And .onion won\'t resolve anymore.</string>
     <string name="enable_adb">Enable Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Open TCP 5555 in both direction so that you may connect to your device overt network</string>
     <string name="enable_tethering">Enable Tethering</string>
