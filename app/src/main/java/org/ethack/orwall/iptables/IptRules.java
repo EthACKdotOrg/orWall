@@ -10,6 +10,7 @@ import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -102,13 +103,27 @@ public class IptRules {
         }
     }
 
-    public boolean LanNoNat(final String lan, final boolean allow) {
-        if (allow) {
-            RULE = "%s -I OUTPUT 1 -d %s -j LAN";
-        } else {
-            RULE = "%s -D OUTPUT -d %s -j LAN";
+    public void LanNoNat(final String lan, final boolean allow) {
+        Character action = 'I';
+        if (!allow) {
+            action = 'D';
         }
-        return (applyRule(String.format(RULE, Constants.IPTABLES, lan)));
+        String[] rules = {
+                "%s -%c OUTPUT -d %s -j LAN",
+                "%s -%c INPUT -d %s -j LAN",
+                "%s -t nat -%c OUTPUT -d %s -j RETURN",
+        };
+
+        String formatted;
+        for (String rule: rules) {
+            formatted = String.format(rule, Constants.IPTABLES, action, lan);
+            if (!applyRule(formatted)) {
+                Log.e(
+                        "LanNoNat",
+                        "Unable to add rule: " + formatted
+                );
+            }
+        }
     }
 
     public boolean genericRule(final String rule) {

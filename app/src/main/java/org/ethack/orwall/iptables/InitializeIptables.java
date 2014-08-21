@@ -13,6 +13,7 @@ import android.util.Log;
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NetworkHelper;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
@@ -109,25 +110,17 @@ public class InitializeIptables {
     }
 
     public void LANPolicy(final boolean allow) {
-        String[] lans = {
-                "10.0.0.0/8",
-                "172.16.0.0/12",
-                "192.168.0.0/16"
-        };
+        NetworkHelper nwHelper = new NetworkHelper();
+        String subnet = nwHelper.getSubnet();
+
         if (allow) {
             if (iptRules.genericRule("-N LAN")) {
-                iptRules.genericRule("-A LAN -p tcp -m tcp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
-                iptRules.genericRule("-A LAN -p udp -m udp --dport 53 -j REJECT --reject-with icmp-port-unreachable");
+                iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
                 iptRules.genericRule("-A LAN -j ACCEPT");
             }
         }
-        for (String lan : lans) {
-            if (!iptRules.LanNoNat(lan, allow)) {
-                Log.e(
-                        InitializeIptables.class.getName(),
-                        String.format("Unable to bypass NAT for %s", lan));
-            }
-        }
+        iptRules.LanNoNat(subnet, allow);
+
         if (!allow) {
             iptRules.genericRule("-F LAN");
             iptRules.genericRule("-X LAN");
@@ -357,20 +350,11 @@ public class InitializeIptables {
     }
 
     public void enableTethering(boolean status) {
-        NetworkInterface wifi = null;
-        try {
-            wifi = NetworkInterface.getByName("wlan0");
-        } catch (SocketException e) {
-            Log.e("enableTethering", e.toString());
-        }
 
-        if (wifi != null) {
-            List<InterfaceAddress> addresses = wifi.getInterfaceAddresses();
-            InterfaceAddress address = (InterfaceAddress) addresses.toArray()[1];
-            String ipv4 = address.getAddress().getHostAddress();
+        NetworkHelper nwHelper = new NetworkHelper();
 
-            String st[] = ipv4.split("\\.");
-            String subnet = st[0] + "." + st[1] + "." + st[2] + ".0/24";
+        if (nwHelper.getWlan() != null) {
+            String subnet = nwHelper.getSubnet();
 
             char action;
             if (status) {
