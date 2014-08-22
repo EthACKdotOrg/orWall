@@ -63,36 +63,18 @@ public class IptRules {
      * @param appUID
      * @param action
      * @param appName
-     * @return true if success
      */
     public void natApp(Context context, final long appUID, final char action, final String appName) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, "9040"));
-        long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, "5400"));
         String[] RULES = {
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -o lo -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"",
+                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p tcp --dport %d -j accounting_OUT -m comment --comment \"Allow %s through TransPort\"",
+                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
-                ),
-                String.format(
-                        "%s -%c INPUT -i lo -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT -m comment --comment \"Allow local inputs for %s\"",
-                        Constants.IPTABLES, action, appUID, appName
-                ),
-                String.format(
-                        "%s -%c INPUT -i lo -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
-                        Constants.IPTABLES, action, appUID, trans_port, appName
-                ),
-                String.format(
-                        "%s -t nat -%c OUTPUT ! -o lo -m owner --uid-owner %d -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Redirect DNS queries for %s\"",
-                        Constants.IPTABLES, action, appUID, dns_port, appName
-                ),
-                String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1/32 -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT -m comment --comment \"DNS Requests for %s on Tor DNSPort\"",
-                        Constants.IPTABLES, action, appUID, dns_port, appName
                 ),
         };
 

@@ -38,6 +38,7 @@ public class InitializeIptables {
     private final String dst_file = String.format("%s/91firewall", dir_dst);
     private long trans_proxy;
     private long polipo_port;
+    private long dns_proxy;
     private Context context;
 
     /**
@@ -51,6 +52,7 @@ public class InitializeIptables {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
         this.polipo_port = Long.valueOf(preferences.getString(Constants.PREF_POLIPO_PORT, Long.toString(Constants.ORBOT_POLIPO_PROXY)));
+        this.dns_proxy = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
         this.context = context;
     }
 
@@ -161,6 +163,8 @@ public class InitializeIptables {
                         orbot_uid
                 ),
                 String.format("-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot outputs\"", orbot_uid),
+                String.format("-A OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT -m comment --comment \"Allow DNS queries\"", this.dns_proxy),
+                String.format("-t nat -A OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Allow DNS queries\"", this.dns_proxy),
                 "-P OUTPUT DROP",
                 // NAT
                 String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
@@ -183,6 +187,7 @@ public class InitializeIptables {
                         "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot inputs\"",
                         orbot_uid
                 ),
+                "-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow related,established inputs\"",
                 "-P INPUT DROP",
         };
         for (String rule : rules) {
