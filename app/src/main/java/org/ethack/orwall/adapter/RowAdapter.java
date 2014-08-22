@@ -139,13 +139,19 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
             Set current_rules = nat_rules;
             HashMap rule = new HashMap<String, Long>();
             rule.put(appName, appUID);
+
+            Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+            bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
+            bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
             if (checked) {
-                iptRules.natApp(context, appUID, 'A', appName);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
                 current_rules.add(rule);
             } else {
-                iptRules.natApp(context, appUID, 'D', appName);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
                 current_rules.remove(rule);
             }
+            context.startService(bgpProcess);
+
             nat_rules = current_rules;
             editor.remove("nat_rules");
             editor.commit();
