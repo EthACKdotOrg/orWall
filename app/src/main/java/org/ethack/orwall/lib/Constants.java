@@ -27,6 +27,7 @@ public class Constants {
     public final static String PARAM_ACTIVATE = "org.ethack.orwall.captive.activate";
 
     public final static String ACTION_ADD_RULE = "org.ethack.orwall.backgroundProcess.action.addRule";
+    public final static String ACTION_RM_RULE = "org.ethack.orwall.backgroundProcess.action.rmRule";
     public final static String PARAM_APPUID = "org.ethack.orwall.backgroundProcess.action.addRule.appUid";
     public final static String PARAM_APPNAME = "org.ethack.orwall.backgroundProcess.action.addRule.appName";
 
