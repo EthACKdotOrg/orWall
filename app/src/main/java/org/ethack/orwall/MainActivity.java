@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
 
 
                 listview = (ListView) findViewById(R.id.applist);
-                listview.setAdapter(new RowAdapter(this, finalList, packageManager, false));
+                listview.setAdapter(new RowAdapter(this, finalList, packageManager));
             }
         }
     }
@@ -174,9 +174,6 @@ public class MainActivity extends Activity {
     public boolean onMenuItemSelected(final int featureID, final MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.action_select_all:
-                listview.setAdapter(new RowAdapter(this, finalList, packageManager, true));
-                return true;
             case R.id.enable_tethering:
             case R.id.disable_tethering:
                 final boolean enabled = (item.getItemId() == R.id.enable_tethering);
@@ -397,6 +394,6 @@ public class MainActivity extends Activity {
 
         Collections.sort(apps2, new PackageComparator(packageManager));
 
-        this.listview.setAdapter(new RowAdapter(this, apps2, packageManager, false));
+        this.listview.setAdapter(new RowAdapter(this, apps2, packageManager));
     }
 }
