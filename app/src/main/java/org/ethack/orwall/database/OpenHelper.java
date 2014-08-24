@@ -26,13 +26,13 @@ public class OpenHelper extends SQLiteOpenHelper {
                     "CREATE TABLE %s (" +
                             "%s INTEGER PRIMARY KEY," +
                             "%s TEXT NOT NULL," +
-                            "%s TEXT NOT NULL DEFAULT \"Tor\"," +
+                            "%s TEXT NOT NULL DEFAULT \"%s\"," +
                             "%s INTEGER NOT NULL DEFAULT '%d'," +
                             "%s TEXT NOT NULL DEFAULT \"TransProxy\")",
                     NAT_TABLE_NAME,
                     COLUMN_APPUID,
                     COLUMN_APPNAME,
-                    COLUMN_ONIONTYPE,
+                    COLUMN_ONIONTYPE, Constants.DB_ONION_TYPE_TOR,
                     COLUMN_ONIONPORT, Constants.ORBOT_TRANSPROXY,
                     COLUMN_PORTTYPE
             );
