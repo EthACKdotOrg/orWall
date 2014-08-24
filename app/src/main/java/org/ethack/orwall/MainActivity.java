@@ -152,6 +152,7 @@ public class MainActivity extends Activity {
                 for (PackageInfo applicationInfo : packageList) {
                     String[] permissions = applicationInfo.requestedPermissions;
                     if (!applicationInfo.packageName.equals(Constants.I2P_APP_NAME) &&
+                            !applicationInfo.packageName.equals(Constants.ORBOT_APP_NAME) &&
                             !applicationInfo.packageName.equals(this.getPackageName()) &&
                             permissions != null) {
                         for (String perm : permissions) {
