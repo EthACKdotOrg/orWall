@@ -24,14 +24,16 @@ public class UninstallBroadcast extends BroadcastReceiver {
             return;
         }
 
-        boolean replacing = intent.getBooleanExtra(Intent.EXTRA_DATA_REMOVED, false);
+        boolean replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
 
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) && !replacing) {
             final long uid = intent.getIntExtra(Intent.EXTRA_UID, -123);
+            final String appName = intent.getData().getSchemeSpecificPart();
+            Log.d("UninstallBroadcast", "AppName: " +appName+ ", AppUID: " +uid);
 
             // First: remove rule from firewall if any
             Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-            bgpProcess.putExtra(Constants.PARAM_APPNAME, intent.getData().getSchemeSpecificPart());
+            bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
             bgpProcess.putExtra(Constants.PARAM_APPUID, uid);
             bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
             context.startService(bgpProcess);
