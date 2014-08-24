@@ -151,7 +151,9 @@ public class MainActivity extends Activity {
 
                 for (PackageInfo applicationInfo : packageList) {
                     String[] permissions = applicationInfo.requestedPermissions;
-                    if (permissions != null) {
+                    if (!applicationInfo.packageName.equals(Constants.I2P_APP_NAME) &&
+                            !applicationInfo.packageName.equals(this.getPackageName()) &&
+                            permissions != null) {
                         for (String perm : permissions) {
                             if (perm.equals("android.permission.INTERNET")) {
                                 finalList.add(applicationInfo);
