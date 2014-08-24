@@ -41,4 +41,7 @@ public class Constants {
 
     public final static String E_NO_SUCH_FILE = "E_NO_SUCH_FILE";
     public final static String E_NO_SUCH_ALGO = "E_NO_SUCH_ALGO";
+
+    public final static String DB_PORT_TYPE_TRANS = "TransProxy";
+    public final static String DB_ONION_TYPE_TOR = "Tor";
 }
