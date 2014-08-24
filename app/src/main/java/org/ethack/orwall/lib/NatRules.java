@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.ethack.orwall.database.OpenHelper;
+import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +72,8 @@ public class NatRules {
     }
 
     public ArrayList<AppRule> getAllRules() {
+        ArrayList<AppRule> list = new ArrayList<AppRule>();
+
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
         String[] selection = {
                 OpenHelper.COLUMN_APPNAME,
@@ -80,12 +83,12 @@ public class NatRules {
                 OpenHelper.COLUMN_PORTTYPE,
         };
         Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, selection, null, null, null, null, null);
-        cursor.moveToFirst();
 
-        ArrayList<AppRule> list = new ArrayList<AppRule>();
+        if (!cursor.moveToFirst()) return list;
+
         AppRule appRule;
 
-        while(cursor.moveToNext()) {
+        do {
             appRule = new AppRule(
                     cursor.getString(0),
                     cursor.getLong(1),
@@ -94,7 +97,7 @@ public class NatRules {
                     cursor.getString(4)
             );
             list.add(appRule);
-        }
+        } while (cursor.moveToNext());
 
         cursor.close();
         db.close();
