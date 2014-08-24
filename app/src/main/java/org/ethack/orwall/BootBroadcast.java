@@ -9,8 +9,11 @@ import android.util.Log;
 
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.iptables.IptRules;
+import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,13 +30,14 @@ public class BootBroadcast extends BroadcastReceiver {
         initializeIptables.boot();
 
         IptRules iptRules = new IptRules();
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        Set rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
 
-        for (Object rule : rules.toArray()) {
-            HashMap<String, Long> r = (HashMap) rule;
-            Long uid = (Long) r.values().toArray()[0];
-            String name = (String) r.keySet().toArray()[0];
+        NatRules natRules = new NatRules(context);
+        ArrayList<AppRule> rules = natRules.getAllRules();
+
+        for (AppRule rule : rules) {
+            long uid = rule.getAppUID();
+            String name = rule.getAppName();
+            // TODO: take care of other rule content (port, proxytype and so on)
             iptRules.natApp(context, uid, 'A', name);
         }
     }

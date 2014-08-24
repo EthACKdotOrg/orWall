@@ -2,7 +2,6 @@ package org.ethack.orwall.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -14,16 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 /**
  * New adapter in order to create the grid for applications
@@ -32,8 +29,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
     private final Context context;
     private final Object[] pkgs;
     private final PackageManager packageManager;
-    private SharedPreferences.Editor editor;
-    private Set nat_rules;
+    private NatRules natRules;
 
     /**
      * Class builder
@@ -46,9 +42,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         this.context = context;
         this.pkgs = pkgs.toArray();
         this.packageManager = packageManager;
-        SharedPreferences sharedPreferences = context.getSharedPreferences("org.ethack.orwall_preferences", Context.MODE_PRIVATE);
-        this.editor = sharedPreferences.edit();
-        this.nat_rules = sharedPreferences.getStringSet("nat_rules", new HashSet());
+        this.natRules = new NatRules(context);
     }
 
     /**
@@ -89,9 +83,7 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         holder.check_box.setCompoundDrawablePadding(15);
 
         holder.check_box.setTag(R.id.checkTag, pkg.packageName);
-        if (!nat_rules.isEmpty()) {
-            holder.check_box.setChecked(isAppChecked(pkg, nat_rules));
-        }
+        holder.check_box.setChecked(isAppChecked(pkg));
 
         holder.check_box.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,29 +108,24 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         if (apk != null) {
 
             long appUID = apk.applicationInfo.uid;
-            Set current_rules = nat_rules;
-            HashMap rule = new HashMap<String, Long>();
-            rule.put(appName, appUID);
 
             Intent bgpProcess = new Intent(context, BackgroundProcess.class);
             bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
             bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
             if (checked) {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
-                current_rules.add(rule);
+                this.natRules.addAppToRules(
+                        appUID, appName,
+                        Constants.DB_ONION_TYPE_TOR,
+                        Constants.ORBOT_TRANSPROXY,
+                        Constants.DB_PORT_TYPE_TRANS
+                );
             } else {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-                current_rules.remove(rule);
+                this.natRules.removeAppFromRules(appUID);
             }
             context.startService(bgpProcess);
 
-            nat_rules = current_rules;
-            editor.remove("nat_rules");
-            editor.commit();
-            editor.putStringSet("nat_rules", nat_rules);
-            if (!editor.commit()) {
-                Log.e("Rulset", "Unable to save new ruleset!");
-            }
         }
     }
 
@@ -152,21 +139,14 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
         return ((pkgInfo.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0);
     }
 
-    private boolean isAppChecked(PackageInfo packageInfo, Set set) {
-        for (Object row : set) {
-            HashMap<String, Long> r = (HashMap) row;
-            if ((Long) r.values().toArray()[0] == packageInfo.applicationInfo.uid) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isAppChecked(PackageInfo packageInfo) {
+        return this.natRules.isAppInRules(Long.valueOf(packageInfo.applicationInfo.uid));
     }
 
     /**
      * View holder, used in order to optimize speed and display
      */
     static class ViewHolder {
-        private TextView text_view;
         private CheckBox check_box;
     }
 }
