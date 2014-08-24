@@ -31,17 +31,21 @@ public class UninstallBroadcast extends BroadcastReceiver {
             final String appName = intent.getData().getSchemeSpecificPart();
             Log.d("UninstallBroadcast", "AppName: " +appName+ ", AppUID: " +uid);
 
-            // First: remove rule from firewall if any
-            Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-            bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
-            bgpProcess.putExtra(Constants.PARAM_APPUID, uid);
-            bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-            context.startService(bgpProcess);
-
-            // Second: remove app from NatRules if present
+            // is the app present in rules?
             NatRules natRules = new NatRules(context);
-            natRules.removeAppFromRules(uid);
 
+            if (natRules.isAppInRules(uid)) {
+
+                // First: remove rule from firewall if any
+                Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+                bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
+                bgpProcess.putExtra(Constants.PARAM_APPUID, uid);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+                context.startService(bgpProcess);
+
+                // Second: remove app from NatRules if present
+                natRules.removeAppFromRules(uid);
+            }
         }
     }
 }
