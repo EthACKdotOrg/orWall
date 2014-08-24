@@ -33,7 +33,8 @@ public class RowAdapter extends ArrayAdapter<PackageInfo> {
 
     /**
      * Class builder
-     *  @param context
+     *
+     * @param context
      * @param pkgs
      * @param packageManager
      */

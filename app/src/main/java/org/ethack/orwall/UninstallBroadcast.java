@@ -29,7 +29,7 @@ public class UninstallBroadcast extends BroadcastReceiver {
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction()) && !replacing) {
             final long uid = intent.getIntExtra(Intent.EXTRA_UID, -123);
             final String appName = intent.getData().getSchemeSpecificPart();
-            Log.d("UninstallBroadcast", "AppName: " +appName+ ", AppUID: " +uid);
+            Log.d("UninstallBroadcast", "AppName: " + appName + ", AppUID: " + uid);
 
             // is the app present in rules?
             NatRules natRules = new NatRules(context);

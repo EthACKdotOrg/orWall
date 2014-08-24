@@ -18,9 +18,6 @@ public class OpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ONIONTYPE = "onionType";
     public static final String COLUMN_ONIONPORT = "onionPort";
     public static final String COLUMN_PORTTYPE = "portType";
-
-    private static final int DATABASE_VERSION = 1;
-    private static final String DB_NAME = "nat.s3db";
     private static final String NAT_TABLE_CREATE =
             String.format(
                     "CREATE TABLE %s (" +
@@ -36,6 +33,8 @@ public class OpenHelper extends SQLiteOpenHelper {
                     COLUMN_ONIONPORT, Constants.ORBOT_TRANSPROXY,
                     COLUMN_PORTTYPE
             );
+    private static final int DATABASE_VERSION = 1;
+    private static final String DB_NAME = "nat.s3db";
 
     public OpenHelper(Context context) {
         super(context, DB_NAME, null, DATABASE_VERSION);

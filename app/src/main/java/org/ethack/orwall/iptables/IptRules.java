@@ -10,7 +10,6 @@ import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -97,7 +96,7 @@ public class IptRules {
         };
 
         String formatted;
-        for (String rule: rules) {
+        for (String rule : rules) {
             formatted = String.format(rule, Constants.IPTABLES, action, lan);
             if (!applyRule(formatted)) {
                 Log.e(

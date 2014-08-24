@@ -19,10 +19,6 @@ import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -91,7 +87,7 @@ public class InitializeIptables {
         }
 
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
-        if(authorized) {
+        if (authorized) {
             enableADB(authorized);
         }
 
@@ -392,7 +388,7 @@ public class InitializeIptables {
             action = 'A';
         }
 
-        for (String rule: rules) {
+        for (String rule : rules) {
             iptRules.genericRule(String.format(rule, action, polipo_port));
         }
     }

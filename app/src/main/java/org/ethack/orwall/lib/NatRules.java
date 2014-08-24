@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.ethack.orwall.database.OpenHelper;
-import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,7 +105,7 @@ public class NatRules {
 
     public int getRuleCount() {
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, null, null, null,null, null, null);
+        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, null, null, null, null, null, null);
         cursor.moveToFirst();
 
         int total = cursor.getCount();
@@ -117,7 +116,7 @@ public class NatRules {
 
     public void importFromSharedPrefs(Set oldRules) {
         PackageManager packageManager = this.context.getPackageManager();
-        for(Object rule: oldRules.toArray()) {
+        for (Object rule : oldRules.toArray()) {
             HashMap<String, Long> r = (HashMap) rule;
             Long uid = (Long) r.values().toArray()[0];
             String name = (String) r.keySet().toArray()[0];
@@ -125,7 +124,8 @@ public class NatRules {
             try {
                 packageManager.getApplicationInfo(name, PackageManager.GET_META_DATA);
                 addAppToRules(uid, name, Constants.DB_ONION_TYPE_TOR, Constants.ORBOT_TRANSPROXY, Constants.DB_PORT_TYPE_TRANS);
-            } catch (PackageManager.NameNotFoundException e) { }
+            } catch (PackageManager.NameNotFoundException e) {
+            }
         }
     }
 }
