@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -28,12 +29,14 @@ import org.ethack.orwall.adapter.RowAdapter;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageComparator;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
@@ -136,6 +139,13 @@ public class MainActivity extends Activity {
                     alert.show();
                 }
 
+                NatRules natRules = new NatRules(this);
+                Set oldRules = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
+                if (natRules.getRuleCount() == 0 && oldRules != null) {
+                    natRules.importFromSharedPrefs(oldRules);
+                    getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
+                }
+
                 List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
                 finalList = new ArrayList<PackageInfo>();
 
@@ -152,7 +162,6 @@ public class MainActivity extends Activity {
                 }
 
                 Collections.sort(finalList, new PackageComparator(packageManager));
-
 
                 listview = (ListView) findViewById(R.id.applist);
                 listview.setAdapter(new RowAdapter(this, finalList, packageManager));
