@@ -205,7 +205,10 @@ public class MainActivity extends Activity {
                 getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, (item.getItemId() == R.id.authorize_browser)).commit();
 
                 if (item.getItemId() == R.id.authorize_browser) {
-                    this.timer = new CountDownTimer(TimeUnit.MINUTES.toMillis(5), TimeUnit.SECONDS.toMillis(30)) {
+
+                    long gracetime = Long.valueOf(getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getString(Constants.PREF_KEY_BROWSER_GRACETIME, String.valueOf(Constants.BROWSER_GRACETIME)));
+
+                    this.timer = new CountDownTimer(TimeUnit.MINUTES.toMillis(gracetime), TimeUnit.SECONDS.toMillis(30)) {
                         public void onTick(long untilFinished) {
 
                             final long minutes = TimeUnit.MILLISECONDS.toMinutes(untilFinished);

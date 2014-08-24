@@ -35,5 +35,11 @@
             android:key="enable_captive_portal"
             android:summary="@string/summary_enable_captive_detection"
             android:title="@string/enable_captive_detection" />
+        <EditTextPreference
+            android:defaultValue="@integer/browser_gracetime"
+            android:inputType="number"
+            android:key="browser_gracetime"
+            android:summary="@string/summary_captive_browser_gracetime"
+            android:title="@string/captive_browser_gracetime" />
     </PreferenceCategory>
 </PreferenceScreen>

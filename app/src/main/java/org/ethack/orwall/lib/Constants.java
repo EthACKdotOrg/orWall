@@ -19,6 +19,7 @@ public class Constants {
     public final static String PREF_KEY_DISABLE_INIT = "deactivate_init_script";
     public final static String PREF_POLIPO_PORT = "proxy_polipo";
     public final static String PREF_KEY_POLIPO_ENABLED = "enable_polipo";
+    public final static String PREF_KEY_BROWSER_GRACETIME = "browser_gracetime";
 
     public final static String IPTABLES = "/system/bin/iptables";
 
@@ -38,6 +39,8 @@ public class Constants {
     public final static long ORBOT_TRANSPROXY = 9040;
     public final static long ORBOT_DNS_PROXY = 5400;
     public final static long ORBOT_POLIPO_PROXY = 8118;
+
+    public final static long BROWSER_GRACETIME = 5;
 
     public final static String E_NO_SUCH_FILE = "E_NO_SUCH_FILE";
     public final static String E_NO_SUCH_ALGO = "E_NO_SUCH_ALGO";

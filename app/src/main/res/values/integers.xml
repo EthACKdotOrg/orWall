@@ -4,4 +4,5 @@
     <integer name="orbot_proxy_transport_value">9040</integer>
     <integer name="orbot_proxy_dns_proxy_value">5400</integer>
     <integer name="orbot_proxy_polipo_value">8118</integer>
+    <integer name="browser_gracetime">5</integer>
 </resources>
