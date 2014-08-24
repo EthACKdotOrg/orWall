@@ -2,6 +2,7 @@ package org.ethack.orwall.lib;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -16,9 +17,11 @@ import java.util.Set;
  */
 public class NatRules {
     private OpenHelper dbHelper;
+    private Context context;
 
     public NatRules(Context context) {
         this.dbHelper = new OpenHelper(context);
+        this.context = context;
     }
 
     public boolean isAppInRules(Long appUID) {
@@ -110,11 +113,16 @@ public class NatRules {
     }
 
     public void importFromSharedPrefs(Set oldRules) {
+        PackageManager packageManager = this.context.getPackageManager();
         for(Object rule: oldRules.toArray()) {
             HashMap<String, Long> r = (HashMap) rule;
             Long uid = (Long) r.values().toArray()[0];
             String name = (String) r.keySet().toArray()[0];
-            addAppToRules(uid, name, Constants.DB_ONION_TYPE_TOR, Constants.ORBOT_TRANSPROXY, Constants.DB_PORT_TYPE_TRANS);
+            // ensure we migrate only existing applications
+            try {
+                packageManager.getApplicationInfo(name, PackageManager.GET_META_DATA);
+                addAppToRules(uid, name, Constants.DB_ONION_TYPE_TOR, Constants.ORBOT_TRANSPROXY, Constants.DB_PORT_TYPE_TRANS);
+            } catch (PackageManager.NameNotFoundException e) { }
         }
     }
 }
