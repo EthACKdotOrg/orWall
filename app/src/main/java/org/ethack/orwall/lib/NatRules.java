@@ -24,13 +24,14 @@ public class NatRules {
     public boolean isAppInRules(Long appUID) {
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 
-        String[] projection = {OpenHelper.COLUMN_APPUID, OpenHelper.COLUMN_APPNAME};
-        String[] filterArgs = {String.valueOf(appUID)};
+        String[] filterArgs = {
+                String.valueOf(appUID)
+        };
 
         Cursor cursor = db.query(
                 OpenHelper.NAT_TABLE_NAME,
-                projection,
-                OpenHelper.COLUMN_APPUID,
+                null,
+                OpenHelper.COLUMN_APPUID + "=?",
                 filterArgs,
                 null,
                 null,
@@ -44,7 +45,7 @@ public class NatRules {
     }
 
     public void removeAppFromRules(Long appUID) {
-        String filter = OpenHelper.COLUMN_APPUID;
+        String filter = OpenHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appUID)};
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
@@ -98,9 +99,8 @@ public class NatRules {
     }
 
     public int getRuleCount() {
-        String[] selection = {OpenHelper.COLUMN_APPUID};
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, selection, null, null,null, null, null);
+        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, null, null, null,null, null, null);
         cursor.moveToFirst();
 
         int total = cursor.getCount();
