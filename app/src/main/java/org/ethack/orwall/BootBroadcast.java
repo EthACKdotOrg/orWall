@@ -32,7 +32,9 @@ public class BootBroadcast extends BroadcastReceiver {
         IptRules iptRules = new IptRules();
 
         NatRules natRules = new NatRules(context);
+        Log.d("BootBroadcast: ", "Get NAT rules...");
         ArrayList<AppRule> rules = natRules.getAllRules();
+        Log.d("BootBroadcast: ", "Length received: " + String.valueOf(rules.size()));
 
         for (AppRule rule : rules) {
             long uid = rule.getAppUID();
@@ -41,5 +43,4 @@ public class BootBroadcast extends BroadcastReceiver {
             iptRules.natApp(context, uid, 'A', name);
         }
     }
-
 }
