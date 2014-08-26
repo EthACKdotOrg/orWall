@@ -65,15 +65,24 @@ public class IptRules {
      */
     public void natApp(Context context, final long appUID, final char action, final String appName) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, "9040"));
+        long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, String.valueOf(Constants.ORBOT_TRANSPROXY)));
+        long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
         String[] RULES = {
                 String.format(
                         "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
                 ),
                 String.format(
+                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through DNSProxy\"",
+                        Constants.IPTABLES, action, appUID, dns_port, appName
+                ),
+                String.format(
                         "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
                         Constants.IPTABLES, action, appUID, trans_port, appName
+                ),
+                String.format(
+                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through DNSProxy\"",
+                        Constants.IPTABLES, action, appUID, dns_port, appName
                 ),
         };
 
