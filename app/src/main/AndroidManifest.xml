@@ -48,6 +48,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -60,6 +61,12 @@
         <service
             android:name=".BackgroundProcess"
             android:exported="false" />
+
+        <activity
+            android:name=".DialogActivity"
+            android:theme="@style/Theme.Transparent"
+            android:label="@string/title_activity_dialog" >
+        </activity>
     </application>
 
 </manifest>
