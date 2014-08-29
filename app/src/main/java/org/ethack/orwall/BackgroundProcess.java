@@ -1,16 +1,11 @@
 package org.ethack.orwall;
 
-import android.app.AlertDialog;
 import android.app.IntentService;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.Constants;
-import org.sufficientlysecure.rootcommands.RootCommands;
 
 /**
  * Created by cedric on 7/31/14.

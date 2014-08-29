@@ -311,7 +311,7 @@ public class MainActivity extends Activity {
         this.listview.setAdapter(new RowAdapter(this, apps2, packageManager));
     }
 
-    private void initDisplay(){
+    private void initDisplay() {
         ApplicationInfo orbot_id = null;
         packageManager = getPackageManager();
 
