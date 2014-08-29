@@ -65,7 +65,7 @@
         <activity
             android:name=".DialogActivity"
             android:theme="@style/Theme.Transparent"
-            android:label="@string/title_activity_dialog" >
+            android:label="none" >
         </activity>
     </application>
 
