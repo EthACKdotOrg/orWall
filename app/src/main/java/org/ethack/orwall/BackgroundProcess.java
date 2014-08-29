@@ -1,6 +1,7 @@
 package org.ethack.orwall;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 
 import org.ethack.orwall.iptables.InitializeIptables;
@@ -12,14 +13,16 @@ import org.ethack.orwall.lib.Constants;
  */
 public class BackgroundProcess extends IntentService {
 
+    private boolean supportComment;
+
     public BackgroundProcess() {
-        super("BackroundProcess");
+        super("BackgroundProcess");
+        this.supportComment = this.getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
     }
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
         String action = workIntent.getStringExtra(Constants.ACTION);
-
         if (action.equals(Constants.ACTION_PORTAL)) {
             boolean activate = workIntent.getBooleanExtra(Constants.PARAM_ACTIVATE, false);
             managePortal(activate);
@@ -43,12 +46,12 @@ public class BackgroundProcess extends IntentService {
     }
 
     private void addRule(Long appUID, String appName) {
-        IptRules iptRules = new IptRules();
+        IptRules iptRules = new IptRules(this.supportComment);
         iptRules.natApp(this, appUID, 'A', appName);
     }
 
     private void rmRule(Long appUID, String appName) {
-        IptRules iptRules = new IptRules();
+        IptRules iptRules = new IptRules(this.supportComment);
         iptRules.natApp(this, appUID, 'D', appName);
     }
 

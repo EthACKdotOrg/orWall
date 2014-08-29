@@ -8,6 +8,7 @@ import android.util.Log;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.AppRule;
+import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 
 import java.util.ArrayList;
@@ -20,10 +21,13 @@ public class BootBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
 
+        boolean supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
+
         InitializeIptables initializeIptables = new InitializeIptables(context);
+        initializeIptables.supportComments();
         initializeIptables.boot();
 
-        IptRules iptRules = new IptRules();
+        IptRules iptRules = new IptRules(supportComment);
 
         NatRules natRules = new NatRules(context);
         Log.d("BootBroadcast: ", "Get NAT rules...");

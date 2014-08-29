@@ -83,6 +83,7 @@ public class MainActivity extends Activity {
             alert.show();
         } else {
 
+            initializeIptables.supportComments();
             ApplicationInfo orbot_id = null;
             packageManager = getPackageManager();
 

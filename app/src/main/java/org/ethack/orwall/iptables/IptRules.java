@@ -17,7 +17,11 @@ import java.util.concurrent.TimeoutException;
  */
 public class IptRules {
 
-    private String RULE;
+    private boolean supportComment;
+
+    public IptRules(boolean supportComment) {
+        this.supportComment = supportComment;
+    }
 
     /**
      * Apply an IPTables rule
@@ -69,20 +73,24 @@ public class IptRules {
         long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
         String[] RULES = {
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through TransPort\"",
-                        Constants.IPTABLES, action, appUID, trans_port, appName
+                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        Constants.IPTABLES, action, appUID, trans_port,
+                        (this.supportComment? String.format(" -m comment --comment \"Force %s through TransPort\"", appName):"")
                 ),
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d -m comment --comment \"Force %s through DNSProxy\"",
-                        Constants.IPTABLES, action, appUID, dns_port, appName
+                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        Constants.IPTABLES, action, appUID, dns_port,
+                        (this.supportComment? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName):"")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through TransPort\"",
-                        Constants.IPTABLES, action, appUID, trans_port, appName
+                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID, trans_port,
+                        (this.supportComment? String.format(" -m comment --comment \"Allow %s through TransPort\"",appName):"")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT -m comment --comment \"Allow %s through DNSProxy\"",
-                        Constants.IPTABLES, action, appUID, dns_port, appName
+                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID, dns_port,
+                        (this.supportComment? String.format(" -m comment --comment \"Allow %s through DNSProxy\"",appName):"")
                 ),
         };
 

@@ -36,6 +36,7 @@ public class InitializeIptables {
     private long polipo_port;
     private long dns_proxy;
     private Context context;
+    private boolean supportComment;
 
     /**
      * Construtor
@@ -43,13 +44,14 @@ public class InitializeIptables {
      * @param context
      */
     public InitializeIptables(Context context) {
-        this.iptRules = new IptRules();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
         this.polipo_port = Long.valueOf(preferences.getString(Constants.PREF_POLIPO_PORT, Long.toString(Constants.ORBOT_POLIPO_PROXY)));
         this.dns_proxy = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
         this.context = context;
+        this.supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
+        this.iptRules = new IptRules(this.supportComment);
     }
 
     public void boot() {
@@ -101,6 +103,17 @@ public class InitializeIptables {
     public boolean iptablesExists() {
         File iptables = new File(Constants.IPTABLES);
         return iptables.exists();
+    }
+
+    public void supportComments() {
+        String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
+        boolean support = iptRules.genericRule(rule);
+        if (support) {
+            Log.d("IPTables: ","Comments are supported");
+        } else {
+            Log.d("IPTables: ","Comments are NOT supported");
+        }
+        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, support);
     }
 
     public boolean isInitialized() {
@@ -156,15 +169,27 @@ public class InitializeIptables {
                 "-A accounting_OUT -j bw_OUTPUT",
                 "-A accounting_OUT -j ACCEPT",
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT -m comment --comment \"Forward Directory traffic to accounting\"",
-                        orbot_uid
+                        "-A OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
+                        orbot_uid, (this.supportComment? " -m comment --comment \"Forward Directory traffic to accounting\"":"")
                 ),
-                String.format("-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot outputs\"", orbot_uid),
-                String.format("-A OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT -m comment --comment \"Allow DNS queries\"", this.dns_proxy),
-                String.format("-t nat -A OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d -m comment --comment \"Allow DNS queries\"", this.dns_proxy),
+                String.format(
+                        "-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        orbot_uid, (this.supportComment? " -m comment --comment \"Allow Orbot outputs\"":"")
+                ),
+                String.format(
+                        "-A OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
+                        this.dns_proxy, (this.supportComment? " -m comment --comment \"Allow DNS queries\"":"")
+                ),
+                String.format(
+                        "-t nat -A OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
+                        this.dns_proxy, (this.supportComment? " -m comment --comment \"Allow DNS queries\"":"")
+                ),
                 "-P OUTPUT DROP",
                 // NAT
-                String.format("-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN -m comment --comment \"Orbot bypasses itself.\"", orbot_uid),
+                String.format(
+                        "-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
+                        orbot_uid, (this.supportComment? " -m comment --comment \"Orbot bypasses itself.\"":"")
+                ),
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -181,10 +206,13 @@ public class InitializeIptables {
                 "-A accounting_IN -j bw_INPUT",
                 "-A accounting_IN -j ACCEPT",
                 String.format(
-                        "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow Orbot inputs\"",
-                        orbot_uid
+                        "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        orbot_uid, (this.supportComment? " -m comment --comment \"Allow Orbot inputs\"":"")
                 ),
-                "-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment \"Allow related,established inputs\"",
+                String.format(
+                        "-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
+                        (this.supportComment? " -m comment --comment \"Allow related,established inputs\"":"")
+                ),
                 "-P INPUT DROP",
         };
         for (String rule : rules) {
@@ -368,7 +396,10 @@ public class InitializeIptables {
             String rules[] = {
                     "-%c INPUT -i wlan0 -j ACCEPT",
                     "-%c OUTPUT -o wlan0 -s %s -j ACCEPT",
-                    "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports " + this.trans_proxy + " -m comment --comment \"Force Tether through TransPort\"",
+                    String.format(
+                            "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports %s%s",
+                            action, subnet, this.trans_proxy, (this.supportComment? " -m comment --comment \"Force Tether through TransPort\"":"")
+                    ),
                     "-t nat -%c OUTPUT -o wlan0 -j RETURN",
             };
             for (String rule : rules) {
@@ -380,17 +411,13 @@ public class InitializeIptables {
     }
 
     public void allowPolipo(boolean status) {
-        String[] rules = {
-                "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED -m comment --comment \"Allow local polipo inputs\"",
-        };
+        String rule = "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED%s";
         char action = 'D';
         if (status) {
             action = 'A';
         }
 
-        for (String rule : rules) {
-            iptRules.genericRule(String.format(rule, action, polipo_port));
-        }
+        iptRules.genericRule(String.format(rule, action, polipo_port, (this.supportComment? " -m comment --comment \"Allow local polipo inputs\"":"")));
     }
 
     public void enableCaptiveDetection(boolean status, Context context) {
