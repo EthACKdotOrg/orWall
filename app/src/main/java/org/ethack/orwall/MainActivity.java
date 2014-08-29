@@ -30,7 +30,6 @@ import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageComparator;
-import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,120 +54,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        Intent checkInit = new Intent(this, DialogActivity.class);
+        int requestCode = 1;
+        this.startActivityForResult(checkInit, requestCode);
+
         initializeIptables = new InitializeIptables(this);
 
-        if (!initializeIptables.iptablesExists()) {
-            Log.e("Main", "No iptables found at " + Constants.IPTABLES);
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setMessage(R.string.main_no_iptables);
-            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            });
-            alert.show();
-        }
+    }
 
-        if (!RootCommands.rootAccessGiven()) {
-            Log.e(MainActivity.class.getName(), "Unable to get root shell, exiting.");
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setMessage(R.string.main_no_root);
-            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            });
-            alert.show();
-        } else {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-            initializeIptables.supportComments();
-            ApplicationInfo orbot_id = null;
-            packageManager = getPackageManager();
-
-            try {
-                orbot_id = packageManager.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(BootBroadcast.class.getName(), "Unable to get Orbot APK info - is it installed?");
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setMessage(R.string.main_no_orbot);
-                alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                    }
-                });
-                alert.show();
-            }
-
-            if (orbot_id != null) {
-
-                InstallScripts installScripts = new InstallScripts(this);
-                installScripts.run();
-                // install the initscript — there is a check in the function in order to avoid useless writes.;
-                boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-                boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
-
-                if (enforceInit) {
-                    Log.d("Main", "Enforcing or installing init-script");
-                    initializeIptables.installInitScript(this);
-                }
-                if (disableInit && !enforceInit) {
-                    Log.d("Main", "Disabling init-script");
-                    initializeIptables.removeIniScript();
-                }
-
-                if (enforceInit && !initializeIptables.isInitialized()) {
-                    Log.d("INIT", "IPTables was NOT initialized as expected!");
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setMessage(R.string.main_reboot_required);
-                    alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            return;
-                        }
-                    });
-                    alert.setPositiveButton(R.string.main_start_iptables, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            initializeIptables.boot();
-                        }
-                    });
-
-                    alert.show();
-                }
-
-                NatRules natRules = new NatRules(this);
-                Set oldRules = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
-                if (natRules.getRuleCount() == 0 && oldRules != null) {
-                    natRules.importFromSharedPrefs(oldRules);
-                    getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
-                }
-
-                List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
-                finalList = new ArrayList<PackageInfo>();
-
-                for (PackageInfo applicationInfo : packageList) {
-                    String[] permissions = applicationInfo.requestedPermissions;
-                    if (!applicationInfo.packageName.equals(Constants.I2P_APP_NAME) &&
-                            !applicationInfo.packageName.equals(Constants.ORBOT_APP_NAME) &&
-                            !applicationInfo.packageName.equals(this.getPackageName()) &&
-                            permissions != null) {
-                        for (String perm : permissions) {
-                            if (perm.equals("android.permission.INTERNET")) {
-                                finalList.add(applicationInfo);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                Collections.sort(finalList, new PackageComparator(packageManager));
-
-                listview = (ListView) findViewById(R.id.applist);
-                listview.setAdapter(new RowAdapter(this, finalList, packageManager));
-            }
+        if (resultCode == 1) {
+            initDisplay();
+        } else if (resultCode == 2) {
+            noIptables();
+        } else if (resultCode == 3) {
+            noRoot();
         }
     }
 
@@ -410,5 +314,117 @@ public class MainActivity extends Activity {
         Collections.sort(apps2, new PackageComparator(packageManager));
 
         this.listview.setAdapter(new RowAdapter(this, apps2, packageManager));
+    }
+
+    private void initDisplay(){
+        ApplicationInfo orbot_id = null;
+        packageManager = getPackageManager();
+
+        try {
+            orbot_id = packageManager.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(BootBroadcast.class.getName(), "Unable to get Orbot APK info - is it installed?");
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setMessage(R.string.main_no_orbot);
+            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            });
+            alert.show();
+        }
+
+        if (orbot_id != null) {
+
+            InstallScripts installScripts = new InstallScripts(this);
+            installScripts.run();
+            // install the initscript — there is a check in the function in order to avoid useless writes.;
+            boolean enforceInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
+            boolean disableInit = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
+
+            if (enforceInit) {
+                Log.d("Main", "Enforcing or installing init-script");
+                initializeIptables.installInitScript(this);
+            }
+            if (disableInit && !enforceInit) {
+                Log.d("Main", "Disabling init-script");
+                initializeIptables.removeIniScript();
+            }
+
+            if (enforceInit && !initializeIptables.isInitialized()) {
+                Log.d("INIT", "IPTables was NOT initialized as expected!");
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setMessage(R.string.main_reboot_required);
+                alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                });
+                alert.setPositiveButton(R.string.main_start_iptables, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        initializeIptables.boot();
+                    }
+                });
+
+                alert.show();
+            }
+
+            NatRules natRules = new NatRules(this);
+            Set oldRules = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
+            if (natRules.getRuleCount() == 0 && oldRules != null) {
+                natRules.importFromSharedPrefs(oldRules);
+                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
+            }
+
+            List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+            finalList = new ArrayList<PackageInfo>();
+
+            for (PackageInfo applicationInfo : packageList) {
+                String[] permissions = applicationInfo.requestedPermissions;
+                if (!applicationInfo.packageName.equals(Constants.I2P_APP_NAME) &&
+                        !applicationInfo.packageName.equals(Constants.ORBOT_APP_NAME) &&
+                        !applicationInfo.packageName.equals(this.getPackageName()) &&
+                        permissions != null) {
+                    for (String perm : permissions) {
+                        if (perm.equals("android.permission.INTERNET")) {
+                            finalList.add(applicationInfo);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Collections.sort(finalList, new PackageComparator(packageManager));
+
+            listview = (ListView) findViewById(R.id.applist);
+            listview.setAdapter(new RowAdapter(this, finalList, packageManager));
+        }
+    }
+
+    private void noIptables() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage(R.string.main_no_iptables);
+        alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        alert.show();
+    }
+
+    private void noRoot() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage(R.string.main_no_root);
+        alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        alert.show();
     }
 }
