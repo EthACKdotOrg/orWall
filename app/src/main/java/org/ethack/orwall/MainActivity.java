@@ -37,14 +37,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import info.guardianproject.onionkit.ui.OrbotHelper;
 
 public class MainActivity extends Activity {
 
-    private InitializeIptables initializeIptables;
     private PackageManager packageManager;
     private List<PackageInfo> finalList;
     private CountDownTimer timer;
+    private InitializeIptables initializeIptables;
 
     private ListView listview;
 
@@ -58,9 +57,6 @@ public class MainActivity extends Activity {
         Intent checkInit = new Intent(this, DialogActivity.class);
         int requestCode = 1;
         this.startActivityForResult(checkInit, requestCode);
-
-        initializeIptables = new InitializeIptables(this);
-
     }
 
     @Override
@@ -73,17 +69,16 @@ public class MainActivity extends Activity {
             noIptables();
         } else if (resultCode == 3) {
             noRoot();
+        } else if (resultCode == 4) {
+            noOrbot();
+        } else if (resultCode == 5) {
+            // nothing for now
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        OrbotHelper oh = new OrbotHelper(this);
-
-        if (oh.isOrbotInstalled() && !oh.isOrbotRunning()) {
-            oh.requestOrbotStart(this);
-        }
     }
 
     @Override
@@ -323,19 +318,10 @@ public class MainActivity extends Activity {
         try {
             orbot_id = packageManager.getApplicationInfo("org.torproject.android", PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(BootBroadcast.class.getName(), "Unable to get Orbot APK info - is it installed?");
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setMessage(R.string.main_no_orbot);
-            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            });
-            alert.show();
         }
 
         if (orbot_id != null) {
+            this.initializeIptables = new InitializeIptables(this);
 
             InstallScripts installScripts = new InstallScripts(this);
             installScripts.run();
@@ -423,6 +409,18 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        alert.show();
+    }
+
+    private void noOrbot() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage(R.string.main_no_orbot);
+        alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
         alert.show();
