@@ -106,14 +106,17 @@ public class InitializeIptables {
     }
 
     public void supportComments() {
+        String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
         String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
-        boolean support = iptRules.genericRule(rule);
+        boolean support = (iptRules.genericRule(check) || iptRules.genericRule(rule));
+
         if (support) {
             Log.d("IPTables: ","Comments are supported");
         } else {
             Log.d("IPTables: ","Comments are NOT supported");
         }
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, support);
+        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, support).apply();
+        this.supportComment = support;
     }
 
     public boolean isInitialized() {
