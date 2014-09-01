@@ -88,7 +88,7 @@ public class IptRules {
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p tcp --dport %d -j ACCEPT%s",
+                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
                 ),
