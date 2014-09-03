@@ -143,7 +143,7 @@ public class InitializeIptables {
     }
 
     public void enableADB(final boolean allow) {
-        char action = (allow? 'I':'D');
+        char action = (allow ? 'I' : 'D');
 
         String[] rules = {
                 "-%c INPUT -p tcp --dport 5555 -j ACCEPT",
@@ -344,7 +344,7 @@ public class InitializeIptables {
                 "-%c OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
                 "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
-        char action = (status? 'A':'D');
+        char action = (status ? 'A' : 'D');
 
         for (String rule : rules) {
             iptRules.genericRule(String.format(rule, action, uid));
@@ -359,7 +359,7 @@ public class InitializeIptables {
                 "-%c OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
                 "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN",
         };
-        char action = (status? 'I':'D');
+        char action = (status ? 'I' : 'D');
 
         for (String rule : rules) {
             Log.d("ManageCaptiveBrowser", String.format(rule, action, uid));
@@ -374,20 +374,20 @@ public class InitializeIptables {
         if (nwHelper.getWlan() != null) {
             String subnet = nwHelper.getSubnet();
 
-            char action = (status? 'I':'D');
+            char action = (status ? 'I' : 'D');
 
             String rules[] = {
                     String.format(
                             "-%c INPUT -i wlan0 -j ACCEPT%s",
-                            action, (this.supportComment? "-m comment --comment \"Allow incoming from wlan0\"":"")
+                            action, (this.supportComment ? "-m comment --comment \"Allow incoming from wlan0\"" : "")
                     ),
                     String.format(
                             "-%c OUTPUT -o wlan0 -s %s -j ACCEPT%s",
-                            action, subnet, (this.supportComment? "-m comment --comment \"Allow outgoing to wlan0\"":"")
+                            action, subnet, (this.supportComment ? "-m comment --comment \"Allow outgoing to wlan0\"" : "")
                     ),
                     String.format(
                             "-t nat -%c OUTPUT -o wlan0 -j RETURN%s",
-                            action, (this.supportComment? "-m comment --comment \"Connections to wlan0 bypass NAT\"":"")
+                            action, (this.supportComment ? "-m comment --comment \"Connections to wlan0 bypass NAT\"" : "")
                     ),
                     String.format(
                             "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports %s%s",
@@ -404,7 +404,7 @@ public class InitializeIptables {
 
     public void allowPolipo(boolean status) {
         String rule = "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED%s";
-        char action = (status? 'A':'D');
+        char action = (status ? 'A' : 'D');
 
 
         iptRules.genericRule(String.format(rule, action, polipo_port, (this.supportComment ? " -m comment --comment \"Allow local polipo inputs\"" : "")));
