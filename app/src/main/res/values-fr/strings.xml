@@ -17,7 +17,7 @@
     <string name="main_start_iptables">Appliquer les règles initiales de démarrage</string>
 
     <string name="main_counter" formatted="false">%d minutes, %d secondes avant la fin des permissions.</string>
-    <string name="main_end_of_browser">Fin des exception pour le Navigateur.</string>
+    <string name="main_end_of_browser">Fin des exceptions pour le Navigateur.</string>
 
     <string name="menu_action_settings">Paramètres</string>
     <string name="menu_action_about">A propos</string>
@@ -34,26 +34,26 @@
     <string name="enforce_init_script">Mise en application du script d\'init</string>
     <string name="summary_enforce_init_script">Imposer que le script d\'init soit toujours installé, même après une mise à jour d\'Android.</string>
     <string name="deactivate_init_script">Désactiver le script d\'init</string>
-    <string name="summary_deactivate_init_script">Regardarder par ici pour désinstaller le script d\'init et être sûr qu\'il ne le sera pas à nouveau. Jamais.</string>
+    <string name="summary_deactivate_init_script">Regarder par ici pour désinstaller le script d\'init et être sûr qu\'il ne le sera jamais à nouveau. Vraiment.</string>
 
     <string name="network">Réseau</string>
     <string name="summary_network">Gèrer quelques options du réseau. Attention, cela peut vous mettre en danger!</string>
     <string name="enable_lan">Autoriser les accès depuis le LAN</string>
     <string name="summary_enable_lan">Permettre au LAN de passer outre le firewall et Orbot.
 
-ATTENTION: cela va autoriser TOUTES les applications à accèder au LAN. Et les .onion ne pourrons plus être résolues/accèdées.</string>
+ATTENTION: cela va autoriser TOUTES les applications à accéder au LAN. Et les .onion ne pourrons plus être résolues/accédées.</string>
     <string name="enable_adb">Permettre Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Ouvrir le port TCP 5555 en bi-directionnel afin de pouvoir connecter votre appareil sur le réseau.</string>
     <string name="enable_tethering">Activer le partage de connexion réseau (Tethering)</string>
     <string name="disable_tethering">Désactiver le partage de connexion réseau (Tethering)</string>
     <string name="summary_enable_tethering">Attention! Cela implique que *tous* le traffic de vos appareil secondaire va être autorisé! Cela signifie que vous pourriez être compromis!</string>
     <string name="enable_polipo">Activer l\'accès Polipo</string>
-    <string name="summary_enable_polipo">Attention! Cela va permettre à toute application qui détecte le port Polipo de s\'y connecter et d\'accèder librement à Internet (à travers Orbot)!</string>
+    <string name="summary_enable_polipo">Attention! Cela va permettre à toute application qui détecte le port Polipo de s\'y connecter et d\'accéder librement à Internet (à travers Orbot)!</string>
     <string name="captive_portal">Détection de protail captif</string>
     <string name="enable_captive_detection">Activer la détection de portail captif</string>
     <string name="summary_enable_captive_detection">Attention! Cela peut conduire à la fuite de données car l\'OS va sonder le réseau à chaque fois que vous vous connecterez au sans-fil!</string>
     <string name="captive_browser_gracetime">Délai de grâce du navigateur (défaut: 5)</string>
-    <string name="summary_captive_browser_gracetime">Définissez un délai de grâce pour la connexion au portail captif. Cinq minutes devrait suffire.</string>
+    <string name="summary_captive_browser_gracetime">Définissez un délai de grâce pour la connexion au portail captif. Cinq minutes devraient suffire.</string>
 
     <string name="special_apps">Applications particulières</string>
     <string name="summary_special_apps">Sélectionnez les applications avec des droits particuliers, comme votre navigateur préféré pour l\'authentification au portail captif, ou la VoIP.</string>
@@ -75,12 +75,12 @@ ATTENTION: cela va autoriser TOUTES les applications à accèder au LAN. Et les 
 https://github.com/EthACKDotOrg/orWall</string>
     <string name="about_license">Licence</string>
     <string name="about_torproject">Indépendant du projet Tor</string>
-    <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® etne reçoit aucune gearantie du projet TOR concernent la qualité, pertinence ou quoique ce soit d\'autre.</string>
+    <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® et ne reçoit aucune garantie du projet TOR concernant la qualité, pertinence ou quoi que ce soit d\'autre.</string>
     <string name="about_author">Auteur(s)</string>
     <string name="about_author_list">EthACK (https://www.ethack.org/)
 SwissTengu (https://www.swisstengu.ch/)</string>
     <string name="about_orwall">Mettez votre application derrière Orbot et bloquez tout le traffic non choisi en une fois.</string>
-    <string name="about_external_libs">Bibliothpques externes</string>
+    <string name="about_external_libs">Bibliothèques externes</string>
     <string name="about_external_libs_content">super-command (Apache2)
 NetCipher (3-clauses BSD license)</string>
 
