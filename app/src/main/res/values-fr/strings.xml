@@ -73,24 +73,14 @@
     <string name="proxy_polipo">Port Polipo (Défaut: 8118)</string>
 
     <string name="about_urls">Liens du projet</string>
-    <string name="about_links">
-        https://orwall.org/\n
-        https://github.com/EthACKDotOrg/orWall
-    </string>
+
     <string name="about_license">Licence</string>
     <string name="about_torproject">Indépendant du projet Tor</string>
     <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® et ne reçoit aucune garantie du projet TOR concernant la qualité, pertinence ou quoi que ce soit d\'autre.</string>
     <string name="about_author">Auteur(s)</string>
-    <string name="about_author_list">
-        EthACK (https://www.ethack.org/)\n
-        SwissTengu (https://www.swisstengu.ch/)
-    </string>
+
     <string name="about_orwall">Mettez votre application derrière Orbot et bloquez tout le trafic non choisi en une fois.</string>
     <string name="about_external_libs">Bibliothèques externes</string>
-    <string name="about_external_libs_content">
-        super-command (Apache2)\n
-        NetCipher (3-clauses BSD license)\n
-    </string>
 
     <string name="alert_install_script_title">Installation d\'un script d\'init</string>
     <string name="alert_install_script_text" formatted="false">

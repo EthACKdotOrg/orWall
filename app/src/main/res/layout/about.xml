@@ -74,7 +74,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:text="GPLv3" />
+                android:text="@string/license" />
 
             <TextView
                 android:layout_width="fill_parent"

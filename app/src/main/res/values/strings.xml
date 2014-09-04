@@ -7,11 +7,11 @@
     <string name="main_no_orbot">You must have Orbot installed!</string>
     <string name="main_no_iptables">We didn\'t found the iptables binary on this ROM… This application will not work.</string>
     <string name="main_reboot_required">
-        You should reboot your device in order to ensure IPTables rules are properly applied.
-
-        If you already have rebooted since orWall installation, you may have hit a bug…
+        You should reboot your device in order to ensure IPTables rules are properly applied.\n
+        \n
+        If you already have rebooted since orWall installation, you may have hit a bug…\n
         Please contact us on github!
-
+        \n
         You may also want to just apply bootup rules in order to test orWall — keep in mind this MAY let some leaks!
     </string>
     <string name="main_start_iptables">Apply bootup rules</string>
@@ -39,9 +39,11 @@
     <string name="network">Network</string>
     <string name="summary_network">Manage some network options. Beware, you may go insecure!</string>
     <string name="enable_lan">Enable LAN connections</string>
-    <string name="summary_enable_lan">Allows LAN to bypass the firewall and Orbot.
-
-WARNING: this will allow ALL apps to access LAN. And .onion won\'t resolve anymore.</string>
+    <string name="summary_enable_lan">
+        Allows LAN to bypass the firewall and Orbot.\n
+        \n
+        WARNING: this will allow ALL apps to access LAN. And .onion won\'t resolve anymore.
+    </string>
     <string name="enable_adb">Enable Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Open TCP 5555 in both direction so that you may connect to your device overt network</string>
     <string name="enable_tethering">Enable Tethering</string>
@@ -71,31 +73,31 @@ WARNING: this will allow ALL apps to access LAN. And .onion won\'t resolve anymo
     <string name="proxy_polipo">Polipo port (Default: 8118)</string>
 
     <string name="about_urls">Project links</string>
-    <string name="about_links">https://orwall.org/
-https://github.com/EthACKDotOrg/orWall</string>
+
     <string name="about_license">License</string>
     <string name="about_torproject">Unlinked to Tor Project</string>
     <string name="about_legal_tor">This product is produced independently from the Tor® anonymity software and carries no guarantee from The Tor Project about quality, suitability or anything else. </string>
     <string name="about_author">Author(s)</string>
-    <string name="about_author_list">EthACK (https://www.ethack.org/)
-SwissTengu (https://www.swisstengu.ch/)</string>
+
     <string name="about_orwall">Put your apps behind Orbot and block all unwanted traffic in one go.</string>
     <string name="about_external_libs">External libraries</string>
-    <string name="about_external_libs_content">super-command (Apache2)
-NetCipher (3-clauses BSD license)</string>
 
     <string name="alert_install_script_title">Init script installation</string>
-    <string name="alert_install_script_text" formatted="false">This application uses an init-script.
-This script blocks all IP communication at boot time, preventing possible leaks from your device.
-We strongly recommend you accept this script.
-
-Script location is %s</string>
+    <string name="alert_install_script_text" formatted="false">
+        This application uses an init-script.\n
+        This script blocks all IP communication at boot time, preventing possible leaks from your device.\n
+        We strongly recommend you accept this script.\n
+        \n
+        Script location is %s
+    </string>
     <string name="alert_install_script_accept">Install</string>
     <string name="alert_install_script_refuse">Refuse</string>
-    <string name="alert_install_no_support" formatted="false">This application uses an init-script in %s.
-Unfortunately, it seems your Android device doesn\'t support it.
-
-<b>You may experience data leaks at boot time.</b>
-
-We cannot do anything against that :(.</string>
+    <string name="alert_install_no_support" formatted="false">
+        This application uses an init-script in %s.\n
+        Unfortunately, it seems your Android device doesn\'t support it.\n
+        \n
+        <b>You may experience data leaks at boot time.</b>\n
+        \n
+        We cannot do anything against that :(.
+    </string>
 </resources>
