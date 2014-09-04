@@ -46,9 +46,16 @@
     </string>
     <string name="enable_adb">Enable Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Open TCP 5555 in both direction so that you may connect to your device overt network</string>
+    <string name="tethering">Tethering</string>
     <string name="enable_tethering">Enable Tethering</string>
     <string name="disable_tethering">Disable Tethering</string>
     <string name="summary_enable_tethering">Caution! Enabling this means *all* your secondary device traffic will go to the wild! That means you may get compromised!</string>
+    <string name="tethering_bypass">Secondary device bypasses Orbot</string>
+    <string name="summary_tethering_bypass">
+        Warning! This options means: all connections from secondary device will go straight to Internet, bypassing Tor!\n
+        We strongly recommend to avoid this, unless you know what you\'re doing.
+    </string>
+    <string name="misc">Misc</string>
     <string name="enable_polipo">Enable Polipo access</string>
     <string name="summary_enable_polipo">Caution! This will allow any app detecting Polipo port to connect to it and access freely to the Internet (through Orbot)!</string>
     <string name="captive_portal">Captive portal detection</string>
