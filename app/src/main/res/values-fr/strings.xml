@@ -2,16 +2,16 @@
 <resources>
     <string name="app_name">orWall</string>
 
-    <string name="main_no_root">Il semble que vous n'avez pas l\'accès root sur cet appareil.</string>
+    <string name="main_no_root">Il semble que vous n\'avez pas l\'accès root sur cet appareil.</string>
     <string name="main_dismiss">Rejeter</string>
-    <string name="main_no_orbot">Il est indispensable qu'Orbot soit installé!</string>
+    <string name="main_no_orbot">Il est indispensable qu\'Orbot soit installé!</string>
     <string name="main_no_iptables">Le binaire iptables n\'a pas été trouvé dans cette ROM… Cette application ne fonctionnera pas.</string>
     <string name="main_reboot_required">
-        Vous devez redémarrer votre appareil afin d\'être sûr que les règles IPTables soient correctement appliquées.
-
+        Vous devez redémarrer votre appareil afin d\'être sûr que les règles IPTables soient correctement appliquées.\n
+        \n
         Si vous avez déjà redémarré votre appareil depuis l\'installation d\'orWall, vous avez peut-être trouvé un bogue…
-        S\'il vous plaît, contactez nous sur github!
-
+        S\'il vous plaît, contactez nous sur github!\n
+        \n
         Vous pouvez aussi simplement appliquer les règles de démarrage afin de tester orWall - gardez à l\'esprit que cela PEUT laisser quelques fuites!
     </string>
     <string name="main_start_iptables">Appliquer les règles initiales de démarrage</string>
@@ -39,14 +39,16 @@
     <string name="network">Réseau</string>
     <string name="summary_network">Gèrer quelques options du réseau. Attention, cela peut vous mettre en danger!</string>
     <string name="enable_lan">Autoriser les accès depuis le LAN</string>
-    <string name="summary_enable_lan">Permettre au LAN de passer outre le firewall et Orbot.
-
-ATTENTION: cela va autoriser TOUTES les applications à accéder au LAN. Et les .onion ne pourrons plus être résolues/accédées.</string>
+    <string name="summary_enable_lan">
+        Permettre au LAN de passer outre le firewall et Orbot.\n
+        \n
+        ATTENTION: cela va autoriser TOUTES les applications à accéder au LAN. Et les .onion ne pourrons plus être résolues/accédées.
+    </string>
     <string name="enable_adb">Permettre Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Ouvrir le port TCP 5555 en bi-directionnel afin de pouvoir connecter votre appareil sur le réseau.</string>
     <string name="enable_tethering">Activer le partage de connexion réseau (Tethering)</string>
     <string name="disable_tethering">Désactiver le partage de connexion réseau (Tethering)</string>
-    <string name="summary_enable_tethering">Attention! Cela implique que *tous* le traffic de vos appareil secondaire va être autorisé! Cela signifie que vous pourriez être compromis!</string>
+    <string name="summary_enable_tethering">Attention! Cela implique que *tous* le trafic de vos appareil secondaire va être autorisé! Cela signifie que vous pourriez être compromis!</string>
     <string name="enable_polipo">Activer l\'accès Polipo</string>
     <string name="summary_enable_polipo">Attention! Cela va permettre à toute application qui détecte le port Polipo de s\'y connecter et d\'accéder librement à Internet (à travers Orbot)!</string>
     <string name="captive_portal">Détection de protail captif</string>
@@ -61,7 +63,7 @@ ATTENTION: cela va autoriser TOUTES les applications à accéder au LAN. Et les 
     <string name="select_browser">Chosir l\'application navigateur</string>
     <string name="summary_select_browser">Ce navigateur sera autorisé, sur demande, à passez outre Tor afin de se connecter sur un portail captif. Vous pouvez activer ce passe droit temporairement directement depuis le menu..</string>
     <string name="sip_application">Chosir l\'application SIP</string>
-    <string name="summary_sip_application">L\'application sélectionnée verra son traffic UDP autorisé en dehors de TOR.</string>
+    <string name="summary_sip_application">L\'application sélectionnée verra son trafic UDP autorisé en dehors de TOR.</string>
 
     <string name="set_ports">Changer les ports proxy</string>
     <string name="summary_set_ports">Changer les ports proxy d\'Orbot si vous avez changé la configuration</string>
@@ -71,31 +73,41 @@ ATTENTION: cela va autoriser TOUTES les applications à accéder au LAN. Et les 
     <string name="proxy_polipo">Port Polipo (Défaut: 8118)</string>
 
     <string name="about_urls">Liens du projet</string>
-    <string name="about_links">https://orwall.org/
-https://github.com/EthACKDotOrg/orWall</string>
+    <string name="about_links">
+        https://orwall.org/\n
+        https://github.com/EthACKDotOrg/orWall
+    </string>
     <string name="about_license">Licence</string>
     <string name="about_torproject">Indépendant du projet Tor</string>
     <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® et ne reçoit aucune garantie du projet TOR concernant la qualité, pertinence ou quoi que ce soit d\'autre.</string>
     <string name="about_author">Auteur(s)</string>
-    <string name="about_author_list">EthACK (https://www.ethack.org/)
-SwissTengu (https://www.swisstengu.ch/)</string>
-    <string name="about_orwall">Mettez votre application derrière Orbot et bloquez tout le traffic non choisi en une fois.</string>
+    <string name="about_author_list">
+        EthACK (https://www.ethack.org/)\n
+        SwissTengu (https://www.swisstengu.ch/)
+    </string>
+    <string name="about_orwall">Mettez votre application derrière Orbot et bloquez tout le trafic non choisi en une fois.</string>
     <string name="about_external_libs">Bibliothèques externes</string>
-    <string name="about_external_libs_content">super-command (Apache2)
-NetCipher (3-clauses BSD license)</string>
+    <string name="about_external_libs_content">
+        super-command (Apache2)\n
+        NetCipher (3-clauses BSD license)\n
+    </string>
 
     <string name="alert_install_script_title">Installation d\'un script d\'init</string>
-    <string name="alert_install_script_text" formatted="false">Cette application utilise un script d\'init.
-Ce script bloque tout le traffic IP au démarrage, prévenant tout traffic indésiré depuis votre appareil.
-Nous vous recommandons chaudement d\'accepter ce script.
-
-L\'emplacement du script est %s</string>
+    <string name="alert_install_script_text" formatted="false">
+        Cette application utilise un script d\'init.\n
+        Ce script bloque tout le trafic IP au démarrage, prévenant tout trafic indésiré depuis votre appareil.\n
+        Nous vous recommandons chaudement d\'accepter ce script.\n
+        \n
+        L\'emplacement du script est %s
+    </string>
     <string name="alert_install_script_accept">Installer</string>
     <string name="alert_install_script_refuse">Refuser</string>
-    <string name="alert_install_no_support" formatted="false">Cette application utilise un script d\'init %s.
-Malheureusement, il semble que votre appareil Android ne le supporte pas.
-
-<b>Vous pourriez être victime de fuite de données au démarrage de l\'appareil.</b>
-
-Nous ne pouvons rien faire contre cela :(.</string>
+    <string name="alert_install_no_support" formatted="false">
+        Cette application utilise un script d\'init %s.\n
+        Malheureusement, il semble que votre appareil Android ne le supporte pas.\n
+        \n
+        <b>Vous pourriez être victime de fuite de données au démarrage de l\'appareil.</b>\n
+        \n
+        Nous ne pouvons rien faire contre cela :(.
+    </string>
 </resources>
