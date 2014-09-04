@@ -13,14 +13,23 @@
             android:key="enable_adb"
             android:summary="@string/summary_enable_adb"
             android:title="@string/enable_adb" />
-
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/tethering">
         <CheckBoxPreference
             android:defaultValue="false"
             android:enabled="true"
             android:key="enable_tethering"
             android:summary="@string/summary_enable_tethering"
             android:title="@string/enable_tethering" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:enabled="true"
+            android:key="tethering_bypass_orbot"
+            android:summary="@string/summary_tethering_bypass"
+            android:title="@string/tethering_bypass" />
+    </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/misc">
         <CheckBoxPreference
             android:defaultValue="false"
             android:enabled="true"
