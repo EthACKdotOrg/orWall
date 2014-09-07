@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!-- Thanks @ChristianTanner! -->
+<resources>
+    <string name="app_name">orWall</string>
+
+    <string name="main_no_root">Es sieht so aus, als hättest Du keine Root Berechtigungen auf diesem Gerät</string>
+    <string name="main_dismiss">Verwerfen</string>
+    <string name="main_no_orbot">Orbot muss zwingend installiert sein!</string>
+    <string name="main_no_iptables">Wir konnten die iptables binaries in diesem ROM nicht finden… Diese Anwendung wird nicht funktionieren.</string>
+    <string name="main_reboot_required">
+        Du solltest Dein Gerät neu starten, um sicherzustellen, dass die IPTables Regeln korrekt angewendet werden.\n
+        \n
+        Falls Du seit der Installation von OrWall bereits einen Reboot durchgeführt hast, bist Du wahrscheinlich auf einen bug gestossen…\n
+        Bitte kontaktiere uns auf github!
+        \n
+        Du kannst auch bootup Regeln anwenden, um OrWall zu testen - Caveat Emptor: gewisse Leaks sind dadurch MÖGLICH!
+    </string>
+    <string name="main_start_iptables">Bootup Regeln anwenden</string>
+
+    <string name="main_counter" formatted="false">%d Minuten, %d Sekunden bevor die Berechtigungen auslaufen.</string>
+    <string name="main_end_of_browser">Browser Bypass beendet.</string>
+
+    <string name="menu_action_settings">Einstellungen</string>
+    <string name="menu_action_about">Über</string>
+    <string name="menu_search">Anwendung suchen</string>
+    <string name="menu_enable_sip">SIP aktivieren</string>
+    <string name="menu_disable_sip">SIP deaktivieren</string>
+    <string name="menu_disable_browser">Browser deaktivieren</string>
+    <string name="menu_authorize_browser">Browser aktivieren</string>
+
+    <string name="title_activity_preferences">Einstellungen</string>
+
+    <string name="init_script">Init script verwalten</string>
+    <string name="summary_manage_init_script">Init-script verwalten (erzwingen or entfernen)</string>
+    <string name="enforce_init_script">Init-script erzwingen</string>
+    <string name="summary_enforce_init_script">Stellt sicher, dass das Init-script immer installiert ist, auch nach einem Android Update.</string>
+    <string name="deactivate_init_script">Init-script deaktivieren</string>
+    <string name="summary_deactivate_init_script">Auswählen, um das Init-script zu entfernen. und um sicherzustellen, dass es nicht mehr zurück kommt. Niemals.</string>
+
+    <string name="network">Netzwerk</string>
+    <string name="summary_network">Netzwerk Optionen verwalten. Aufgepasst, kann Löcher aufreissen!</string>
+    <string name="enable_lan">LAN Verbindungen aktivieren</string>
+    <string name="summary_enable_lan">
+        Erlaubt dem LAN, die Firewall und Orbot zu umgehen.\n
+        \n
+        WARNUNG: diese Einstellung erlaubt allen Anwendungen Zugriff auf das LAN. .onion Adressen werden nicht mehr aufgelöst.
+    </string>
+    <string name="enable_adb">Android Debug Bridge (ADB) aktivieren</string>
+    <string name="summary_enable_adb">TCP 5555 in beiden Richtungen öffnen um über das Netzwerk auf dein Gerät zuzugreifen</string>
+    <string name="tethering">Tethering</string>
+    <string name="enable_tethering">Tethering aktivieren</string>
+    <string name="disable_tethering">Tethering deaktivieren</string>
+    <string name="summary_enable_tethering">Achtung! Mit dieser Einstellung verläuft der ganze sekundäre Netzwerkverkehr unkontrolliert! Du könntest kompromittiert werden.</string>
+    <string name="tethering_bypass">Sekundärgerät umgeht Orbot</string>
+    <string name="summary_tethering_bypass">
+        Vorsicht! Mit dieser Einstellung geht der ganze Traffic des Zweitgeräts direkt und ohne Umweg über Tor ins Internet\n
+        Wir empfehlen dringend, diese Einstellung zu vermeiden. Außer Du weisst ganz genau was Du tust!
+    </string>
+    <string name="misc">Verschiedenes</string>
+    <string name="enable_polipo">Polipo Zugriff aktivieren</string>
+    <string name="summary_enable_polipo">Achtung! Mit dieser Einstellung können APPs, die Polipo erkennen, darauf zugreifen und direkt via Orbot auf das Internet zugreifen!</string>
+    <string name="captive_portal">Captive portal auffinden</string>
+    <string name="enable_captive_detection">Captive portal Identifikation aktivieren</string>
+    <string name="summary_enable_captive_detection">Vorsicht! Das OS wird bei jeder Verbindung zum Wireless das Netzwerk testen. Datenlecks können nicht ausgeschlossen werden</string>
+    <string name="captive_browser_gracetime">Zeitlimite in Minuten für Browser (default: 5)</string>
+    <string name="summary_captive_browser_gracetime">Zeitlimite, um bei Captive Portals einzuloggen. Fünf Minuten sollten komfortable ausreichen.</string>
+
+    <string name="special_apps">Besondere Anwendungen</string>
+    <string name="summary_special_apps">Hier kannst du Anwendungen bestimmen, welche Privilegien erhalten, wie zum Beispiel einen Browser für Captive Portal logins oder VoIP Anwendungen.</string>
+    <string name="portal_browser">Browser für Portal login</string>
+    <string name="select_browser">Browser auswählen</string>
+    <string name="summary_select_browser">Dieser Browser darf sich auf Anfrage an Tor vorbei direkt bei Captive Portals anmelden. Du kannst die temporäre Umgehung von Tor direkt im Menu aktivieren.</string>
+    <string name="sip_application">SIP Anwendung auswählen</string>
+    <string name="summary_sip_application">Die ausgewählte Anwendung kann ihren UDP Traffic an Tor vorbei senden und empfangen.</string>
+
+    <string name="set_ports">Proxy ports festlegen</string>
+    <string name="summary_set_ports">Proxy Ports für Orbot festlegen falls Du sie in der Konfiguration geändert hast</string>
+    <string name="proxy_socks">Proxy SOCKS port (Default: 9050)</string>
+    <string name="proxy_transport">Transparent proxy port (Default: 9040)</string>
+    <string name="proxy_dns">DNS Proxy port (Default: 5400)</string>
+    <string name="proxy_polipo">Polipo port (Default: 8118)</string>
+
+    <string name="about_urls">Projekt Links</string>
+
+    <string name="about_license">Lizenz</string>
+    <string name="about_torproject">Unabhängig vom Tor Project</string>
+    <string name="about_legal_tor">Diese Anwendung wird unabhängig vom Tor® Anonymitäts Projekt entwickelt und kommt ohne Garantie vom Tor Projekt bezüglich Qualität, Tauglichkeit oder irgendeine andere Eigenschaft. </string>
+    <string name="about_author">Author(en)</string>
+
+    <string name="about_orwall">Stell alle APPS hinter Orbit und blockiere sämtliche ungewollte Netzwerk Traffic in einem einzigen Schritt.</string>
+    <string name="about_external_libs">Externe Libraries</string>
+
+    <string name="alert_install_script_title">Init script Installation</string>
+    <string name="alert_install_script_text" formatted="false">
+        Diese Anwendung verwendet ein Init-script.\n
+        Das Script unterbindet sämtlich IP Traffic während dem Bootvorgang und verhindert so Datenlecks Deines Geräts.\n
+        Wir empfehlen die Verwendng dieses Scripts wärmstens.\n
+        \n
+        Das Script befindet sich an folgender Stelle: %s
+    </string>
+    <string name="alert_install_script_accept">Installieren</string>
+    <string name="alert_install_script_refuse">Ablehnen</string>
+    <string name="alert_install_no_support" formatted="false">
+        Diese Anwendung verwendet ein Init-script in %s.\n
+        Es sieht so aus, als ob es von Deinem Android Gerät nicht unterstützt wird.\n
+        \n
+        <b>Das bedeutet, dass während des Bootvorgangs Datenlecks bestehen können.</b>\n
+        \n
+        Leider können wir dagegen nichts unterbehmen :(.
+    </string>
+</resources>
+
