@@ -19,7 +19,7 @@ public class NetworkHelper {
     public static int TYPE_WIFI = 1;
     public static int TYPE_MOBILE = 2;
     public static int TYPE_TETHER = 3;
-    public static int TYPE_NOT_CONNECTED = 0;
+    public static int TYPE_OTHER = 0;
 
     public NetworkHelper() {
         try {
@@ -59,6 +59,6 @@ public class NetworkHelper {
                 return TYPE_TETHER;
             }
         }
-        return TYPE_NOT_CONNECTED;
+        return TYPE_OTHER;
     }
 }
