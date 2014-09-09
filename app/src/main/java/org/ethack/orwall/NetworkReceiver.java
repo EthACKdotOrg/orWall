@@ -22,7 +22,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             int status = NetworkHelper.getConnectivityStatus(context);
 
             InitializeIptables initializeIptables = new InitializeIptables(context);
-            if (status == 3) {
+            if (status == NetworkHelper.TYPE_TETHER) {
                 Toast.makeText(context, R.string.tether_activated_in_orwall, Toast.LENGTH_LONG).show();
                 initializeIptables.enableTethering(true);
             } else {
