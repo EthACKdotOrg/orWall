@@ -107,4 +107,7 @@
         \n
         We cannot do anything against that :(.
     </string>
+
+    <string name="tether_activated_in_orwall">Tethering activated in orWall</string>
+    <string name="tether_deactivated_in_orwall">Tethering deactivated in orWall</string>
 </resources>

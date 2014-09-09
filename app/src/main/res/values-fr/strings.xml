@@ -107,4 +107,7 @@
         \n
         Nous ne pouvons rien faire contre cela :(.
     </string>
+
+    <string name="tether_activated_in_orwall">Partage de connection activé dans orWall</string>
+    <string name="tether_deactivated_in_orwall">Partage de connection désactivé orWall</string>
 </resources>
