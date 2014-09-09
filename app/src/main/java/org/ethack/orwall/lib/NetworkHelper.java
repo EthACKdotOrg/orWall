@@ -36,8 +36,7 @@ public class NetworkHelper {
         String netmask = Short.toString(address.getNetworkPrefixLength());
 
         String st[] = ipv4.split("\\.");
-        String subnet = st[0] + "." + st[1] + "." + st[2] + ".0/" + netmask;
-        return subnet;
+        return st[0] + "." + st[1] + "." + st[2] + ".0/" + netmask;
     }
 
     public final NetworkInterface getWlan() {
