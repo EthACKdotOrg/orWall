@@ -1,5 +1,8 @@
 package org.ethack.orwall.lib;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.net.InterfaceAddress;
@@ -13,6 +16,10 @@ import java.util.List;
 public class NetworkHelper {
 
     private NetworkInterface wlan = null;
+    public static int TYPE_WIFI = 1;
+    public static int TYPE_MOBILE = 2;
+    public static int TYPE_TETHER = 3;
+    public static int TYPE_NOT_CONNECTED = 0;
 
     public NetworkHelper() {
         try {
@@ -35,5 +42,23 @@ public class NetworkHelper {
 
     public final NetworkInterface getWlan() {
         return this.wlan;
+    }
+
+    public static int getConnectivityStatus(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null) {
+            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                return TYPE_WIFI;
+            }
+            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                return TYPE_MOBILE;
+            }
+            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE_DUN) {
+                return TYPE_TETHER;
+            }
+        }
+        return TYPE_NOT_CONNECTED;
     }
 }
