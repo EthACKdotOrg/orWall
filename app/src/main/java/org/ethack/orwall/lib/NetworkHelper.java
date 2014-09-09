@@ -25,7 +25,7 @@ public class NetworkHelper {
         try {
             this.wlan = NetworkInterface.getByName("wlan0");
         } catch (SocketException e) {
-            Log.e("enableTethering", e.toString());
+            Log.e("NetworkHelper", e.toString());
         }
     }
 
