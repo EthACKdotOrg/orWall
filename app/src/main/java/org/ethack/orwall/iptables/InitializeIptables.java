@@ -19,6 +19,7 @@ import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -374,32 +375,47 @@ public class InitializeIptables {
         if (nwHelper.getWlan() != null) {
             String subnet = nwHelper.getSubnet();
 
-            char action = (status ? 'I' : 'D');
+            char action = (status ? 'A' : 'D');
 
-            String rules[] = {
+            ArrayList<String> rules = new ArrayList<String>();
+
+            rules.add(
                     String.format(
-                            "-%c INPUT -i wlan0 -j ACCEPT%s",
-                            action, (this.supportComment ? "-m comment --comment \"Allow incoming from wlan0\"" : "")
-                    ),
+                            "-%c INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
+                            action, (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
+                    )
+            );
+            rules.add(
                     String.format(
-                            "-%c OUTPUT -o wlan0 -s %s -j ACCEPT%s",
-                            action, subnet, (this.supportComment ? "-m comment --comment \"Allow outgoing to wlan0\"" : "")
-                    ),
-                    String.format(
-                            "-t nat -%c OUTPUT -o wlan0 -j RETURN%s",
-                            action, (this.supportComment ? "-m comment --comment \"Connections to wlan0 bypass NAT\"" : "")
-                    ),
-                    String.format(
-                            "-t nat -%c OUTPUT ! -o lo -s %s -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -j REDIRECT --to-ports %s%s",
-                            action, subnet, this.trans_proxy, (this.supportComment ? " -m comment --comment \"Force Tether through TransPort\"" : "")
-                    ),
-            };
+                            "-%c OUTPUT -o wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j accounting_OUT%s",
+                            action, (this.supportComment ? " -m comment --comment \"Allow outgoing to wlan0\"" : "")
+                    )
+            );
+
+            rules.add(
+                    String.format("-%c OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
+                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver bis\"":"")
+                    )
+            );
+
+
             for (String rule : rules) {
-                iptRules.genericRule(rule);
+                if (!iptRules.genericRule(rule)) {
+                    Log.e("Tethering", "Unable to apply rule");
+                    Log.e("Tethering", rule);
+                }
             }
         } else {
             Log.e("Tethering", "Unable to get Wifi state");
         }
+    }
+
+    public boolean isTetherEnabled() {
+        String rule = String.format(
+                "-C INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
+                (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
+        );
+        return iptRules.genericRule(rule);
     }
 
     public void allowPolipo(boolean status) {
