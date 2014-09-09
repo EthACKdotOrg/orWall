@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
                 bgpProcess.putExtra(Constants.PARAM_TETHER_STATUS, enabled);
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_TETHER);
                 this.startService(bgpProcess);
-                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENAVLED, enabled).commit();
+                getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, enabled).commit();
 
                 return true;
             case R.id.authorize_browser:
@@ -227,7 +227,7 @@ public class MainActivity extends Activity {
         final boolean browser_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false);
 
         final boolean tethering_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
-        final boolean is_tether_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENAVLED, false);
+        final boolean is_tether_enabled = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
 
         if (sip_app != null && !sip_app.equals("0")) {
             MenuItem item = menu.getItem(3);

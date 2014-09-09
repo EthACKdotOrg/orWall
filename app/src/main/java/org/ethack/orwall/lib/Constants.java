@@ -10,7 +10,7 @@ public class Constants {
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
     public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
-    public final static String PREF_KEY_IS_TETHER_ENAVLED = "is_tether_enabled";
+    public final static String PREF_KEY_IS_TETHER_ENABLED = "is_tether_enabled";
     public final static String PREF_KEY_TETHER_BYPASS = "tethering_bypass_orbot";
     public final static String PREF_TRANS_PORT = "proxy_transport";
     public final static String PREF_DNS_PORT = "proxy_dns";
