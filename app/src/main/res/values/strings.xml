@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">orWall</string>
-
     <string name="main_no_root">Seems you do not have root access on this device</string>
     <string name="main_dismiss">Dismiss</string>
     <string name="main_no_orbot">You must have Orbot installed!</string>

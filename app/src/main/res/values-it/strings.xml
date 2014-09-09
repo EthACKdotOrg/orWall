@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name">orWall</string>
 <string name="main_no_root">A quanto pare non avete accesso ai permessi di root su questo dispositivo.</string>
 <string name="main_dismiss">Rifiutare</string>
 <string name="main_no_orbot">Questa applicazione non può funzionare senza Orbot!</string>
