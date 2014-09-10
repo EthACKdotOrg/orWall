@@ -60,8 +60,8 @@ Raccomandiamo caldamente di non attivare questa opzione, a meno che non sappiate
 <string name="portal_browser">Browser per la connessione al captive portal</string>
 <string name="select_browser">Scegliere il browser</string>
 <string name="summary_select_browser">Questo browser sarà autorizzato, su domanda, à oltrepassare Tor per connettersi al captive portal. È possibile attivare quest bypass temporaneo direttamente dal Menu</string>
-<string name="sip_application">Scegliere l'applicazione SIP</string>
-<string name="summary_sip_application">L\'applicazione scelta otterrà l'autorizzazione di veicolare il proprio traffico udp al di fuori di Tor.</string>
+<string name="sip_application">Scegliere l\'applicazione SIP</string>
+<string name="summary_sip_application">L\'applicazione scelta otterrà l\'autorizzazione di veicolare il proprio traffico udp al di fuori di Tor.</string>
 <string name="set_ports">Modificare le porte del proxy</string>
 <string name="summary_set_ports">Modificare le porte del proxy d\'Orbot se avete cambiato la configurazione.</string>
 <string name="proxy_socks">Porta proxy SOCKS (Impostazione predefinita: 9050)</string>
