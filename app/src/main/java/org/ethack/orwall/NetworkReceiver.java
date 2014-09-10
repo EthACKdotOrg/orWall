@@ -11,28 +11,36 @@ import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NetworkHelper;
 
 public class NetworkReceiver extends BroadcastReceiver {
+    private static String TAG = "NetworkReceiver";
     public NetworkReceiver() {
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        boolean support_tethering = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
+        boolean support_tethering = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
+
+        Log.d(TAG, "Got a Network Change event");
 
         if (support_tethering) {
+            Log.d(TAG, "Tethering support is enabled");
             int status = NetworkHelper.getConnectivityStatus(context);
 
             InitializeIptables initializeIptables = new InitializeIptables(context);
             if (status == NetworkHelper.TYPE_TETHER) {
+                Log.d(TAG, "Enable Tethering");
                 Toast.makeText(context, R.string.tether_activated_in_orwall, Toast.LENGTH_LONG).show();
                 initializeIptables.enableTethering(true);
             } else {
                 if (initializeIptables.isTetherEnabled()) {
+                    Log.d(TAG, "Disable Tethering");
                     Toast.makeText(context, R.string.tether_deactivated_in_orwall, Toast.LENGTH_LONG).show();
                     initializeIptables.enableTethering(false);
                 } else {
-                    Log.d("NetworkReceiver", "Nothing to do");
+                    Log.d(TAG, "Nothing to do");
                 }
             }
+        } else {
+            Log.d(TAG, "Tethering support is disabled");
         }
     }
 }
