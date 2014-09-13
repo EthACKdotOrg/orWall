@@ -67,7 +67,7 @@
             android:label="none"
             android:theme="@style/Theme.Transparent" />
 
-        <!--<receiver
+        <receiver
             android:name=".NetworkReceiver"
             android:enabled="true"
             android:exported="true" >
@@ -75,7 +75,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
     </application>
 
 </manifest>
