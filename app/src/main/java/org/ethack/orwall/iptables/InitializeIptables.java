@@ -397,13 +397,6 @@ public class InitializeIptables {
                     )
             );
 
-            rules.add(
-                    String.format("-t nat -%c natctrl_nat_POSTROUTING -p udp --dport 53 -j RETURN %s",
-                            nat_action, (this.supportComment ? " -m comment --comment \"Mark packets\"":"")
-                    )
-            );
-
-
             for (String rule : rules) {
                 if (!iptRules.genericRule(rule)) {
                     Log.e("Tethering", "Unable to apply rule");
