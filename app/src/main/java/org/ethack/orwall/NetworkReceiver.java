@@ -23,10 +23,9 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         if (support_tethering) {
             Log.d(TAG, "Tethering support is enabled");
-            int status = NetworkHelper.getConnectivityStatus(context);
 
             InitializeIptables initializeIptables = new InitializeIptables(context);
-            if (status == NetworkHelper.TYPE_TETHER) {
+            if (NetworkHelper.isTether(context)) {
                 Log.d(TAG, "Enable Tethering");
                 Toast.makeText(context, R.string.tether_activated_in_orwall, Toast.LENGTH_LONG).show();
                 initializeIptables.enableTethering(true);
