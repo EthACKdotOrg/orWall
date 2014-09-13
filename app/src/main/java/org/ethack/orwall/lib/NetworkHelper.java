@@ -2,9 +2,6 @@ package org.ethack.orwall.lib;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.DhcpInfo;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
@@ -12,13 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * Created by cedric on 8/21/14.
@@ -28,6 +20,27 @@ public class NetworkHelper {
     private static String TAG = "NetworkHelper";
 
     public NetworkHelper() {
+    }
+
+    public static boolean isTether(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        Method[] methods = connectivityManager.getClass().getDeclaredMethods();
+        String[] tethered = {};
+        for (Method method : methods) {
+            if (method.getName().equals("getTetheredIfaces")) {
+                try {
+                    tethered = (String[]) method.invoke(connectivityManager);
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, e.getMessage());
+                } catch (IllegalAccessException e) {
+                    Log.e(TAG, e.getMessage());
+                } catch (InvocationTargetException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+        }
+        return (tethered.length != 0);
     }
 
     public String getIp(Context context) {
@@ -47,35 +60,13 @@ public class NetworkHelper {
             Log.e(TAG, "Unable to get host address.");
             ipAddressString = null;
         }
-        Log.d(TAG, "IPaddress: " +ipAddressString);
+        Log.d(TAG, "IPaddress: " + ipAddressString);
         return ipAddressString;
     }
-
 
     public String getSubnet(Context context) {
         String ipAddress = getIp(context);
         String[] st = ipAddress.split("\\.");
         return st[0] + "." + st[1] + "." + st[2] + ".1/24";
-    }
-
-    public static boolean isTether(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        Method[] methods = connectivityManager.getClass().getDeclaredMethods();
-        String[] tethered = {};
-        for (Method method: methods) {
-            if (method.getName().equals("getTetheredIfaces")) {
-                try {
-                    tethered = (String[])method.invoke(connectivityManager);
-                } catch (IllegalArgumentException e) {
-                    Log.e(TAG, e.getMessage());
-                } catch (IllegalAccessException e) {
-                    Log.e(TAG, e.getMessage());
-                } catch (InvocationTargetException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        }
-        return (tethered.length != 0);
     }
 }

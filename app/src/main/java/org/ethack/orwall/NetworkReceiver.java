@@ -12,6 +12,7 @@ import org.ethack.orwall.lib.NetworkHelper;
 
 public class NetworkReceiver extends BroadcastReceiver {
     private static String TAG = "NetworkReceiver";
+
     public NetworkReceiver() {
     }
 

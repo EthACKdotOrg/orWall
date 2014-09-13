@@ -393,7 +393,7 @@ public class InitializeIptables {
 
             rules.add(
                     String.format("-%c OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"":"")
+                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"" : "")
                     )
             );
 
