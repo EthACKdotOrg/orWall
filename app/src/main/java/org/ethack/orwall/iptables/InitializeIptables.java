@@ -370,12 +370,11 @@ public class InitializeIptables {
 
     public void enableTethering(boolean status) {
 
-        NetworkHelper nwHelper = new NetworkHelper();
+        char action = (status ? 'A' : 'D');
+        char nat_action = (status ? 'I' : 'D');
 
-        if (nwHelper.getWlan() != null) {
-            String subnet = nwHelper.getSubnet();
-
-            char action = (status ? 'A' : 'D');
+        if (!isTetherEnabled() || !status) {
+            //String subnet = nwHelper.getSubnet();
 
             ArrayList<String> rules = new ArrayList<String>();
 
@@ -394,7 +393,13 @@ public class InitializeIptables {
 
             rules.add(
                     String.format("-%c OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver bis\"":"")
+                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"":"")
+                    )
+            );
+
+            rules.add(
+                    String.format("-t nat -%c natctrl_nat_POSTROUTING -p udp --dport 53 -j RETURN %s",
+                            nat_action, (this.supportComment ? " -m comment --comment \"Mark packets\"":"")
                     )
             );
 
@@ -405,17 +410,14 @@ public class InitializeIptables {
                     Log.e("Tethering", rule);
                 }
             }
+            this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, status);
         } else {
-            Log.e("Tethering", "Unable to get Wifi state");
+            Log.d("Tethering", "Already enabled");
         }
     }
 
     public boolean isTetherEnabled() {
-        String rule = String.format(
-                "-C INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
-                (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
-        );
-        return iptRules.genericRule(rule);
+        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
     }
 
     public void allowPolipo(boolean status) {
