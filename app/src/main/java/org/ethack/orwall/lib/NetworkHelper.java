@@ -22,10 +22,6 @@ public class NetworkHelper {
 
     private NetworkInterface wlan = null;
     private static String TAG = "NetworkHelper";
-    public static int TYPE_WIFI = 1;
-    public static int TYPE_MOBILE = 2;
-    public static int TYPE_TETHER = 3;
-    public static int TYPE_OTHER = 0;
 
     public NetworkHelper() {
         try {
@@ -49,9 +45,8 @@ public class NetworkHelper {
         return this.wlan;
     }
 
-    public static int getConnectivityStatus(Context context) {
+    public static boolean isTether(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         Method[] methods = connectivityManager.getClass().getDeclaredMethods();
         String[] tethered = {};
@@ -68,21 +63,6 @@ public class NetworkHelper {
                 }
             }
         }
-
-        if (networkInfo != null) {
-            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                return TYPE_WIFI;
-            }
-            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-                if (tethered.length == 1) {
-                    return TYPE_TETHER;
-                }
-                return TYPE_MOBILE;
-            }
-            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE_DUN) {
-                return TYPE_TETHER;
-            }
-        }
-        return TYPE_OTHER;
+        return (tethered.length != 0);
     }
 }
