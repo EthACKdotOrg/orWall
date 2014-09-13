@@ -10,9 +10,14 @@ import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -20,29 +25,37 @@ import java.util.List;
  */
 public class NetworkHelper {
 
-    private NetworkInterface wlan = null;
     private static String TAG = "NetworkHelper";
 
     public NetworkHelper() {
-        try {
-            this.wlan = NetworkInterface.getByName("wlan0");
-        } catch (SocketException e) {
-            Log.e(TAG, e.toString());
+    }
+
+    public String getIp(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+
+        if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+            ipAddress = Integer.reverseBytes(ipAddress);
         }
+
+        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+        String ipAddressString;
+        try {
+            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+        } catch (UnknownHostException ex) {
+            Log.e(TAG, "Unable to get host address.");
+            ipAddressString = null;
+        }
+        Log.d(TAG, "IPaddress: " +ipAddressString);
+        return ipAddressString;
     }
 
-    public String getSubnet() {
-        List<InterfaceAddress> addresses = this.wlan.getInterfaceAddresses();
-        InterfaceAddress address = (InterfaceAddress) addresses.toArray()[1];
-        String ipv4 = address.getAddress().getHostAddress();
-        String netmask = Short.toString(address.getNetworkPrefixLength());
 
-        String st[] = ipv4.split("\\.");
-        return st[0] + "." + st[1] + "." + st[2] + ".0/" + netmask;
-    }
-
-    public final NetworkInterface getWlan() {
-        return this.wlan;
+    public String getSubnet(Context context) {
+        String ipAddress = getIp(context);
+        String[] st = ipAddress.split("\\.");
+        return st[0] + "." + st[1] + "." + st[2] + ".1/24";
     }
 
     public static boolean isTether(Context context) {
