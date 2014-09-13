@@ -127,7 +127,7 @@ public class InitializeIptables {
 
     public void LANPolicy(final boolean allow) {
         NetworkHelper nwHelper = new NetworkHelper();
-        String subnet = nwHelper.getSubnet();
+        String subnet = nwHelper.getSubnet(this.context);
 
         if (allow) {
             if (iptRules.genericRule("-N LAN")) {
