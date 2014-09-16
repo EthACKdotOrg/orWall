@@ -94,6 +94,6 @@ Sfortunatamente, a quanto pare il vostro dispositivo Android sembra non supporta
 In questo caso non possiamo farci niente :(.
 </string>
 
-    <string name="tether_activated_in_orwall">TODO: Tethering activated in orWall</string>
-    <string name="tether_deactivated_in_orwall">TODO: Tethering deactivated in orWall</string>
+    <string name="tether_activated_in_orwall">Funzionalità di Tethering abilitata in orWall</string>
+    <string name="tether_deactivated_in_orwall">Funzionalità di Tethering disabilitata in orWall</string>
 </resources>
