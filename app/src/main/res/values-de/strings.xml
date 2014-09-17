@@ -107,7 +107,7 @@
         Leider können wir dagegen nichts unterbehmen :(.
     </string>
 
-    <string name="tether_activated_in_orwall">TODO: Tethering activated in orWall</string>
-    <string name="tether_deactivated_in_orwall">TODO: Tethering deactivated in orWall</string>
+    <string name="tether_activated_in_orwall">Tethering in OrWall ist aktiv</string>
+    <string name="tether_deactivated_in_orwall">Thethering in OrWall ist deaktiviert</string>
 </resources>
 
