@@ -44,6 +44,8 @@
     </string>
     <string name="enable_adb">Permettre Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Ouvrir le port TCP 5555 en bi-directionnel afin de pouvoir connecter votre appareil sur le réseau.</string>
+    <string name="enable_ssh">Permettre les connexions SSH entrantes</string>
+    <string name="summary_enable_ssh">Permet les connexions entrantes TCP:22 pour vous connecter en SSH sur votre appareil.</string>
     <string name="tethering">Partage de connexion</string>
     <string name="enable_tethering">Activer le partage de connexion réseau (Tethering)</string>
     <string name="disable_tethering">Désactiver le partage de connexion réseau (Tethering)</string>

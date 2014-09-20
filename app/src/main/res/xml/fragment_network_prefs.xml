@@ -13,6 +13,11 @@
             android:key="enable_adb"
             android:summary="@string/summary_enable_adb"
             android:title="@string/enable_adb" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_ssh"
+            android:summary="@string/summary_enable_ssh"
+            android:title="@string/enable_ssh" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/tethering">
         <CheckBoxPreference
