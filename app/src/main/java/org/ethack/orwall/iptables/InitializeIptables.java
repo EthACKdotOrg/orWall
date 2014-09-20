@@ -94,6 +94,11 @@ public class InitializeIptables {
             enableADB(authorized);
         }
 
+        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SSH_ENABLED, false);
+        if (authorized) {
+            enableSSH(authorized);
+        }
+
         authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
         if (authorized) {
             allowPolipo(authorized);
@@ -146,9 +151,10 @@ public class InitializeIptables {
     public void enableADB(final boolean allow) {
         char action = (allow ? 'I' : 'D');
 
+        // TODO: lock in order to authorize only LAN
         String[] rules = {
-                "-%c INPUT -p tcp --dport 5555 -j ACCEPT",
-                "-%c OUTPUT -p tcp --sport 5555 -j ACCEPT",
+                "-%c INPUT -p tcp --dport 5555 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c OUTPUT -p tcp --sport 5555 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
                 "-t nat -%c OUTPUT -p tcp --sport 5555 -j RETURN",
         };
 
@@ -156,6 +162,26 @@ public class InitializeIptables {
             if (!iptRules.genericRule(String.format(rule, action))) {
                 Log.e("enableADB", "Unable to add rule");
                 Log.e("enableADB", String.format(rule, action));
+            }
+        }
+    }
+
+    public void enableSSH(final boolean allow) {
+        char action = (allow ? 'I' : 'D');
+
+        // TODO: lock in order to authorize only LAN
+        // TODO: better way to implement this kind of opening (copy-paste isn't a great way)
+        // Have to think a bit more about that.
+        String[] rules = {
+                "-%c INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c OUTPUT -p tcp --sport 22 -j RETURN",
+        };
+
+        for (String rule : rules) {
+            if (!iptRules.genericRule(String.format(rule, action))) {
+                Log.e("enableSSH", "Unable to add rule");
+                Log.e("enableSSH", String.format(rule, action));
             }
         }
     }
