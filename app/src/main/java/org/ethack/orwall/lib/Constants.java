@@ -16,6 +16,7 @@ public class Constants {
     public final static String PREF_DNS_PORT = "proxy_dns";
     public final static String PREF_SOCKS = "proxy_socks";
     public final static String PREF_KEY_ADB_ENABLED = "enable_adb";
+    public final static String PREF_KEY_SSH_ENABLED = "enable_ssh";
     public final static String PREF_KEY_ENFOCE_INIT = "enforce_init_script";
     public final static String PREF_KEY_DISABLE_INIT = "deactivate_init_script";
     public final static String PREF_POLIPO_PORT = "proxy_polipo";
