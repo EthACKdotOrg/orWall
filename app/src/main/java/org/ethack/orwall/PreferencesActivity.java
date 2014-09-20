@@ -117,8 +117,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
                 }
 
-                if (s.equals("enable_adb")) {
+                if (s.equals(Constants.PREF_KEY_ADB_ENABLED)) {
                     iptables.enableADB(sharedPreferences.getBoolean(s, false));
+                }
+
+                if (s.equals(Constants.PREF_KEY_SSH_ENABLED)) {
+                    iptables.enableSSH(sharedPreferences.getBoolean(s, false));
                 }
 
                 if (s.equals("enable_polipo")) {
