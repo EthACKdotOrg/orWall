@@ -14,15 +14,20 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
 
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
     <application
         android:allowBackup="true"
         android:icon="@drawable/v2"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <!--<activity
+            android:name="org.ethack.orwall.MainActivity"
+            android:label="@string/app_name" >
+        </activity>-->
+
         <activity
-            android:name=".MainActivity"
+            android:name="org.ethack.orwall.TabbedMain"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +37,7 @@
         </activity>
 
         <receiver
-            android:name=".BootBroadcast"
+            android:name="org.ethack.orwall.BootBroadcast"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -42,7 +47,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".UninstallBroadcast"
+            android:name="org.ethack.orwall.UninstallBroadcast"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -54,21 +59,21 @@
         </receiver>
 
         <activity
-            android:name=".PreferencesActivity"
+            android:name="org.ethack.orwall.PreferencesActivity"
             android:hardwareAccelerated="true"
             android:label="@string/title_activity_preferences" />
 
         <service
-            android:name=".BackgroundProcess"
+            android:name="org.ethack.orwall.BackgroundProcess"
             android:exported="false" />
 
         <activity
-            android:name=".DialogActivity"
+            android:name="org.ethack.orwall.DialogActivity"
             android:label="none"
             android:theme="@style/Theme.Transparent" />
 
         <receiver
-            android:name=".NetworkReceiver"
+            android:name="org.ethack.orwall.NetworkReceiver"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
