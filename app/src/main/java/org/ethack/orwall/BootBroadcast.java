@@ -21,24 +21,8 @@ public class BootBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
 
-        boolean supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
-
         InitializeIptables initializeIptables = new InitializeIptables(context);
         initializeIptables.supportComments();
         initializeIptables.boot();
-
-        IptRules iptRules = new IptRules(supportComment);
-
-        NatRules natRules = new NatRules(context);
-        Log.d("BootBroadcast: ", "Get NAT rules...");
-        ArrayList<AppRule> rules = natRules.getAllRules();
-        Log.d("BootBroadcast: ", "Length received: " + String.valueOf(rules.size()));
-
-        for (AppRule rule : rules) {
-            long uid = rule.getAppUID();
-            String name = rule.getAppName();
-            // TODO: take care of other rule content (port, proxytype and so on)
-            iptRules.natApp(context, uid, 'A', name);
-        }
     }
 }
