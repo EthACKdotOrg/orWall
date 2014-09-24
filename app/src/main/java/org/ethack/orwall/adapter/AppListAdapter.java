@@ -133,7 +133,7 @@ public class AppListAdapter extends ArrayAdapter {
                     holder.checkBox.setText(label);
                 } else {
                     Log.d(TAG, "Treating as ENABLED: "+label);
-                    holder.checkBox.setText(label + " (" + appRule.getOnionType() + ")");
+                    holder.checkBox.setText(label + " (via " + appRule.getOnionType() + ")");
                     holder.checkBox.setChecked(true);
                 }
 
