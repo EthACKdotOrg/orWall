@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.adapter.AppListAdapter;
@@ -32,7 +33,6 @@ public class AppFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
 
         ListView enabledListView = (ListView)view.findViewById(R.id.id_enabled_apps);
@@ -42,9 +42,6 @@ public class AppFragment extends Fragment {
         List<AppRule> enabledApps = natRules.getAllRules();
         List<AppRule> disabledApps = listDisabledApps();
 
-        Log.d(TAG, "Enabled size: " + String.valueOf(enabledApps.size()));
-        Log.d(TAG, "Disabled size: " + String.valueOf(disabledApps.size()));
-
         if (natRules.getRuleCount() > 0) {
             enabledListView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
         }
@@ -52,6 +49,10 @@ public class AppFragment extends Fragment {
         return view;
     }
 
+    /**
+     * List all disabled application. Meaning: installed app requiring Internet, but NOT in NatRules.
+     * @return List of AppRule
+     */
     private List<AppRule> listDisabledApps() {
         NatRules natRules = new NatRules(this.getActivity());
 
@@ -75,7 +76,7 @@ public class AppFragment extends Fragment {
     /**
      * Checks if package is System or not.
      *
-     * @param pkgInfo
+     * @param pkgInfo PackageInfo object
      * @return true if package is a system app
      */
     private boolean isSystemPackage(PackageInfo pkgInfo) {
@@ -85,8 +86,8 @@ public class AppFragment extends Fragment {
     /**
      * Checks if application requires Internet
      *
-     * @param pkg
-     * @return
+     * @param pkg PackageInfo object
+     * @return true if package requires internet
      */
     private boolean needInternet(PackageInfo pkg) {
         String[] permissions = (pkg.requestedPermissions);
@@ -103,10 +104,13 @@ public class AppFragment extends Fragment {
     /**
      * Check if app name is a reserved one, like orbot or i2p
      *
-     * @param pkg
-     * @return
+     * @param pkg PackageInfo object
+     * @return true if package name matches one of the reserved names
      */
     private boolean isReservedApp(PackageInfo pkg) {
-        return (pkg.packageName.equals(Constants.ORBOT_APP_NAME) || pkg.packageName.equals(Constants.I2P_APP_NAME));
+        return (
+                pkg.packageName.equals(Constants.ORBOT_APP_NAME) ||
+                pkg.packageName.equals(Constants.I2P_APP_NAME)
+        );
     }
 }

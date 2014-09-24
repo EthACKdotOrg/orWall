@@ -1,6 +1,7 @@
 package org.ethack.orwall.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,13 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
+import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.AppRule;
+import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -51,6 +55,8 @@ public class AppListAdapter extends ArrayAdapter {
     private final static String TAG = "AppListAdapter";
     private final Context context;
     private final Object[] apps;
+    private final PackageManager packageManager;
+    private final NatRules natRules;
 
     /**
      * Constructor.
@@ -59,11 +65,11 @@ public class AppListAdapter extends ArrayAdapter {
      * @param pkgs - list of all installed packages
      */
     public AppListAdapter(Context context, List<AppRule> pkgs) {
-        super(context, R.layout.rowlayout, context.getPackageManager().getInstalledApplications(PackageManager.GET_PERMISSIONS));
+        super(context, R.layout.rowlayout, pkgs);
         this.context = context;
         this.apps = pkgs.toArray();
-
-        Log.d(TAG, "Pkgs: "+ this.apps.length);
+        this.packageManager = context.getPackageManager();
+        this.natRules = new NatRules(context);
     }
 
     /**
@@ -76,7 +82,6 @@ public class AppListAdapter extends ArrayAdapter {
      */
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         ViewHolder holder;
@@ -84,7 +89,7 @@ public class AppListAdapter extends ArrayAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.app_row, parent, false);
             holder = new ViewHolder();
-            holder.textView = (TextView) convertView.findViewById(R.id.id_application);
+            holder.checkBox = (CheckBox) convertView.findViewById(R.id.id_application);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -113,20 +118,73 @@ public class AppListAdapter extends ArrayAdapter {
                 Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
                 appIcon.setBounds(0, 0, 40, 40);
 
-                holder.textView.setCompoundDrawables(appIcon, null, null, null);
+                holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
+                holder.checkBox.setTag(R.id.id_appTag, appRule.getAppName());
+                holder.checkBox.setTextColor(Color.BLACK);
+                holder.checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        toggleApp(view);
+                    }
+                });
+                CharSequence label = packageManager.getApplicationLabel(applicationInfo);
+
                 if (appRule.getOnionType().equals("None")) {
-                    holder.textView.setText(packageManager.getApplicationLabel(applicationInfo));
-                    holder.textView.setTextColor(Color.GRAY);
+                    holder.checkBox.setText(label);
                 } else {
-                    holder.textView.setTextColor(Color.WHITE);
-                    holder.textView.setText(appRule.getAppName() + "(" + appRule.getOnionType() + ")");
+                    Log.d(TAG, "Treating as ENABLED: "+label);
+                    holder.checkBox.setText(label + " (" + appRule.getOnionType() + ")");
+                    holder.checkBox.setChecked(true);
                 }
+
             }
         }
         return convertView;
     }
 
+    /**
+     * Simple holder — allows a faster view
+     */
     static class ViewHolder {
-        private TextView textView;
+        private CheckBox checkBox;
+    }
+
+    /**
+     * Function called when we touch an app in the "app" tab
+     * @param view - View object transmitted via onClick argument in app_row.xml
+     */
+    public void toggleApp(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+        String appName = view.getTag(R.id.id_appTag).toString();
+
+        PackageInfo apk;
+        try {
+            apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            android.util.Log.e(TAG, "Application " + appName + " not found");
+            apk = null;
+        }
+        if (apk != null) {
+
+            long appUID = apk.applicationInfo.uid;
+
+            Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+            bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
+            bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
+            if (checked) {
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+                this.natRules.addAppToRules(
+                        appUID, appName,
+                        Constants.DB_ONION_TYPE_TOR,
+                        Constants.ORBOT_TRANSPROXY,
+                        Constants.DB_PORT_TYPE_TRANS
+                );
+            } else {
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+                this.natRules.removeAppFromRules(appUID);
+            }
+            context.startService(bgpProcess);
+            view.invalidate();
+        }
     }
 }
