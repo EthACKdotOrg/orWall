@@ -4,6 +4,11 @@
     android:padding="10dp"
     android:orientation="vertical"
     android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp">
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -12,6 +17,17 @@
         android:textStyle="bold"
         android:text="@string/enabled"
         />
+    <ListView
+        android:id="@+id/id_enabled_apps"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp">
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -20,4 +36,9 @@
         android:textStyle="bold"
         android:text="@string/disabled"
         />
+    <ListView
+        android:id="@+id/id_disabled_apps"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
 </LinearLayout>
