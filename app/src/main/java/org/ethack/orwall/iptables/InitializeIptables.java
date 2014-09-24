@@ -11,8 +11,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.R;
+import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.NetworkHelper;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
@@ -61,10 +63,10 @@ public class InitializeIptables {
         PackageManager packageManager = context.getPackageManager();
 
         try {
-            app_uid = Long.valueOf(packageManager.getApplicationInfo("org.torproject.android", 0).uid);
+            app_uid = (long)packageManager.getApplicationInfo("org.torproject.android", 0).uid;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
-            app_uid = new Long(0); // prevents stupid compiler error… never used.
+            app_uid = (long)0; // prevents stupid compiler error… never used.
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
@@ -104,6 +106,59 @@ public class InitializeIptables {
             allowPolipo(authorized);
         }
         Log.d("Boot: ", "Finished initialization");
+
+        Log.d("Boot: ", "Preparing NAT stuff");
+        NatRules natRules = new NatRules(context);
+        Log.d("Boot: ", "Get NAT rules...");
+        ArrayList<AppRule> rules = natRules.getAllRules();
+        Log.d("Boot: ", "Length received: " + String.valueOf(rules.size()));
+
+        for (AppRule rule : rules) {
+            long uid = rule.getAppUID();
+            String name = rule.getAppName();
+            // TODO: take care of other rule content (port, proxytype and so on)
+            iptRules.natApp(context, uid, 'A', name);
+        }
+        Log.d("Boot: ", "Finished NAT stuff");
+    }
+
+    /**
+     * This method will deactivate the whole orWall iptables stuff.
+     * It must:
+     * - set INPUT and OUTPUT policy to ACCEPT
+     * - flush all rules we have in filter and nat tables
+     * - put back default accounting rules in INPUT and OUTPUT
+     * - remove any chain it created (though we want to keep the "witness" chain).
+     */
+    public void deactivate() {
+        String[] rules = {
+                // set OUTPUT policy back to ACCEPT
+                "-P OUTPUT ACCEPT",
+                // flush all OUTPUT rules
+                "-F OUTPUT",
+                // remove accounting_OUT chain
+                "-F accounting_OUT",
+                "-X accounting_OUT",
+                // add back default system accounting
+                "-A OUTPUT -j bw_OUTPUT",
+                // set INPUT policy back to ACCEPT
+                "-P INPUT ACCEPT",
+                // flush all INPUT rules
+                "-F INPUT",
+                // remove accounting_IN chain
+                "-F accounting_IN",
+                "-X accounting_IN",
+                // add back default system accounting
+                "-A INPUT -j bw_INPUT",
+                // flush nat OUTPUT
+                "-t nat -F OUTPUT",
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("deactivate", "Unable to remove rule");
+                Log.e("deactivate", rule);
+            }
+        }
     }
 
     public boolean iptablesExists() {
