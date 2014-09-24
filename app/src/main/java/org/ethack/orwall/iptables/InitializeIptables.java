@@ -75,7 +75,7 @@ public class InitializeIptables {
         initOutputs(app_uid);
         initInput(app_uid);
 
-        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
+        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
         if (authorized) {
             LANPolicy(true);
         }
