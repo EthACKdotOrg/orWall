@@ -31,7 +31,7 @@
         android:id="@+id/sip_status"
         android:text="@string/menu_enable_sip"
         android:textOn="@string/enabled"
-        android:textOff="@string/disabled"/>
+        android:textOff="@string/disabled" />
 
     <Switch
         android:layout_width="fill_parent"
@@ -40,10 +40,22 @@
         android:id="@+id/lan_status"
         android:text="@string/enable_lan"
         android:textOn="@string/enabled"
-        android:textOff="@string/disabled"/>
+        android:textOff="@string/disabled" />
 
-    <Button
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_action_settings"/>
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_gravity="start"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_action_settings" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/menu_action_about"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>
