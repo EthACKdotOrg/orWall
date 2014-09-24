@@ -8,11 +8,10 @@ import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.Constants;
 
 /**
- * Created by cedric on 7/31/14.
+ * Allows to run background commands in order to avoid any blocking stuff in main thread.
  */
 public class BackgroundProcess extends IntentService {
 
-    private boolean supportComment;
     private InitializeIptables initializeIptables;
     private IptRules iptRules;
 
@@ -22,9 +21,9 @@ public class BackgroundProcess extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        this.supportComment = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
+        boolean supportComment = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
         this.initializeIptables = new InitializeIptables(this);
-        this.iptRules = new IptRules(this.supportComment);
+        this.iptRules = new IptRules(supportComment);
 
         String action = workIntent.getStringExtra(Constants.ACTION);
         if (action.equals(Constants.ACTION_PORTAL)) {
@@ -41,6 +40,10 @@ public class BackgroundProcess extends IntentService {
         } else if (action.equals(Constants.ACTION_TETHER)) {
             boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
             manageTether(activate);
+        } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
+            this.initializeIptables.deactivate();
+        } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
+            this.initializeIptables.boot();
         }
     }
 
