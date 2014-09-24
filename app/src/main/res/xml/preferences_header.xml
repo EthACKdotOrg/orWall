@@ -11,7 +11,7 @@
         android:fragment="org.ethack.orwall.PreferencesActivity$NetworkPrefs"
         android:icon="@drawable/ic_action_settings"
         android:summary="@string/summary_network"
-        android:title="@string/network"></header>
+        android:title="@string/network" />
 
     <header
         android:fragment="org.ethack.orwall.PreferencesActivity$SpecialApps"
