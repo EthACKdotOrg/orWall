@@ -23,6 +23,8 @@ public class Constants {
     public final static String PREF_KEY_POLIPO_ENABLED = "enable_polipo";
     public final static String PREF_KEY_BROWSER_GRACETIME = "browser_gracetime";
     public final static String CONFIG_IPT_SUPPORTS_COMMENTS = "ipt_comments";
+    public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
+    public final static String PREF_KEY_LAN_ENABLED = "lan_enabled";
 
     public final static String IPTABLES = "/system/bin/iptables";
 
