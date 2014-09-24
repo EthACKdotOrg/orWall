@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
 
 import org.ethack.orwall.adapter.TabsPagerAdapter;
 import org.sufficientlysecure.rootcommands.util.Log;
@@ -57,10 +59,12 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        // create the tab header
         for (String tab : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab).setTabListener(this));
         }
 
+        // changer in order to take care of tab switching
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -78,24 +82,24 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
     }
 
 
+    /**
+     * No more menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // We don't need menu anymore now. "Settings" entry is on home page, as well as quick actions
         return true;
     }
 
+    /**
+     * We do not provide a menu.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 }
