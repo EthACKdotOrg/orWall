@@ -64,7 +64,6 @@ public class HomeFragment extends Fragment {
 
         } else {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getActivity());
-            //final AlertDialog dialog = alertDialog.create();
 
             alertDialog.setTitle(getString(R.string.disable_orwall_title));
             alertDialog.setMessage(getString(R.string.disable_orwall_msg));
