@@ -40,6 +40,9 @@ public class Constants {
     public final static String ACTION_TETHER = "org.ethack.orwall.backgroundProcess.action.tethering";
     public final static String PARAM_TETHER_STATUS = "org.ethack.orwall.backgroundProcess.action.tethering.status";
 
+    public final static String ACTION_DISABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.disable_orwall";
+    public final static String ACTION_ENABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.enable_orwall";
+
     public final static long ORBOT_SOCKS_PROXY = 9050;
     public final static long ORBOT_TRANSPROXY = 9040;
     public final static long ORBOT_DNS_PROXY = 5400;
