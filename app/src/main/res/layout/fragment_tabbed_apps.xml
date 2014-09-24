@@ -12,9 +12,11 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="#000000"
         android:textColor="#fade22"
-        android:textSize="20dp"
         android:textStyle="bold"
+        android:padding="5dp"
+        android:textSize="20dp"
         android:text="@string/enabled"
         />
     <ListView
@@ -31,9 +33,11 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:background="#000000"
         android:textColor="#fade22"
         android:textStyle="bold"
+        android:padding="5dp"
+        android:textSize="20dp"
         android:text="@string/disabled"
         />
     <ListView
