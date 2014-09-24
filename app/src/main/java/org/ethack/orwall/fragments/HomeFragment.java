@@ -5,17 +5,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.ethack.orwall.BackgroundProcess;
+import org.ethack.orwall.PreferencesActivity;
 import org.ethack.orwall.R;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
@@ -47,6 +52,8 @@ public class HomeFragment extends Fragment {
         Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);
         Switch sipStatus = (Switch) view.findViewById(R.id.sip_status);
         Switch lanStatus = (Switch) view.findViewById(R.id.lan_status);
+        Button settings = (Button) view.findViewById(R.id.id_settings);
+        Button about = (Button) view.findViewById(R.id.id_about);
 
         orwallStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true));
         // orWall might be deactivated. Let's test it!
@@ -98,6 +105,23 @@ public class HomeFragment extends Fragment {
                 boolean checked = ((Switch) view).isChecked();
                 initializeIptables.LANPolicy(checked);
                 sharedPreferences.edit().putBoolean(Constants.PREF_KEY_LAN_ENABLED, checked).apply();
+            }
+        });
+
+        // Shows settings
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), PreferencesActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Shows alert dialog with "about" stuff
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAbout();
             }
         });
 
@@ -178,5 +202,25 @@ public class HomeFragment extends Fragment {
             });
             alertDialog.show();
         }
+    }
+
+    public void showAbout() {
+
+        LayoutInflater li = LayoutInflater.from(getActivity());
+        View v_about = li.inflate(R.layout.about, null);
+
+        PackageManager packageManager = getActivity().getPackageManager();
+        String versionName = "UNKNOWN";
+        try {
+            versionName = packageManager.getPackageInfo(getActivity().getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("About: ", "Unable to get application version name");
+        }
+        TextView version = (TextView) v_about.findViewById(R.id.about_version);
+        version.setText(versionName);
+        new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                .setTitle(getString(R.string.menu_action_about))
+                .setView(v_about)
+                .show();
     }
 }

@@ -50,12 +50,14 @@
             android:layout_width="wrap_content"
             android:layout_gravity="start"
             android:layout_height="wrap_content"
+            android:id="@+id/id_settings"
             android:text="@string/menu_action_settings" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/menu_action_about"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:id="@+id/id_about"
+            android:text="@string/menu_action_about"/>
     </LinearLayout>
 </LinearLayout>
