@@ -112,6 +112,14 @@
     <string name="tether_deactivated_in_orwall">Tethering deactivated in orWall</string>
 
     <string name="home_enable_orwall">orWall status</string>
+    <string name="enabling_orwall">orWall is being started</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
+    <string name="disable_orwall_title">Disable orWall?</string>
+    <string name="disable_orwall_msg">You\'re going to disable orWall.\n\n
+        This means your device will allow all outgoing connections. As well, outgoing connections
+        will not be forced to any anonymous proxy anymore.\n\n
+        This may be dangerous!
+    </string>
+    <string name="alert_accept">Accept</string>
 </resources>
