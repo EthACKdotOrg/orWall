@@ -2,11 +2,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/network">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="enable_lan"
-            android:summary="@string/summary_enable_lan"
-            android:title="@string/enable_lan" />
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -20,12 +15,6 @@
             android:title="@string/enable_ssh" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/tethering">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:enabled="true"
-            android:key="enable_tethering"
-            android:summary="@string/summary_enable_tethering"
-            android:title="@string/enable_tethering" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:enabled="true"

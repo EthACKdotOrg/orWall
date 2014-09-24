@@ -113,9 +113,6 @@ public class PreferencesActivity extends PreferenceActivity {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
                 InitializeIptables iptables = new InitializeIptables(getActivity());
-                if (s.equals(Constants.PREF_KEY_LAN_ENABLED)) {
-                    iptables.LANPolicy(sharedPreferences.getBoolean(s, false));
-                }
 
                 if (s.equals(Constants.PREF_KEY_ADB_ENABLED)) {
                     iptables.enableADB(sharedPreferences.getBoolean(s, false));
