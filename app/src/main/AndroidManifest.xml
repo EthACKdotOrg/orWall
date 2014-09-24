@@ -62,11 +62,6 @@
             android:name="org.ethack.orwall.BackgroundProcess"
             android:exported="false" />
 
-        <activity
-            android:name="org.ethack.orwall.DialogActivity"
-            android:label="none"
-            android:theme="@style/Theme.Transparent" />
-
         <receiver
             android:name="org.ethack.orwall.NetworkReceiver"
             android:enabled="true"

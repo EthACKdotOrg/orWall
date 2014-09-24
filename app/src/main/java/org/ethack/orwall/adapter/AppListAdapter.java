@@ -65,7 +65,7 @@ public class AppListAdapter extends ArrayAdapter {
      * @param pkgs - list of all installed packages
      */
     public AppListAdapter(Context context, List<AppRule> pkgs) {
-        super(context, R.layout.rowlayout, pkgs);
+        super(context, R.layout.app_row, pkgs);
         this.context = context;
         this.apps = pkgs.toArray();
         this.packageManager = context.getPackageManager();
