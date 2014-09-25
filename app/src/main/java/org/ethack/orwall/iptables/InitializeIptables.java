@@ -114,10 +114,18 @@ public class InitializeIptables {
         Log.d("Boot: ", "Length received: " + String.valueOf(rules.size()));
 
         for (AppRule rule : rules) {
-            long uid = rule.getAppUID();
-            String name = rule.getAppName();
-            // TODO: take care of other rule content (port, proxytype and so on)
-            iptRules.natApp(context, uid, 'A', name);
+
+            if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                iptRules.bypass(rule.getAppUID(), rule.getAppName(), true);
+
+            } else if (rule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+                iptRules.fenced(rule.getAppUID(), rule.getAppName(), true);
+
+            } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
+                iptRules.natApp(context, rule.getAppUID(), 'A', rule.getAppName());
+            } else {
+                Log.e("Boot: ", "Don't know what to do for "+ rule.getAppName());
+            }
         }
         Log.d("Boot: ", "Finished NAT stuff");
     }
