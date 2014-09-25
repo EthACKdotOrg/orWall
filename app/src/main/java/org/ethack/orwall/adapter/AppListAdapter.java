@@ -133,6 +133,13 @@ public class AppListAdapter extends ArrayAdapter {
                         toggleApp(view);
                     }
                 });
+                holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        showAdvanced(view);
+                        return true;
+                    }
+                });
                 CharSequence label = packageManager.getApplicationLabel(applicationInfo);
 
                 if (appRule.getOnionType().equals("None")) {
@@ -141,13 +148,6 @@ public class AppListAdapter extends ArrayAdapter {
                     Log.d(TAG, "Treating as ENABLED: " + label);
                     holder.checkBox.setText(label + " (via " + appRule.getOnionType() + ")");
                     holder.checkBox.setChecked(true);
-                    holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            showAdvanced(view);
-                            return true;
-                        }
-                    });
                 }
 
             }
@@ -223,6 +223,12 @@ public class AppListAdapter extends ArrayAdapter {
             // get current application rule
             final AppRule appRule = this.natRules.getAppRule((long) applicationInfo.uid);
 
+            // is it a known app? If not, populate some information about it anyway.
+            if (appRule.getAppName() == null) {
+                appRule.setAppUID((long) applicationInfo.uid);
+                appRule.setAppName(applicationInfo.packageName);
+            }
+
             // Add Proxy providers if available
             // Is orbot installed ?
             OrbotHelper orbotHelper = new OrbotHelper(this.context);
@@ -231,7 +237,8 @@ public class AppListAdapter extends ArrayAdapter {
             if (orbotHelper.isOrbotInstalled()) {
                 radioTor.setText("Tor");
 
-                if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
+                // TODO: handle this a bit better once we get a better support for i2p
+                if (appRule.getOnionType() == null || appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
                     radioTor.setChecked(true);
                 }
 
@@ -250,7 +257,7 @@ public class AppListAdapter extends ArrayAdapter {
                 // For now we do not have support for i2p. Just teasing ;)
                 radioI2p.setEnabled(false);
 
-                if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_I2P)) {
+                if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_I2P)) {
                     radioI2p.setChecked(true);
                 }
                 ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioI2p);
@@ -259,7 +266,7 @@ public class AppListAdapter extends ArrayAdapter {
             this.radioForced = (RadioButton) l_view.findViewById(R.id.id_radio_force);
             this.radioFenced = (RadioButton) l_view.findViewById(R.id.id_radio_fenced);
             // Is it a Fenced or a Forced app?
-            if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+            if (appRule.getPortType() != null && appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
                 radioFenced.setChecked(true);
             } else {
                 radioForced.setChecked(true);
@@ -267,7 +274,7 @@ public class AppListAdapter extends ArrayAdapter {
 
             // Maybe it's a Bypass, if so, we will need to deactivate all other Radios…
             this.check_bypass = (CheckBox) l_view.findViewById(R.id.id_checkbox_bypass);
-            if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+            if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
                 toggleAdvancedPrefs(true);
             }
 
@@ -350,26 +357,36 @@ public class AppListAdapter extends ArrayAdapter {
             updated.setPortType(Constants.DB_PORT_TYPE_TRANS);
         }
 
-        // If and ONLY IF the DB update is OK, we will push the new rules
-        if (natRules.update(updated)) {
+        // By the way, is it a new object? If so, we're wanting to create it instead of update it!
+        boolean db_status;
+        if (appRule.getOnionType() == null) {
+            db_status = natRules.addAppToRules(updated);
+        } else {
+            db_status = natRules.update(updated);
+        }
+
+        // If and ONLY IF the DB update/creation is OK, we will push the new rules
+        if (db_status) {
 
             // We want to use a background process in order to free the main thread and associated
             Intent bgCleanup = new Intent(this.context, BackgroundProcess.class);
             bgCleanup.putExtra(Constants.PARAM_APPUID, appRule.getAppUID());
             bgCleanup.putExtra(Constants.PARAM_APPNAME, appRule.getAppName());
 
-            // first: clean existing rules
-            IptRules iptRules = new IptRules(this.sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
-            if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
+            // first: clean existing rules IF app already exists
+            if (appRule.getOnionType() != null) {
+                IptRules iptRules = new IptRules(this.sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
+                if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
 
-            } else if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
+                } else if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
 
-            } else {
-                bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+                } else {
+                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+                }
+                this.context.startService(bgCleanup);
             }
-            this.context.startService(bgCleanup);
 
             // Now we can add the new rules
             Intent bgNewRules = new Intent(this.context, BackgroundProcess.class);
