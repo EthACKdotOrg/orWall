@@ -44,6 +44,14 @@ public class BackgroundProcess extends IntentService {
             this.initializeIptables.deactivate();
         } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
             this.initializeIptables.boot();
+        } else if (action.equals(Constants.ACTION_RM_BYPASS)) {
+            // TODO: call for dedicated method
+        } else if (action.equals(Constants.ACTION_RM_FENCED)) {
+            // TODO: call for dedicated method
+        } else if (action.equals(Constants.ACTION_ADD_BYPASS)) {
+            // TODO: call for dedicated method
+        } else if (action.equals(Constants.ACTION_ADD_FENCED)) {
+            // TODO: call for dedicated method
         }
     }
 
