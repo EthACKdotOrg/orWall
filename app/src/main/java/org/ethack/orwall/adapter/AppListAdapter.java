@@ -56,6 +56,11 @@ public class AppListAdapter extends ArrayAdapter {
     private final Object[] apps;
     private final PackageManager packageManager;
     private final NatRules natRules;
+    private RadioButton radioTor;
+    private RadioButton radioForced;
+    private RadioButton radioFenced;
+    private RadioButton radioI2p;
+    private CheckBox check_bypass;
 
     /**
      * Constructor.
@@ -202,29 +207,30 @@ public class AppListAdapter extends ArrayAdapter {
 
         // Get application information
         String appName = view.getTag(R.id.id_appTag).toString();
-        PackageInfo packageInfo = null;
+        ApplicationInfo applicationInfo = null;
         try {
-            packageInfo = this.packageManager.getPackageInfo(appName, PackageManager.GET_PERMISSIONS);
+            applicationInfo = this.packageManager.getApplicationInfo(appName, PackageManager.GET_PERMISSIONS);
         } catch (PackageManager.NameNotFoundException e) {
         }
 
-        if (packageInfo != null) {
+        if (applicationInfo != null) {
 
             // get current application rule
-            AppRule appRule = this.natRules.getAppRule((long) packageInfo.applicationInfo.uid);
+            AppRule appRule = this.natRules.getAppRule((long) applicationInfo.uid);
 
             // Add Proxy providers if available
             // Is orbot installed ?
             OrbotHelper orbotHelper = new OrbotHelper(this.context);
+
+            this.radioTor = new RadioButton(this.context);
             if (orbotHelper.isOrbotInstalled()) {
-                RadioButton radioTor = new RadioButton(this.context);
                 radioTor.setText("Tor");
 
                 if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
                     radioTor.setChecked(true);
                 }
 
-                ((ViewGroup) l_view.findViewById(R.id.radio_connection_provider)).addView(radioTor);
+                ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioTor);
             }
             // is i2p present? No helper for that now
             PackageInfo i2p = null;
@@ -233,8 +239,8 @@ public class AppListAdapter extends ArrayAdapter {
             } catch (PackageManager.NameNotFoundException e) {
             }
 
+            this.radioI2p = new RadioButton(this.context);
             if (i2p != null) {
-                RadioButton radioI2p = new RadioButton(this.context);
                 radioI2p.setText("i2p");
                 // For now we do not have support for i2p. Just teasing ;)
                 radioI2p.setEnabled(false);
@@ -242,8 +248,32 @@ public class AppListAdapter extends ArrayAdapter {
                 if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_I2P)) {
                     radioI2p.setChecked(true);
                 }
-                ((ViewGroup) l_view.findViewById(R.id.radio_connection_provider)).addView(radioI2p);
+                ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioI2p);
             }
+
+            this.radioForced = (RadioButton)l_view.findViewById(R.id.id_radio_force);
+            this.radioFenced = (RadioButton)l_view.findViewById(R.id.id_radio_fenced);
+            // Is it a Fenced or a Forced app?
+            if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+                radioFenced.setChecked(true);
+            } else {
+                radioForced.setChecked(true);
+            }
+
+            // Maybe it's a Bypass, if so, we will need to deactivate all other Radios…
+            this.check_bypass = (CheckBox) l_view.findViewById(R.id.id_checkbox_bypass);
+            if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                toggleAdvancedPrefs(true);
+            }
+
+            // just set an onClick action for the checkBox, as we don't have access to the dependencies
+            check_bypass.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((CheckBox) view.findViewById(R.id.id_checkbox_bypass)).isChecked();
+                    toggleAdvancedPrefs(checked);
+                }
+            });
 
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
@@ -263,9 +293,18 @@ public class AppListAdapter extends ArrayAdapter {
             });
 
             // Display alert
-            alert.setTitle("Advanced settings")
-                    .setView(l_view)
-                    .show();
+            alert.setTitle(String.format(
+                    this.context.getString(R.string.advanced_connection_settings_title),
+                    this.packageManager.getApplicationLabel(applicationInfo))
+            ).setView(l_view).show();
         }
+    }
+
+    public void toggleAdvancedPrefs(boolean status) {
+        radioFenced.setEnabled(!status);
+        radioForced.setEnabled(!status);
+        radioI2p.setEnabled(!status);
+        radioTor.setEnabled(!status);
+        check_bypass.setChecked(status);
     }
 }
