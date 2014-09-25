@@ -44,13 +44,14 @@ public class BackgroundProcess extends IntentService {
             this.initializeIptables.deactivate();
         } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
             this.initializeIptables.boot();
-        } else if (action.equals(Constants.ACTION_RM_BYPASS)) {
-            // TODO: call for dedicated method
-        } else if (action.equals(Constants.ACTION_RM_FENCED)) {
-            // TODO: call for dedicated method
-        } else if (action.equals(Constants.ACTION_ADD_BYPASS)) {
-            // TODO: call for dedicated method
-        } else if (action.equals(Constants.ACTION_ADD_FENCED)) {
+        } else if (action.equals(Constants.ACTION_RM_BYPASS) || action.equals(Constants.ACTION_ADD_BYPASS)) {
+            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
+            iptRules.bypass(appUID, appName, action.equals(Constants.ACTION_ADD_BYPASS));
+
+        } else if (action.equals(Constants.ACTION_RM_FENCED) || action.equals(Constants.ACTION_ADD_FENCED)) {
+            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
             // TODO: call for dedicated method
         }
     }
