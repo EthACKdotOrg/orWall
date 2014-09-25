@@ -54,8 +54,11 @@ public class Constants {
     public final static String E_NO_SUCH_ALGO = "E_NO_SUCH_ALGO";
 
     public final static String DB_PORT_TYPE_TRANS = "TransProxy";
+    public final static String DB_PORT_TYPE_SOCKS = "SOCKS";
+    public final static String DB_PORT_TYPE_FENCED = "Fenced";
     public final static String DB_ONION_TYPE_TOR = "Tor";
     public final static String DB_ONION_TYPE_I2P = "i2p";
+    public final static String DB_ONION_TYPE_BYPASS = "Bypass";
 
     public final static String I2P_APP_NAME = "net.i2p.android.router";
     public final static String ORBOT_APP_NAME = "org.torproject.android";
