@@ -123,6 +123,7 @@
     </string>
     <string name="alert_accept">Accept</string>
 
+    <string name="advanced_connection_settings_title" formatted="false">Advanced settings for %s</string>
     <string name="advanced_connection_provider">Connection provider</string>
     <string name="advanced_connection_type">Connection type</string>
     <string name="advanced_connection_type_force">Force connection (using REDIRECT)</string>
