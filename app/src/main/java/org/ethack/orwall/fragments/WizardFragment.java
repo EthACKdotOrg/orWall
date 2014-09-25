@@ -85,7 +85,7 @@ public class WizardFragment extends Fragment {
         ((Button) rootView.findViewById(R.id.wizard_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_FIRST_RUN, true).apply();
+                getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_FIRST_RUN, false).apply();
                 getActivity().finish();
             }
         });
