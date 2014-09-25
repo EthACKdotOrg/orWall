@@ -135,7 +135,7 @@ public class IptRules {
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
                 String.format(
-                        "-%c OUTPUT -m owner --uid-owner %d -j ACCEPT%s",
+                        "-%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
@@ -145,6 +145,37 @@ public class IptRules {
             if (!applyRule(rule)) {
                 Log.e(
                         "bypass",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
+    }
+
+    public void fenced(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'A' : 'D');
+
+        String[] rules = {
+                String.format(
+                        "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Fencing %s\"", appName) : "")
+                ),
+                String.format(
+                        "-%c INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED.RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                ),
+                String.format(
+                        "-%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                ),
+        };
+
+        for (String rule: rules) {
+            if (!applyRule(rule)) {
+                Log.e(
+                        "fenced",
                         "Unable to add rule: " + rule
                 );
             }

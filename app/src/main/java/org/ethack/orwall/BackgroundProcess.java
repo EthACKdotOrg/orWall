@@ -58,7 +58,7 @@ public class BackgroundProcess extends IntentService {
         } else if (action.equals(Constants.ACTION_RM_FENCED) || action.equals(Constants.ACTION_ADD_FENCED)) {
             String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
             long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-            // TODO: call for dedicated method
+            iptRules.fenced(appUID, appName, action.equals(Constants.ACTION_ADD_FENCED));
         }
     }
 
