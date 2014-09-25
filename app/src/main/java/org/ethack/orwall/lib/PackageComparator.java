@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import java.util.Comparator;
 
 /**
- * Created by cedric on 7/20/14.
+ * Package comparator in order to sort a collection of application.
  */
 public class PackageComparator implements Comparator<PackageInfo> {
     private PackageManager packageManager;
