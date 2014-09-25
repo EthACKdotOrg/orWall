@@ -144,6 +144,7 @@ public class AppListAdapter extends ArrayAdapter {
 
                 if (appRule.getOnionType().equals("None")) {
                     holder.checkBox.setText(label);
+                    holder.checkBox.setChecked(false);
                 } else {
                     Log.d(TAG, "Treating as ENABLED: " + label);
                     holder.checkBox.setText(label + " (via " + appRule.getOnionType() + ")");
