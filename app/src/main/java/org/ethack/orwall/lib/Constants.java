@@ -5,6 +5,7 @@ package org.ethack.orwall.lib;
  */
 public class Constants {
     public final static String PREFERENCES = "org.ethack.orwall_preferences";
+    public final static String PREF_KEY_FIRST_RUN = "first_run";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
