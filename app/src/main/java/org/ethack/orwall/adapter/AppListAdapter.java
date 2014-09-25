@@ -177,7 +177,7 @@ public class AppListAdapter extends ArrayAdapter {
             bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
 
 
-            // TODO: find a way to force a complet refresh of the tab
+            // TODO: find a way to force a complete refresh of the tab
 
             if (checked) {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
