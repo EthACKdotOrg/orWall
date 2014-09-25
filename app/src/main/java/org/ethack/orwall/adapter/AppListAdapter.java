@@ -97,10 +97,7 @@ public class AppListAdapter extends ArrayAdapter {
         AppRule appRule = null;
         try {
             appRule = (AppRule) this.apps[position];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            //Log.e(TAG, "Out of bound: "+ String.valueOf(position));
-            //Log.e(TAG, "Array size: "+ String.valueOf(this.apps.length));
-        }
+        } catch (ArrayIndexOutOfBoundsException e) {}
 
         if (appRule != null) {
 
