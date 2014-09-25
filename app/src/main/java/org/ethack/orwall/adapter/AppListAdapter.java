@@ -171,6 +171,10 @@ public class AppListAdapter extends ArrayAdapter {
             Intent bgpProcess = new Intent(context, BackgroundProcess.class);
             bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
             bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
+
+
+            // TODO: find a way to force a complet refresh of the tab
+
             if (checked) {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
                 this.natRules.addAppToRules(
@@ -184,7 +188,7 @@ public class AppListAdapter extends ArrayAdapter {
                 this.natRules.removeAppFromRules(appUID);
             }
             context.startService(bgpProcess);
-            view.invalidate();
+
         }
     }
 }
