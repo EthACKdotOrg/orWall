@@ -72,6 +72,7 @@ public class InitializeIptables {
 
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
         this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
+        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
 
 
         initOutputs(app_uid);
