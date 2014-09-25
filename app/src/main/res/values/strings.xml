@@ -129,4 +129,6 @@
     <string name="advanced_connection_type_force">Force connection (using REDIRECT)</string>
     <string name="advanced_connection_type_native">Use application native capacity (Fenced path)</string>
     <string name="advanced_connection_bypass">Allow this application to bypass Proxy</string>
+    <string name="alert_save">Save</string>
+    <string name="alert_cancel">Cancel</string>
 </resources>
