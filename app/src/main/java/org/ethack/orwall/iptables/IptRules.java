@@ -130,13 +130,13 @@ public class IptRules {
         char action = (allow ? 'I' : 'D');
         String[] rules = {
                 String.format(
-                        "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
-                        action, appUID,
+                        "%s -t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
                 String.format(
-                        "-%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        action, appUID,
+                        "%s -%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
         };
@@ -156,18 +156,18 @@ public class IptRules {
 
         String[] rules = {
                 String.format(
-                        "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
-                        action, appUID,
+                        "%s -t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Fencing %s\"", appName) : "")
                 ),
                 String.format(
-                        "-%c INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED.RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        action, appUID,
+                        "%s -%c INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED.RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
                 String.format(
-                        "-%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        action, appUID,
+                        "%s -%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
         };
