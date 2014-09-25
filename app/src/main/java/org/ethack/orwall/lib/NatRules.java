@@ -4,11 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.ethack.orwall.database.OpenHelper;
 import org.sufficientlysecure.rootcommands.util.Log;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -133,6 +135,30 @@ public class NatRules {
             } catch (PackageManager.NameNotFoundException e) {
             }
         }
+    }
+
+    public boolean update(AppRule appRule) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(OpenHelper.COLUMN_APPNAME, appRule.getAppName());
+        contentValues.put(OpenHelper.COLUMN_APPUID, String.valueOf(appRule.getAppUID()));
+        contentValues.put(OpenHelper.COLUMN_ONIONPORT, String.valueOf(appRule.getOnionPort()));
+        contentValues.put(OpenHelper.COLUMN_ONIONTYPE, appRule.getOnionType());
+        contentValues.put(OpenHelper.COLUMN_PORTTYPE, appRule.getPortType());
+
+        String filter = OpenHelper.COLUMN_APPUID + "=?";
+        String[] filterArgs = { String.valueOf(appRule.getAppUID()) };
+        SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+
+        int nb_row = 0;
+        try {
+            nb_row = db.update(OpenHelper.NAT_TABLE_NAME, contentValues, filter, filterArgs);
+        } catch (SQLiteConstraintException e) {
+            Log.e(TAG, "Constaint exception");
+            Log.e(TAG, e.getMessage());
+        }
+        db.close();
+
+        return (nb_row == 1);
     }
 
     public AppRule getAppRule(Long appUID) {
