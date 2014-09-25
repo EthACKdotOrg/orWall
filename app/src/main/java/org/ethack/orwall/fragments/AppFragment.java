@@ -35,17 +35,15 @@ public class AppFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
 
-        ListView enabledListView = (ListView)view.findViewById(R.id.id_enabled_apps);
-        ListView disabledListView = (ListView)view.findViewById(R.id.id_disabled_apps);
+        ListView listView = (ListView)view.findViewById(R.id.id_enabled_apps);
 
         NatRules natRules = new NatRules(this.getActivity());
         List<AppRule> enabledApps = natRules.getAllRules();
         List<AppRule> disabledApps = listDisabledApps();
 
-        if (natRules.getRuleCount() > 0) {
-            enabledListView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
-        }
-        disabledListView.setAdapter(new AppListAdapter(this.getActivity(), disabledApps));
+        enabledApps.addAll(disabledApps);
+
+        listView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
         return view;
     }
 
@@ -60,7 +58,6 @@ public class AppFragment extends Fragment {
         List<AppRule> pkgList = new ArrayList<AppRule>();
 
         List<PackageInfo> pkgInstalled = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
-        Collections.sort(pkgInstalled, new PackageComparator(packageManager));
 
         for (PackageInfo pkgInfo: pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
