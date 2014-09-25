@@ -3,15 +3,16 @@ package org.ethack.orwall;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CheckBox;
 
 import org.ethack.orwall.adapter.TabsPagerAdapter;
+import org.ethack.orwall.lib.Constants;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 /**
@@ -50,6 +51,12 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_main);
+
+        boolean first_run = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_FIRST_RUN, true);
+        if (first_run) {
+            Intent wizard = new Intent(this, WizardActivity.class);
+            startActivity(wizard);
+        }
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
