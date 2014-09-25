@@ -322,6 +322,9 @@ public class AppListAdapter extends ArrayAdapter {
         radioForced.setEnabled(!status);
         radioI2p.setEnabled(!status);
         radioTor.setEnabled(!status);
+        if (!status) {
+            radioTor.setChecked(true);
+        }
         check_bypass.setChecked(status);
     }
 
@@ -417,6 +420,7 @@ public class AppListAdapter extends ArrayAdapter {
                 CharSequence label = packageManager.getApplicationLabel(applicationInfo);
                 CheckBox checkBox = (CheckBox) view;
                 checkBox.setText(label + " (via " + updated.getOnionType() + ")");
+                checkBox.setChecked(true);
             }
         } else {
             Log.e(TAG, "ERROR while updating object in DB!");
