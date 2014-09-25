@@ -131,4 +131,85 @@
     <string name="advanced_connection_bypass">Allow this application to bypass Proxy</string>
     <string name="alert_save">Save</string>
     <string name="alert_cancel">Cancel</string>
+
+    <string name="wizard_step">Step</string>
+    <string name="wizard_title_one">What is orWall</string>
+    <string name="wizard_title_two">Quick settings</string>
+    <string name="wizard_title_three">Application settings</string>
+    <string name="title_activity_wizard">Welcome to orWall</string>
+    <string name="wizard_close">Close wizard</string>
+    <string name="wizard_first">
+        <b>Welcome to orWall!</b>\n
+        \n
+        This wizard will let you learn what orWall can do and what it cannot. It will also give you some
+        hints on what might or might not be done.\n
+        \n
+        <b>orWall is not a firewall</b>\n
+        \n
+        Keep it in mind. orWall will not replace AFWall nor DroidWall nor anything like that.\n
+        orWall main aim is to allow you forcing apps though some local proxy when those apps don\'t
+        know how to talk to this proxy; it will also allow you to prevent any leaks, using an init-script.\n
+        \n
+        <b>How to use orWall</b>\n
+        You will find three panels:\n
+        - Home\n
+        - Apps\n
+        - Logs (which isn\'t available for now)\n
+        \n
+        On the Home panel, you will find some main settings.\n
+        From there, you are able to deactivate orWall (until next reboot), activate Tethering support (by default,
+        orWall rules block that usage), as well as give a temporary authorization to a web browser to bypass the whole proxy
+        thing, enable SIP application to send UDP requests, and enable Local Area Network (LAN) connections.\n
+        \n
+        On the Apps panel, you will find a list of your installed applications.\n
+    </string>
+    <string name="wizard_second">
+        <b>Disable orWall</b>\n
+        \n
+        This option let you deactivate orWall. Just keep in mind the deactivation will ends once you reboot
+        your device.
+        \n
+        <b>Enable tethering</b>\n
+        \n
+        You\'ll need to activate this option if you want to share your Internet connection from your device.\n
+        Once this option is enabled, orWall will detect automatically when you enable the connection sharing, and
+        activate a subset of firewall rules.\n
+        \n
+        It may take a while before this takes effect.\n
+        <b>WARNING!</b> This option doesn\'t work as expected for now :(.\n
+        \n
+        <b>Authorize browser</b>\n
+        \n
+        This option allows you to lock up your device, while still being able to authenticate to some
+        captive portal (like in hotels). An application you select through Settings>Special Applications
+        will get an unlimited access to the network for a give time.\n
+        Once you enable this option, a timer will start. Once it reaches the end of the grace time, the
+        browser will be locked as previously.\n
+        The grace time may be set in Settings>Network. Default value is 5 minutes.\n
+        \n
+        <b>Enable SIP</b>\n
+        \n
+        Toggling this option will allow a selected application to access remote hosts using UDP protocol.\n
+        \n
+        <b>Enable LAN connections</b>\n
+        \n
+        This will let you access to your Local Area Network.
+    </string>
+    <string name="wizard_third">
+        <b>Default behavior</b>\n
+        \n
+        When you touch an app in the "Apps" tab, it will toggle its status: either the app can access the Net
+        using Orbot, or it\'s locked out.\n
+        The list view will refresh eventually when you come back to orWall later (this must be improved).\n
+        \n
+        <b>Advanced settings</b>\n
+        \n
+        A long touch will display a dialog in order to let you configure a bit more the app accesses.\n
+        The following options are available for now:\n
+        - Connection provider: let you chose between Tor and… well, Tor for now.\n
+        - Connection type: either the application can be configured in order to use a local proxy, or you\'ll need
+        to force it through the proxy.\n
+        - Complete bypass: this option shouldn\'t be use at all, as it will allow the application to bypass completely
+        your proxy, for life.
+    </string>
 </resources>
