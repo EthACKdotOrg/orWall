@@ -60,7 +60,7 @@ public class NatRules {
         db.close();
     }
 
-    public void addAppToRules(Long appUID, String appName, String onionType, Long onionPort, String portType) {
+    public boolean addAppToRules(Long appUID, String appName, String onionType, Long onionPort, String portType) {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(OpenHelper.COLUMN_APPNAME, appName);
@@ -72,6 +72,17 @@ public class NatRules {
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.insert(OpenHelper.NAT_TABLE_NAME, null, contentValues);
         db.close();
+        return true;
+    }
+
+    public boolean addAppToRules(AppRule appRule) {
+        return addAppToRules(
+                appRule.getAppUID(),
+                appRule.getAppName(),
+                appRule.getOnionType(),
+                appRule.getOnionPort(),
+                appRule.getOnionType()
+        );
     }
 
     public ArrayList<AppRule> getAllRules() {
@@ -184,14 +195,20 @@ public class NatRules {
                 null,
                 null
         );
-        cursor.moveToFirst();
-        AppRule appRule = new AppRule(
-                cursor.getString(0),
-                cursor.getLong(1),
-                cursor.getString(2),
-                cursor.getLong(3),
-                cursor.getString(4)
-        );
+
+        AppRule appRule;
+        if (cursor.moveToFirst()) {
+            appRule = new AppRule(
+                    cursor.getString(0),
+                    cursor.getLong(1),
+                    cursor.getString(2),
+                    cursor.getLong(3),
+                    cursor.getString(4)
+            );
+        } else {
+            appRule = new AppRule(null, null, null, null, null);
+            Log.e(TAG, "Unable to get rules for "+ String.valueOf(appUID));
+        }
         cursor.close();
         db.close();
 
