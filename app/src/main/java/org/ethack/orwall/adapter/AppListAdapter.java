@@ -169,19 +169,20 @@ public class AppListAdapter extends ArrayAdapter {
      * @param view - View object transmitted via onClick argument in app_row.xml
      */
     public void toggleApp(View view) {
-        boolean checked = ((CheckBox) view).isChecked();
+        CheckBox checkBox = (CheckBox) view;
+        boolean checked = checkBox.isChecked();
         String appName = view.getTag(R.id.id_appTag).toString();
 
-        PackageInfo apk;
+        PackageInfo apk = null;
         try {
             apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             android.util.Log.e(TAG, "Application " + appName + " not found");
-            apk = null;
         }
         if (apk != null) {
 
             long appUID = apk.applicationInfo.uid;
+            CharSequence label = packageManager.getApplicationLabel(apk.applicationInfo);
 
             Intent bgpProcess = new Intent(context, BackgroundProcess.class);
             bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
@@ -198,16 +199,18 @@ public class AppListAdapter extends ArrayAdapter {
                         Constants.ORBOT_TRANSPROXY,
                         Constants.DB_PORT_TYPE_TRANS
                 );
+                checkBox.setText(label + " (via " + Constants.DB_ONION_TYPE_TOR + ")");
             } else {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
                 this.natRules.removeAppFromRules(appUID);
+                checkBox.setText(label);
             }
             context.startService(bgpProcess);
 
         }
     }
 
-    public void showAdvanced(View view) {
+    public void showAdvanced(final View view) {
         LayoutInflater li = LayoutInflater.from(this.context);
         View l_view = li.inflate(R.layout.advanced_connection, null);
 
@@ -294,7 +297,7 @@ public class AppListAdapter extends ArrayAdapter {
             alert.setPositiveButton(R.string.alert_save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    saveAdvanced(appRule);
+                    saveAdvanced(appRule, view);
                 }
             });
 
@@ -322,7 +325,7 @@ public class AppListAdapter extends ArrayAdapter {
         check_bypass.setChecked(status);
     }
 
-    private void saveAdvanced(AppRule appRule) {
+    private void saveAdvanced(AppRule appRule, View view) {
 
         // Update DB content
         AppRule updated = new AppRule();
@@ -404,6 +407,17 @@ public class AppListAdapter extends ArrayAdapter {
                 bgNewRules.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
             }
             this.context.startService(bgNewRules);
+
+            ApplicationInfo applicationInfo = null;
+            try {
+                applicationInfo = this.packageManager.getApplicationInfo(updated.getAppName(), PackageManager.GET_PERMISSIONS);
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+            if (applicationInfo != null) {
+                CharSequence label = packageManager.getApplicationLabel(applicationInfo);
+                CheckBox checkBox = (CheckBox) view;
+                checkBox.setText(label + " (via " + updated.getOnionType() + ")");
+            }
         } else {
             Log.e(TAG, "ERROR while updating object in DB!");
         }
