@@ -7,11 +7,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import org.ethack.orwall.fragments.AppFragment;
 import org.ethack.orwall.fragments.HomeFragment;
 import org.ethack.orwall.fragments.LogFragment;
+import org.sufficientlysecure.rootcommands.util.Log;
 
 /**
- * Created by cedric on 9/23/14.
+ * A simple wrapper for tab management.
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
+
+    private static final String TAG = "TabsPagerAdapter";
 
     public TabsPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
