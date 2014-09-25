@@ -1,6 +1,8 @@
 package org.ethack.orwall.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
@@ -20,9 +23,9 @@ import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.sufficientlysecure.rootcommands.util.Log;
 
-
-import java.util.ArrayList;
 import java.util.List;
+
+import info.guardianproject.onionkit.ui.OrbotHelper;
 
 
 /**
@@ -33,22 +36,18 @@ import java.util.List;
  * - disabled application
  *
  * Enabled application will get the following information/characteristics:
- * - white color
  * - name of proxy being used (default: Tor/Orbot)
- *  - if there's a pass-through, it will be shown in here
- * - an arrow in order to get a special panel with dedicated options for this app
- * - The dedicate panel will provide:
- *  - choice for another proxy app (if i2p is installed for example)
- *  - choice between "forcing" or "native" connection to the proxy
- *      - native will create a fenced way: the app may not connect to anything else than the proxy port
- *      - forcing will apply the -j REDIRECT we already use now
- *  - choice to allow the app to go to the Net without using any proxy (with a timer)
+ * - if there's a pass-through, it will be shown in here
  *
- * Disabled application will get the following information/characteristics:
- * - grey name (of something showing up "hey, disabled")
+ * A long press on the activated app will show up a dedicated dialog providing:
+ * - choice for another proxy app (if i2p is installed for example)
+ * - choice between "forcing" or "native" connection to the proxy
+ * - native will create a fenced way: the app may not connect to anything else than the proxy port
+ * - forcing will apply the -j REDIRECT we already use now
+ * - choice to allow the app to go to the Net without using any proxy (with a timer)
  *
  * Once we touch either a disabled or enabled app, it should go to the opposite list, and rules should
- * be removed or added.
+ * be removed or added. This still has to be done.
  */
 public class AppListAdapter extends ArrayAdapter {
 
@@ -62,7 +61,7 @@ public class AppListAdapter extends ArrayAdapter {
      * Constructor.
      *
      * @param context - application context
-     * @param pkgs - list of all installed packages
+     * @param pkgs    - list of all installed packages
      */
     public AppListAdapter(Context context, List<AppRule> pkgs) {
         super(context, R.layout.app_row, pkgs);
@@ -75,9 +74,9 @@ public class AppListAdapter extends ArrayAdapter {
     /**
      * Creates the view with both lists.
      *
-     * @param position - position in list
+     * @param position    - position in list
      * @param convertView - conversion view
-     * @param parent - parent view group
+     * @param parent      - parent view group
      * @return - the formatted view
      */
     @Override
@@ -132,9 +131,16 @@ public class AppListAdapter extends ArrayAdapter {
                 if (appRule.getOnionType().equals("None")) {
                     holder.checkBox.setText(label);
                 } else {
-                    Log.d(TAG, "Treating as ENABLED: "+label);
+                    Log.d(TAG, "Treating as ENABLED: " + label);
                     holder.checkBox.setText(label + " (via " + appRule.getOnionType() + ")");
                     holder.checkBox.setChecked(true);
+                    holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            showAdvanced(view);
+                            return true;
+                        }
+                    });
                 }
 
             }
@@ -151,6 +157,7 @@ public class AppListAdapter extends ArrayAdapter {
 
     /**
      * Function called when we touch an app in the "app" tab
+     *
      * @param view - View object transmitted via onClick argument in app_row.xml
      */
     public void toggleApp(View view) {
@@ -189,6 +196,77 @@ public class AppListAdapter extends ArrayAdapter {
             }
             context.startService(bgpProcess);
 
+        }
+    }
+
+    public void showAdvanced(View view) {
+        LayoutInflater li = LayoutInflater.from(this.context);
+        View l_view = li.inflate(R.layout.advanced_connection, null);
+
+        // Get application information
+        String appName = view.getTag(R.id.id_appTag).toString();
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = this.packageManager.getPackageInfo(appName, PackageManager.GET_PERMISSIONS);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+
+        if (packageInfo != null) {
+
+            // get current application rule
+            AppRule appRule = this.natRules.getAppRule((long) packageInfo.applicationInfo.uid);
+
+            // Add Proxy providers if available
+            // Is orbot installed ?
+            OrbotHelper orbotHelper = new OrbotHelper(this.context);
+            if (orbotHelper.isOrbotInstalled()) {
+                RadioButton radioTor = new RadioButton(this.context);
+                radioTor.setText("Tor");
+
+                if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
+                    radioTor.setChecked(true);
+                }
+
+                ((ViewGroup) l_view.findViewById(R.id.radio_connection_provider)).addView(radioTor);
+            }
+            // is i2p present? No helper for that now
+            PackageInfo i2p = null;
+            try {
+                i2p = this.packageManager.getPackageInfo(Constants.I2P_APP_NAME, PackageManager.GET_PERMISSIONS);
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+
+            if (i2p != null) {
+                RadioButton radioI2p = new RadioButton(this.context);
+                radioI2p.setText("i2p");
+
+                if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_I2P)) {
+                    radioI2p.setChecked(true);
+                }
+                ((ViewGroup) l_view.findViewById(R.id.radio_connection_provider)).addView(radioI2p);
+            }
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+            // Will save state and apply rules
+            alert.setPositiveButton(R.string.alert_accept, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+
+            // Will do nothing
+            alert.setNegativeButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+
+            // Display alert
+            alert.setTitle("Advanced settings")
+                    .setView(l_view)
+                    .show();
         }
     }
 }
