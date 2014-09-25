@@ -198,6 +198,10 @@ public class InitializeIptables {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
         if (subnet != null) {
+            if (allow && iptRules.genericRule(String.format("-C OUTPUT -d %s -j LAN", subnet))) {
+                Log.d("LANPolicy", "Already applied");
+                return;
+            }
             if (allow) {
                 if (iptRules.genericRule("-N LAN")) {
                     iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
