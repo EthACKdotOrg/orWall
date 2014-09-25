@@ -153,7 +153,7 @@ public class NatRules {
         try {
             nb_row = db.update(OpenHelper.NAT_TABLE_NAME, contentValues, filter, filterArgs);
         } catch (SQLiteConstraintException e) {
-            Log.e(TAG, "Constaint exception");
+            Log.e(TAG, "Constraint exception");
             Log.e(TAG, e.getMessage());
         }
         db.close();
