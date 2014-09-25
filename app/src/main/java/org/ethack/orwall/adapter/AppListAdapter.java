@@ -236,6 +236,8 @@ public class AppListAdapter extends ArrayAdapter {
             if (i2p != null) {
                 RadioButton radioI2p = new RadioButton(this.context);
                 radioI2p.setText("i2p");
+                // For now we do not have support for i2p. Just teasing ;)
+                radioI2p.setEnabled(false);
 
                 if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_I2P)) {
                     radioI2p.setChecked(true);
