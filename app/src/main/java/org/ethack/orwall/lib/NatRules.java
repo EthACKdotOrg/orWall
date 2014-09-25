@@ -134,4 +134,41 @@ public class NatRules {
             }
         }
     }
+
+    public AppRule getAppRule(Long appUID) {
+        SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+
+        String[] filterArgs = {
+                String.valueOf(appUID)
+        };
+        String[] selection = {
+                OpenHelper.COLUMN_APPNAME,
+                OpenHelper.COLUMN_APPUID,
+                OpenHelper.COLUMN_ONIONTYPE,
+                OpenHelper.COLUMN_ONIONPORT,
+                OpenHelper.COLUMN_PORTTYPE,
+        };
+
+        Cursor cursor = db.query(
+                OpenHelper.NAT_TABLE_NAME,
+                selection,
+                OpenHelper.COLUMN_APPUID + "=?",
+                filterArgs,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        AppRule appRule = new AppRule(
+                cursor.getString(0),
+                cursor.getLong(1),
+                cursor.getString(2),
+                cursor.getLong(3),
+                cursor.getString(4)
+        );
+        cursor.close();
+        db.close();
+
+        return appRule;
+    }
 }
