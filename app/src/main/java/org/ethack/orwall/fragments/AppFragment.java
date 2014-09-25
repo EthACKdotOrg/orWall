@@ -9,15 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.adapter.AppListAdapter;
 import org.ethack.orwall.lib.AppRule;
+import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
-import org.ethack.orwall.lib.PackageComparator;
-import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,10 +35,18 @@ public class AppFragment extends Fragment {
 
         ListView listView = (ListView)view.findViewById(R.id.id_enabled_apps);
 
+        // get enabled apps
         NatRules natRules = new NatRules(this.getActivity());
         List<AppRule> enabledApps = natRules.getAllRules();
+
+        // get disabled apps (filtered with enabled)
         List<AppRule> disabledApps = listDisabledApps();
 
+        // Sort collection using a dedicated method
+        Collections.sort(enabledApps, new AppRuleComparator(getActivity().getPackageManager()));
+        Collections.sort(disabledApps, new AppRuleComparator(getActivity().getPackageManager()));
+
+        // merge both collections so that enabled apps are above disabled
         enabledApps.addAll(disabledApps);
 
         listView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
@@ -49,6 +55,7 @@ public class AppFragment extends Fragment {
 
     /**
      * List all disabled application. Meaning: installed app requiring Internet, but NOT in NatRules.
+     * It also filters out special apps like orbot and i2p.
      * @return List of AppRule
      */
     private List<AppRule> listDisabledApps() {
