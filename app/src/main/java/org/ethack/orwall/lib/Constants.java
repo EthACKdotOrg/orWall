@@ -43,6 +43,11 @@ public class Constants {
     public final static String ACTION_DISABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.disable_orwall";
     public final static String ACTION_ENABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.enable_orwall";
 
+    public final static String ACTION_RM_FENCED = "org.ethack.orwall.backgroundProcess.action.rmFenced";
+    public final static String ACTION_RM_BYPASS = "org.ethack.orwall.backgroundProcess.action.rmBypass";
+    public final static String ACTION_ADD_FENCED = "org.ethack.orwall.backgroundProcess.action.addFenced";
+    public final static String ACTION_ADD_BYPASS = "org.ethack.orwall.backgroundProcess.action.addBypass";
+
     public final static long ORBOT_SOCKS_PROXY = 9050;
     public final static long ORBOT_TRANSPROXY = 9040;
     public final static long ORBOT_DNS_PROXY = 5400;
