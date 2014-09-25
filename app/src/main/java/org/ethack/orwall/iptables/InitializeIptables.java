@@ -188,18 +188,19 @@ public class InitializeIptables {
     public void LANPolicy(final boolean allow) {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
-
-        if (allow) {
-            if (iptRules.genericRule("-N LAN")) {
-                iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
-                iptRules.genericRule("-A LAN -j ACCEPT");
+        if (subnet != null) {
+            if (allow) {
+                if (iptRules.genericRule("-N LAN")) {
+                    iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
+                    iptRules.genericRule("-A LAN -j ACCEPT");
+                }
             }
-        }
-        iptRules.LanNoNat(subnet, allow);
+            iptRules.LanNoNat(subnet, allow);
 
-        if (!allow) {
-            iptRules.genericRule("-F LAN");
-            iptRules.genericRule("-X LAN");
+            if (!allow) {
+                iptRules.genericRule("-F LAN");
+                iptRules.genericRule("-X LAN");
+            }
         }
     }
 
