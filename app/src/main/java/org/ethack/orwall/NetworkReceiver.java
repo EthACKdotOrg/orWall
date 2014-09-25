@@ -18,14 +18,15 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        boolean support_tethering = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
-
         Log.d(TAG, "Got a Network Change event");
 
+        InitializeIptables initializeIptables = new InitializeIptables(context);
+
+        boolean support_tethering = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
         if (support_tethering) {
             Log.d(TAG, "Tethering support is enabled");
 
-            InitializeIptables initializeIptables = new InitializeIptables(context);
+
             if (NetworkHelper.isTether(context)) {
                 Log.d(TAG, "Enable Tethering");
                 Toast.makeText(context, R.string.tether_activated_in_orwall, Toast.LENGTH_LONG).show();
@@ -42,5 +43,8 @@ public class NetworkReceiver extends BroadcastReceiver {
         } else {
             Log.d(TAG, "Tethering support is disabled");
         }
+
+        boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
+        initializeIptables.LANPolicy(lan_bypass);
     }
 }
