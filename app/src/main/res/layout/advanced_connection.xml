@@ -28,11 +28,13 @@
             android:text="@string/advanced_connection_type"
             />
         <RadioButton
+            android:id="@+id/id_radio_force"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/advanced_connection_type_force"
             />
         <RadioButton
+            android:id="@+id/id_radio_fenced"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/advanced_connection_type_native"
