@@ -123,6 +123,10 @@
     </string>
     <string name="alert_accept">Accept</string>
 
+    <string name="toast_new_rule">New rules are being added</string>
+    <string name="toast_remove_rule">Rules are being removed</string>
+    <string name="toast_error" formatted="false">An error occurred, please contact the dev! #%d</string>
+
     <string name="advanced_connection_settings_title" formatted="false">Advanced settings for %s</string>
     <string name="advanced_connection_provider">Connection provider</string>
     <string name="advanced_connection_type">Connection type</string>
