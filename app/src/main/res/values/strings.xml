@@ -146,6 +146,13 @@
     <string name="wizard_title_three">Application settings</string>
     <string name="title_activity_wizard">Welcome to orWall</string>
     <string name="wizard_close">Close wizard</string>
+
+    <string name="wizard_init_script_text">Init script activation:</string>
+    <string name="wizard_init_root_text">Root access (read-only):</string>
+    <string name="wizard_init_iptables_text">IPTables installed (read-only):</string>
+    <string name="wizard_init_ipt_comments_text">Comment support in IPTables (read-only):</string>
+    <string name="wizard_orbot_status_text">Orbot (read-only):</string>
+
     <string name="wizard_first">
         <b>Welcome to orWall!</b>\n
         This wizard will let you learn what orWall can do and what it cannot. It will also give you some
@@ -168,6 +175,9 @@
         thing, enable SIP application to send UDP requests, and enable Local Area Network (LAN) connections.\n
         \n
         On the Apps panel, you will find a list of your installed applications.\n
+        \n
+        Bellow you will find some information about current orWall status. Note that some switches may be disabled.
+        This happens if, for some reason, an option isn\'t available on your device. It is also true for read-only settings.
     </string>
     <string name="wizard_second">
         <b>Disable orWall</b>\n
