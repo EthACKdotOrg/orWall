@@ -161,11 +161,6 @@ public class IptRules {
                         (this.supportComment ? String.format(" -m comment --comment \"Fencing %s\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED.RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        Constants.IPTABLES, action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
-                ),
-                String.format(
                         "%s -%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
