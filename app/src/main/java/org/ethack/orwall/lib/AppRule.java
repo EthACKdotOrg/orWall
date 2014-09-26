@@ -5,18 +5,27 @@ package org.ethack.orwall.lib;
  */
 public class AppRule {
 
-    private String appName;
+    private String pkgName;
     private Long appUID;
     private String onionType;
     private Long onionPort;
     private String portType;
 
-    public AppRule(String appName, Long appUID, String onionType, Long onionPort, String portType) {
-        this.appName = appName;
+    // Variables dedicated for ListView
+    // We need them for persistence across scroll
+    private boolean isChecked;
+    private String label;
+    private String appName;
+
+    public AppRule(String pkgName, Long appUID, String onionType, Long onionPort, String portType) {
+        this.pkgName = pkgName;
         this.appUID = appUID;
         this.onionType = onionType;
         this.onionPort = onionPort;
         this.portType = portType;
+        // set to a null value - used in AppListAdapter
+        this.label = null;
+        this.appName = null;
     }
 
     public AppRule() {
@@ -24,12 +33,12 @@ public class AppRule {
     }
 
 
-    public String getAppName() {
-        return this.appName;
+    public String getPkgName() {
+        return this.pkgName;
     }
 
-    public void setAppName(String appName) {
-        this.appName = appName;
+    public void setPkgName(String pkgName) {
+        this.pkgName = pkgName;
     }
 
     public String getOnionType() {
@@ -62,6 +71,34 @@ public class AppRule {
 
     public void setOnionPort(Long onionPort) {
         this.onionPort = onionPort;
+    }
+
+    /**
+     * Setters and getters dedicated for View — mainly used in AppListAdapter
+     * They don't have any incidence on DB content.
+     */
+    public boolean isChecked() {
+        return this.isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.isChecked = checked;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getAppName() {
+        return  this.appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
 }
