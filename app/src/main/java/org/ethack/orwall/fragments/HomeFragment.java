@@ -25,8 +25,12 @@ import org.ethack.orwall.R;
 import org.ethack.orwall.WizardActivity;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.InstallScripts;
+import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.concurrent.TimeUnit;
+
+import info.guardianproject.onionkit.ui.OrbotHelper;
 
 /**
  * Manage "home" tab fragment.
@@ -55,6 +59,14 @@ public class HomeFragment extends Fragment {
         Switch lanStatus = (Switch) view.findViewById(R.id.lan_status);
         Switch tetherStatus = (Switch) view.findViewById(R.id.tethering_status);
 
+        // Status switches — most of them are read-only, as they just displays devices capabilities.
+        Switch status_initscript = (Switch) view.findViewById(R.id.status_initscript);
+        Switch status_root = (Switch) view.findViewById(R.id.status_root);
+        Switch status_iptables = (Switch) view.findViewById(R.id.status_iptables);
+        Switch status_ipt_comments = (Switch) view.findViewById(R.id.status_ipt_comments);
+        Switch status_orbot = (Switch) view.findViewById(R.id.status_orbot);
+
+        // Buttons
         Button settings = (Button) view.findViewById(R.id.id_settings);
         Button about = (Button) view.findViewById(R.id.id_about);
         Button wizard = (Button) view.findViewById(R.id.id_wizard);
@@ -124,6 +136,25 @@ public class HomeFragment extends Fragment {
                 sharedPreferences.edit().putBoolean(Constants.PREF_KEY_TETHER_ENABLED, checked).apply();
             }
         });
+
+        // Set status switches in order to show the user what's working. Or not working.
+
+        // Init script: try to install it and so on
+        InstallScripts installScripts = new InstallScripts(getActivity());
+        installScripts.run();
+        boolean disableInit = sharedPreferences.getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
+        status_initscript.setChecked(disableInit);
+        status_initscript.setEnabled(disableInit);
+        // Do we have root access ?
+        status_root.setChecked(RootCommands.rootAccessGiven());
+        // Hopefully there IS iptables on this device…
+        status_iptables.setChecked(initializeIptables.iptablesExists());
+        // Does current kernel supports comments in iptables?
+        initializeIptables.supportComments();
+        status_ipt_comments.setChecked(sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
+        // Is orbot installed?
+        OrbotHelper orbotHelper = new OrbotHelper(getActivity());
+        status_orbot.setChecked(orbotHelper.isOrbotInstalled());
 
         // Shows settings
         settings.setOnClickListener(new View.OnClickListener() {

@@ -55,6 +55,42 @@
         android:text="@string/enable_lan"
         android:textOn="@string/enabled"
         android:textOff="@string/disabled" />
+        <Space
+            android:layout_width="fill_parent"
+            android:layout_height="30dp" />
+        <!--
+        This part will give hints regarding orWall status.
+        It's, more or less, the same thing we will see in the wizard first page.
+         -->
+        <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_init_script_text"
+            android:id="@+id/status_initscript"/>
+        <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_init_root_text"
+            android:enabled="false"
+            android:id="@+id/status_root" />
+        <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_init_iptables_text"
+            android:enabled="false"
+            android:id="@+id/status_iptables" />
+        <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_init_ipt_comments_text"
+            android:enabled="false"
+            android:id="@+id/status_ipt_comments" />
+        <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_orbot_status_text"
+            android:enabled="false"
+            android:id="@+id/status_orbot"/>
     </LinearLayout>
 
     <RelativeLayout
@@ -63,7 +99,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:gravity="center"
             android:id="@+id/id_about"
             android:text="@string/menu_action_about"/>
 
@@ -78,7 +114,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:gravity="center"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:id="@+id/id_settings"
