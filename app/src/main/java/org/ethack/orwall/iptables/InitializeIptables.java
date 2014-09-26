@@ -202,6 +202,10 @@ public class InitializeIptables {
                 Log.d("LANPolicy", "Already applied");
                 return;
             }
+            if (!allow && !iptRules.genericRule(String.format("-C OUTPUT -d %s -j LAN", subnet))) {
+                Log.d("LANPolicy", "Nothing to do");
+                return;
+            }
             if (allow) {
                 if (iptRules.genericRule("-N LAN")) {
                     iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
