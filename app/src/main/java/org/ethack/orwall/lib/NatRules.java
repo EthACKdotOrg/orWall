@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import org.ethack.orwall.database.OpenHelper;
 import org.sufficientlysecure.rootcommands.util.Log;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -51,13 +50,14 @@ public class NatRules {
         return appExists;
     }
 
-    public void removeAppFromRules(Long appUID) {
+    public boolean removeAppFromRules(Long appUID) {
         String filter = OpenHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appUID)};
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.delete(OpenHelper.NAT_TABLE_NAME, filter, filterArgs);
+        int result = db.delete(OpenHelper.NAT_TABLE_NAME, filter, filterArgs);
         db.close();
+        return (result == 1);
     }
 
     public boolean addAppToRules(Long appUID, String appName, String onionType, Long onionPort, String portType) {
@@ -70,15 +70,15 @@ public class NatRules {
         contentValues.put(OpenHelper.COLUMN_PORTTYPE, portType);
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.insert(OpenHelper.NAT_TABLE_NAME, null, contentValues);
+        long result = db.insert(OpenHelper.NAT_TABLE_NAME, null, contentValues);
         db.close();
-        return true;
+        return (result > 0);
     }
 
     public boolean addAppToRules(AppRule appRule) {
         return addAppToRules(
                 appRule.getAppUID(),
-                appRule.getAppName(),
+                appRule.getPkgName(),
                 appRule.getOnionType(),
                 appRule.getOnionPort(),
                 appRule.getOnionType()
@@ -150,7 +150,7 @@ public class NatRules {
 
     public boolean update(AppRule appRule) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(OpenHelper.COLUMN_APPNAME, appRule.getAppName());
+        contentValues.put(OpenHelper.COLUMN_APPNAME, appRule.getPkgName());
         contentValues.put(OpenHelper.COLUMN_APPUID, String.valueOf(appRule.getAppUID()));
         contentValues.put(OpenHelper.COLUMN_ONIONPORT, String.valueOf(appRule.getOnionPort()));
         contentValues.put(OpenHelper.COLUMN_ONIONTYPE, appRule.getOnionType());
