@@ -113,7 +113,9 @@ public class AppListAdapter extends ArrayAdapter {
 
                     String appName = apps.get(getPosition).getAppName();
                     if (compoundButton.isChecked()) {
-                        apps.get(getPosition).setLabel(appName + " (via " + apps.get(getPosition).getOnionType() + ")");
+                        String type = apps.get(getPosition).getPortType();
+                        String label = String.format("%s (%s via %s)", appName, type, apps.get(getPosition).getOnionType());
+                        apps.get(getPosition).setLabel(label);
                     } else {
                         apps.get(getPosition).setLabel(appName);
                     }
@@ -168,8 +170,11 @@ public class AppListAdapter extends ArrayAdapter {
                     appRule.setChecked(false);
                     holder.checkBox.setChecked(false);
                 } else {
-                    holder.checkBox.setText(appName + " (via " + appRule.getOnionType() + ")");
-                    appRule.setLabel(appName + " (via " + appRule.getOnionType() + ")");
+                    String type = appRule.getPortType();
+                    String label = String.format("%s (%s via %s)", appName, type, appRule.getOnionType());
+
+                    holder.checkBox.setText(label);
+                    appRule.setLabel(label);
                     appRule.setChecked(true);
                     holder.checkBox.setChecked(true);
                 }
