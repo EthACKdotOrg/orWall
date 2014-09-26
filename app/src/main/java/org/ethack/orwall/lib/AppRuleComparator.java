@@ -22,13 +22,13 @@ public class AppRuleComparator implements Comparator<AppRule> {
     public int compare(AppRule appRule1, AppRule appRule2) {
         PackageInfo pkgInfo1 = null;
         try {
-            pkgInfo1 = packageManager.getPackageInfo(appRule1.getAppName(), PackageManager.GET_PERMISSIONS);
+            pkgInfo1 = packageManager.getPackageInfo(appRule1.getPkgName(), PackageManager.GET_PERMISSIONS);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, e.getMessage());
         }
         PackageInfo pkgInfo2 = null;
         try {
-            pkgInfo2 = packageManager.getPackageInfo(appRule2.getAppName(), PackageManager.GET_PERMISSIONS);
+            pkgInfo2 = packageManager.getPackageInfo(appRule2.getPkgName(), PackageManager.GET_PERMISSIONS);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, e.getMessage());
         }

@@ -117,15 +117,15 @@ public class InitializeIptables {
         for (AppRule rule : rules) {
 
             if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                iptRules.bypass(rule.getAppUID(), rule.getAppName(), true);
+                iptRules.bypass(rule.getAppUID(), rule.getPkgName(), true);
 
             } else if (rule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                iptRules.fenced(rule.getAppUID(), rule.getAppName(), true);
+                iptRules.fenced(rule.getAppUID(), rule.getPkgName(), true);
 
             } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
-                iptRules.natApp(context, rule.getAppUID(), 'A', rule.getAppName());
+                iptRules.natApp(context, rule.getAppUID(), 'A', rule.getPkgName());
             } else {
-                Log.e("Boot: ", "Don't know what to do for "+ rule.getAppName());
+                Log.e("Boot: ", "Don't know what to do for "+ rule.getPkgName());
             }
         }
         Log.d("Boot: ", "Finished NAT stuff");
