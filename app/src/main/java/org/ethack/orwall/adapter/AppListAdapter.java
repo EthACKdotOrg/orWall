@@ -8,14 +8,15 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
@@ -55,7 +56,7 @@ public class AppListAdapter extends ArrayAdapter {
 
     private final static String TAG = "AppListAdapter";
     private final Context context;
-    private final Object[] apps;
+    private final List<AppRule> apps;
     private final PackageManager packageManager;
     private final NatRules natRules;
     private final SharedPreferences sharedPreferences;
@@ -74,7 +75,7 @@ public class AppListAdapter extends ArrayAdapter {
     public AppListAdapter(Context context, List<AppRule> pkgs) {
         super(context, R.layout.app_row, pkgs);
         this.context = context;
-        this.apps = pkgs.toArray();
+        this.apps = pkgs;
         this.packageManager = context.getPackageManager();
         this.natRules = new NatRules(context);
         this.sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
@@ -98,59 +99,83 @@ public class AppListAdapter extends ArrayAdapter {
             convertView = inflater.inflate(R.layout.app_row, parent, false);
             holder = new ViewHolder();
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.id_application);
+            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                /**
+                 * This should allow the checked state to be persistent across scroll.
+                 * Thanks to http://www.lalit3686.blogspot.in/2012/06/today-i-am-going-to-show-how-to-deal.html
+                 * @param compoundButton CompoundButton transmitted by click event
+                 * @param b a boolean
+                 */
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    int getPosition = (Integer) compoundButton.getTag();
+                    apps.get(getPosition).setChecked(compoundButton.isChecked());
+
+                    String appName = apps.get(getPosition).getAppName();
+                    if (compoundButton.isChecked()) {
+                        apps.get(getPosition).setLabel(appName + " (via " + apps.get(getPosition).getOnionType() + ")");
+                    } else {
+                        apps.get(getPosition).setLabel(appName);
+                    }
+                }
+            });
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        holder.checkBox.setTag(position);
 
-        AppRule appRule = null;
+        AppRule appRule = this.apps.get(position);
+
+        PackageManager packageManager = this.context.getPackageManager();
+        ApplicationInfo applicationInfo = null;
         try {
-            appRule = (AppRule) this.apps[position];
-        } catch (ArrayIndexOutOfBoundsException e) {
+            applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), PackageManager.GET_PERMISSIONS);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Application not found: " + appRule.getPkgName());
         }
 
-        if (appRule != null) {
+        if (applicationInfo != null) {
 
-            PackageManager packageManager = this.context.getPackageManager();
-            ApplicationInfo applicationInfo = null;
-            try {
-                applicationInfo = packageManager.getApplicationInfo(appRule.getAppName(), PackageManager.GET_PERMISSIONS);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "Application not found: " + appRule.getAppName());
-            }
+            Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
+            appIcon.setBounds(0, 0, 40, 40);
 
-            if (applicationInfo != null) {
+            holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
+            holder.checkBox.setTag(R.id.id_appTag, appRule.getPkgName());
+            holder.checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((CheckBox) view).isChecked();
+                    int getPosition = (Integer) view.getTag();
+                    toggleApp(checked, apps.get(getPosition));
+                    apps.get(getPosition).setChecked(checked);
+                }
+            });
+            holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showAdvanced(view);
+                    return true;
+                }
+            });
 
-                Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-                appIcon.setBounds(0, 0, 40, 40);
-
-                holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
-                holder.checkBox.setTag(R.id.id_appTag, appRule.getAppName());
-                holder.checkBox.setTextColor(Color.BLACK);
-                holder.checkBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        toggleApp(view);
-                    }
-                });
-                holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        showAdvanced(view);
-                        return true;
-                    }
-                });
-                CharSequence label = packageManager.getApplicationLabel(applicationInfo);
-
+            if (appRule.getLabel() == null) {
+                String appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                appRule.setAppName(appName);
                 if (appRule.getOnionType().equals("None")) {
-                    holder.checkBox.setText(label);
+                    holder.checkBox.setText(appName);
+                    appRule.setLabel(appName);
+                    appRule.setChecked(false);
                     holder.checkBox.setChecked(false);
                 } else {
-                    Log.d(TAG, "Treating as ENABLED: " + label);
-                    holder.checkBox.setText(label + " (via " + appRule.getOnionType() + ")");
+                    holder.checkBox.setText(appName + " (via " + appRule.getOnionType() + ")");
+                    appRule.setLabel(appName + " (via " + appRule.getOnionType() + ")");
+                    appRule.setChecked(true);
                     holder.checkBox.setChecked(true);
                 }
-
+            } else {
+                holder.checkBox.setText(appRule.getLabel());
+                holder.checkBox.setChecked(appRule.isChecked());
             }
         }
         return convertView;
@@ -160,54 +185,55 @@ public class AppListAdapter extends ArrayAdapter {
      * Simple holder — allows a faster view
      */
     static class ViewHolder {
-        private CheckBox checkBox;
+        protected CheckBox checkBox;
     }
 
     /**
      * Function called when we touch an app in the "app" tab
      *
-     * @param view - View object transmitted via onClick argument in app_row.xml
+     * @param checked boolean: is checkbox checked?
+     * @param appRule AppRule object
      */
-    public void toggleApp(View view) {
-        CheckBox checkBox = (CheckBox) view;
-        boolean checked = checkBox.isChecked();
-        String appName = view.getTag(R.id.id_appTag).toString();
+    public void toggleApp(boolean checked, AppRule appRule) {
 
-        PackageInfo apk = null;
-        try {
-            apk = packageManager.getPackageInfo(appName, PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            android.util.Log.e(TAG, "Application " + appName + " not found");
-        }
-        if (apk != null) {
-
-            long appUID = apk.applicationInfo.uid;
-            CharSequence label = packageManager.getApplicationLabel(apk.applicationInfo);
-
-            Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-            bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
-            bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
+        String appName = appRule.getPkgName();
 
 
-            // TODO: find a way to force a complete refresh of the tab
+        long appUID = appRule.getAppUID();
 
-            if (checked) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
-                this.natRules.addAppToRules(
-                        appUID, appName,
-                        Constants.DB_ONION_TYPE_TOR,
-                        Constants.ORBOT_TRANSPROXY,
-                        Constants.DB_PORT_TYPE_TRANS
-                );
-                checkBox.setText(label + " (via " + Constants.DB_ONION_TYPE_TOR + ")");
+        Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+        bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
+        bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
+
+        if (checked) {
+            bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+            boolean success = this.natRules.addAppToRules(
+                    appUID, appName,
+                    Constants.DB_ONION_TYPE_TOR,
+                    Constants.ORBOT_TRANSPROXY,
+                    Constants.DB_PORT_TYPE_TRANS
+            );
+            if (success) {
+                Toast.makeText(context, context.getString(R.string.toast_new_rule), Toast.LENGTH_SHORT).show();
             } else {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-                this.natRules.removeAppFromRules(appUID);
-                checkBox.setText(label);
+                Toast.makeText(context,
+                        String.format(context.getString(R.string.toast_error), 1),
+                        Toast.LENGTH_SHORT
+                ).show();
             }
-            context.startService(bgpProcess);
-
+        } else {
+            bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+            boolean success = this.natRules.removeAppFromRules(appUID);
+            if (success) {
+                Toast.makeText(context, context.getString(R.string.toast_remove_rule), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context,
+                        String.format(context.getString(R.string.toast_error), 2),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         }
+        context.startService(bgpProcess);
     }
 
     public void showAdvanced(final View view) {
@@ -228,9 +254,9 @@ public class AppListAdapter extends ArrayAdapter {
             final AppRule appRule = this.natRules.getAppRule((long) applicationInfo.uid);
 
             // is it a known app? If not, populate some information about it anyway.
-            if (appRule.getAppName() == null) {
+            if (appRule.getPkgName() == null) {
                 appRule.setAppUID((long) applicationInfo.uid);
-                appRule.setAppName(applicationInfo.packageName);
+                appRule.setPkgName(applicationInfo.packageName);
             }
 
             // Add Proxy providers if available
@@ -332,7 +358,7 @@ public class AppListAdapter extends ArrayAdapter {
 
         // Update DB content
         AppRule updated = new AppRule();
-        updated.setAppName(appRule.getAppName());
+        updated.setPkgName(appRule.getPkgName());
         updated.setAppUID(appRule.getAppUID());
 
         if (check_bypass.isChecked()) {
@@ -378,7 +404,7 @@ public class AppListAdapter extends ArrayAdapter {
             // We want to use a background process in order to free the main thread and associated
             Intent bgCleanup = new Intent(this.context, BackgroundProcess.class);
             bgCleanup.putExtra(Constants.PARAM_APPUID, appRule.getAppUID());
-            bgCleanup.putExtra(Constants.PARAM_APPNAME, appRule.getAppName());
+            bgCleanup.putExtra(Constants.PARAM_APPNAME, appRule.getPkgName());
 
             // first: clean existing rules IF app already exists
             if (appRule.getOnionType() != null) {
@@ -398,7 +424,7 @@ public class AppListAdapter extends ArrayAdapter {
             // Now we can add the new rules
             Intent bgNewRules = new Intent(this.context, BackgroundProcess.class);
             bgNewRules.putExtra(Constants.PARAM_APPUID, appRule.getAppUID());
-            bgNewRules.putExtra(Constants.PARAM_APPNAME, appRule.getAppName());
+            bgNewRules.putExtra(Constants.PARAM_APPNAME, appRule.getPkgName());
 
             if (updated.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
                 bgNewRules.putExtra(Constants.ACTION, Constants.ACTION_ADD_FENCED);
@@ -413,7 +439,7 @@ public class AppListAdapter extends ArrayAdapter {
 
             ApplicationInfo applicationInfo = null;
             try {
-                applicationInfo = this.packageManager.getApplicationInfo(updated.getAppName(), PackageManager.GET_PERMISSIONS);
+                applicationInfo = this.packageManager.getApplicationInfo(updated.getPkgName(), PackageManager.GET_PERMISSIONS);
             } catch (PackageManager.NameNotFoundException e) {
             }
             if (applicationInfo != null) {
