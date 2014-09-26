@@ -118,8 +118,11 @@
     <string name="disable_orwall_title">Disable orWall?</string>
     <string name="disable_orwall_msg">You\'re going to disable orWall.\n\n
         This means your device will allow all outgoing connections. As well, outgoing connections
-        will not be forced to any anonymous proxy anymore.\n\n
-        This may be dangerous!
+        will not be forced to any anonymous proxy anymore.\n
+        \n
+        This may be dangerous!\n
+        \n
+        Please keep in mind deactivation will last until next reboot.
     </string>
     <string name="alert_accept">Accept</string>
 
@@ -136,6 +139,7 @@
     <string name="alert_save">Save</string>
     <string name="alert_cancel">Cancel</string>
 
+    <string name="start_wizard">Start Wizard</string>
     <string name="wizard_step">Step</string>
     <string name="wizard_title_one">What is orWall</string>
     <string name="wizard_title_two">Quick settings</string>

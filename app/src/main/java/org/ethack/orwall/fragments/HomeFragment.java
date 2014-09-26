@@ -22,6 +22,7 @@ import android.widget.Toast;
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.PreferencesActivity;
 import org.ethack.orwall.R;
+import org.ethack.orwall.WizardActivity;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 
@@ -56,6 +57,7 @@ public class HomeFragment extends Fragment {
 
         Button settings = (Button) view.findViewById(R.id.id_settings);
         Button about = (Button) view.findViewById(R.id.id_about);
+        Button wizard = (Button) view.findViewById(R.id.id_wizard);
 
         orwallStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true));
         // orWall might be deactivated. Let's test it!
@@ -137,6 +139,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showAbout();
+            }
+        });
+
+        // Start wizard
+        wizard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent wizard = new Intent(getActivity()
+                        , WizardActivity.class);
+                startActivity(wizard);
             }
         });
 

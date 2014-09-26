@@ -70,6 +70,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:id="@+id/id_wizard"
+            android:text="@string/start_wizard"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="end"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
