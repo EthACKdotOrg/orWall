@@ -33,8 +33,8 @@ import java.util.concurrent.TimeoutException;
 public class InitializeIptables {
 
     private final IptRules iptRules;
-    private final String dir_dst = "/system/etc/init.d";
-    private final String dst_file = String.format("%s/91firewall", dir_dst);
+    public final static String dir_dst = "/system/etc/init.d";
+    public final static String dst_file = String.format("%s/91firewall", dir_dst);
     private long trans_proxy;
     private long polipo_port;
     private long dns_proxy;
