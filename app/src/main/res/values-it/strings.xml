@@ -119,6 +119,7 @@ In questo caso non possiamo farci niente :(.
     <string name="wizard_init_ipt_comments_text">Support des commentaires dans IPTables (lecture seule) :</string>
     <string name="wizard_orbot_status_text">Orbot (lecture seule):</string>
 
+    <string name="warning_init">Attention ! IPTables ne semble pas être initialisé !</string>
     <string name="wizard_first">
         <b>Welcome to orWall!</b>\n
         This wizard will let you learn what orWall can do and what it cannot. It will also give you some

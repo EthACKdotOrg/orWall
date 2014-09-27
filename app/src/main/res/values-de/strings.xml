@@ -123,6 +123,7 @@
     <string name="wizard_orbot_status_text">Orbot (nur lesen):</string>
 
     <!-- TODO: translation -->
+    <string name="warning_init">Warning! IPTables doesn\'t seem to be initialized!</string>
     <string name="wizard_first">
         <b>Welcome to orWall!</b>\n
         This wizard will let you learn what orWall can do and what it cannot. It will also give you some
