@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,7 @@ public class HomeFragment extends Fragment {
 
         this.sharedPreferences = this.getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         this.initializeIptables = new InitializeIptables(getActivity());
+        boolean initSupported = initializeIptables.initSupported();
 
         Switch orwallStatus = (Switch) view.findViewById(R.id.orwall_status);
         Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);
@@ -71,6 +73,14 @@ public class HomeFragment extends Fragment {
         Button settings = (Button) view.findViewById(R.id.id_settings);
         Button about = (Button) view.findViewById(R.id.id_about);
         Button wizard = (Button) view.findViewById(R.id.id_wizard);
+
+        // Display a big fat warning if IPTables wasn't initialized properly
+        // This warning should be shown only if we aren't expected this situation
+        // If we know there is no init-script support, then don't show it.
+        if (initSupported && !initializeIptables.isInitialized()) {
+            view.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
+        }
+
 
         orwallStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true));
         // orWall might be deactivated. Let's test it!
@@ -144,7 +154,6 @@ public class HomeFragment extends Fragment {
         InstallScripts installScripts = new InstallScripts(getActivity());
         installScripts.run();
         boolean enforceInit = sharedPreferences.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-        boolean initSupported = initializeIptables.initSupported();
         status_initscript.setChecked( (enforceInit && initSupported) );
         status_initscript.setEnabled(initSupported);
         // If init script cannot be enabled, display why
