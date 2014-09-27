@@ -5,112 +5,118 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
+    <ScrollView
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_width="fill_parent"
+        android:layout_height="0dp">
 
-        <Switch
-            android:id="@+id/orwall_status"
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/home_enable_orwall"
-            android:textOff="@string/disabled"
-            android:textOn="@string/enabled" />
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <Switch
-            android:id="@+id/tethering_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/switch_tethering"
-            android:textOff="@string/disabled"
-            android:textOn="@string/enabled" />
+            <Switch
+                android:id="@+id/orwall_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/home_enable_orwall"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
 
-        <Switch
-            android:id="@+id/browser_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/switch_browser"
-            android:textOff="@string/disabled"
-            android:textOn="@string/enabled" />
+            <Switch
+                android:id="@+id/tethering_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/switch_tethering"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
 
-        <Switch
-            android:id="@+id/sip_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/switch_sip"
-            android:textOff="@string/disabled"
-            android:textOn="@string/enabled" />
+            <Switch
+                android:id="@+id/browser_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/switch_browser"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
 
-        <Switch
-            android:id="@+id/lan_status"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/switch_lan"
-            android:textOff="@string/disabled"
-            android:textOn="@string/enabled" />
+            <Switch
+                android:id="@+id/sip_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/switch_sip"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
 
-        <Space
-            android:layout_width="fill_parent"
-            android:layout_height="30dp" />
-        <!--
-        This part will give hints regarding orWall status.
-        It's, more or less, the same thing we will see in the wizard first page.
-         -->
-        <Switch
-            android:id="@+id/status_initscript"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/wizard_init_script_text" />
+            <Switch
+                android:id="@+id/lan_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/switch_lan"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
 
-        <TextView
-            android:id="@+id/status_initscript_description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            <Space
+                android:layout_width="fill_parent"
+                android:layout_height="30dp" />
+            <!--
+            This part will give hints regarding orWall status.
+            It's, more or less, the same thing we will see in the wizard first page.
+             -->
+            <Switch
+                android:id="@+id/status_initscript"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/wizard_init_script_text" />
 
-        <Switch
-            android:id="@+id/status_root"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/wizard_init_root_text" />
+            <TextView
+                android:id="@+id/status_initscript_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
-        <Switch
-            android:id="@+id/status_iptables"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/wizard_init_iptables_text" />
+            <Switch
+                android:id="@+id/status_root"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/wizard_init_root_text" />
 
-        <TextView
-            android:id="@+id/status_iptables_description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/explain_no_iptables"
-            android:visibility="gone" />
+            <Switch
+                android:id="@+id/status_iptables"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/wizard_init_iptables_text" />
 
-        <Switch
-            android:id="@+id/status_ipt_comments"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/wizard_init_ipt_comments_text" />
+            <TextView
+                android:id="@+id/status_iptables_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/explain_no_iptables"
+                android:visibility="gone" />
 
-        <Switch
-            android:id="@+id/status_orbot"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/wizard_orbot_status_text" />
-    </LinearLayout>
+            <Switch
+                android:id="@+id/status_ipt_comments"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/wizard_init_ipt_comments_text" />
+
+            <Switch
+                android:id="@+id/status_orbot"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/wizard_orbot_status_text" />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         style="@android:style/ButtonBar"
