@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -101,7 +102,35 @@ public class WizardFragment extends Fragment {
         if (mPageNumber == 0) {
             ViewGroup main_content = (ViewGroup) rootView.findViewById(R.id.id_main_content);
             SharedPreferences preferenceManager = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-            InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+            final InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+            // Extract scripts
+            InstallScripts installScripts = new InstallScripts(getActivity());
+            installScripts.run();
+
+            // init-script installation
+            // install init as default behavior
+            initializeIptables.installInitScript();
+            boolean enforceInit = preferenceManager.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
+            boolean disableInit = preferenceManager.getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
+
+            Switch initScript = new Switch(getActivity());
+            initScript.setChecked(enforceInit);
+            initScript.setText(getString(R.string.wizard_init_script_text));
+            initScript.setEnabled(!disableInit);
+
+            initScript.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    boolean checked = compoundButton.isChecked();
+                    if (checked) {
+                        initializeIptables.installInitScript();
+                    } else {
+                        initializeIptables.removeIniScript();
+                    }
+                }
+            });
+
+            main_content.addView(initScript);
 
             // Root status
             Switch rootStatus = new Switch(getActivity());
@@ -124,18 +153,6 @@ public class WizardFragment extends Fragment {
             iptablesComments.setEnabled(false);
             iptablesComments.setText(getString(R.string.wizard_init_ipt_comments_text));
             main_content.addView(iptablesComments);
-
-            // init-script installation
-            InstallScripts installScripts = new InstallScripts(getActivity());
-            installScripts.run();
-            boolean disableInit = preferenceManager.getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
-
-            Switch initScript = new Switch(getActivity());
-            initScript.setChecked(disableInit);
-            initScript.setText(getString(R.string.wizard_init_script_text));
-            initScript.setEnabled(disableInit);
-            // TODO: add listener
-            main_content.addView(initScript);
 
             // Is orbot installed?
             OrbotHelper orbotHelper = new OrbotHelper(getActivity());
