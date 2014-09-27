@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false"<>orWall</string>
+    <string name="app_name" translatable="false">orWall</string>
 
     <string name="about_links" translatable="false">
         https://orwall.org \nhttps://twitter.com/orWallApp \nhttps://github.com/EthACKDotOrg/orWall
