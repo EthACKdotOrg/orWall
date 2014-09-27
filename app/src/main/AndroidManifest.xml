@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.ethack.orwall" >
+    package="org.ethack.orwall">
 
     <!-- In order to apply NAT and other rules once boot is complete -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -20,10 +20,10 @@
         android:allowBackup="true"
         android:icon="@drawable/v2"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="org.ethack.orwall.TabbedMain"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +34,7 @@
         <receiver
             android:name="org.ethack.orwall.BootBroadcast"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
@@ -44,7 +44,7 @@
         <receiver
             android:name="org.ethack.orwall.UninstallBroadcast"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
@@ -65,7 +65,7 @@
         <receiver
             android:name="org.ethack.orwall.NetworkReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
@@ -74,8 +74,7 @@
 
         <activity
             android:name="org.ethack.orwall.WizardActivity"
-            android:label="@string/title_activity_wizard" >
-        </activity>
+            android:label="@string/title_activity_wizard"></activity>
     </application>
 
 </manifest>

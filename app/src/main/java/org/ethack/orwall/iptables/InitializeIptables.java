@@ -32,9 +32,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class InitializeIptables {
 
-    private final IptRules iptRules;
     public final static String dir_dst = "/system/etc/init.d";
     public final static String dst_file = String.format("%s/91firewall", dir_dst);
+    private final IptRules iptRules;
     private long trans_proxy;
     private long polipo_port;
     private long dns_proxy;
@@ -63,10 +63,10 @@ public class InitializeIptables {
         PackageManager packageManager = context.getPackageManager();
 
         try {
-            app_uid = (long)packageManager.getApplicationInfo("org.torproject.android", 0).uid;
+            app_uid = (long) packageManager.getApplicationInfo("org.torproject.android", 0).uid;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
-            app_uid = (long)0; // prevents stupid compiler error… never used.
+            app_uid = (long) 0; // prevents stupid compiler error… never used.
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
@@ -125,7 +125,7 @@ public class InitializeIptables {
             } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
                 iptRules.natApp(context, rule.getAppUID(), 'A', rule.getPkgName());
             } else {
-                Log.e("Boot: ", "Don't know what to do for "+ rule.getPkgName());
+                Log.e("Boot: ", "Don't know what to do for " + rule.getPkgName());
             }
         }
         Log.d("Boot: ", "Finished NAT stuff");

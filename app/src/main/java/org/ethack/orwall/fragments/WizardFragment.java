@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -37,7 +36,8 @@ public class WizardFragment extends Fragment {
     private int mPageNumber;
 
 
-    public WizardFragment() {}
+    public WizardFragment() {
+    }
 
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
@@ -72,7 +72,7 @@ public class WizardFragment extends Fragment {
         String step = "Step 1: ";
         if (mPageNumber < titles.length) {
             title = getString(titles[mPageNumber]);
-            step = String.format("Step %d: ", mPageNumber+1);
+            step = String.format("Step %d: ", mPageNumber + 1);
         }
         ((TextView) rootView.findViewById(R.id.wizard_step_title))
                 .setText(step + title);

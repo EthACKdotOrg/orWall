@@ -25,6 +25,7 @@ public class NetworkHelper {
     /**
      * Tries to detect if we're sharing the connection or not.
      * It's not that easy, as it seems there is no simple API to call for that :(.
+     *
      * @param context Context in order to get ConnectivityManager
      * @return boolean (true if connection is shared)
      */
@@ -52,6 +53,7 @@ public class NetworkHelper {
     /**
      * Get device IP, using WifiManager
      * Using this object let us access the IP without requiring INTERNET right.
+     *
      * @param context Context in order to get WifiManager
      * @return the IP as a String
      */
@@ -79,6 +81,7 @@ public class NetworkHelper {
     /**
      * Provide a simple way to get subnet
      * Though it might be a bit stronger, as it fixes /24.
+     *
      * @param context Context in order to call getIp()
      * @return subnet as a String
      */

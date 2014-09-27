@@ -15,10 +15,10 @@ import org.ethack.orwall.lib.Constants;
 /**
  * Simple wizard activity.
  * It will displays orWall capabilities, explain some stuff
- *
+ * <p/>
  * Aim: provide main information in a smooth though complete way to the User, so that
  * he knows what to do.
- *
+ * <p/>
  * Taken from example in here:
  * https://developer.android.com/training/animation/screen-slide.html
  */

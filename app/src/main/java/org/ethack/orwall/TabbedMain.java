@@ -91,6 +91,7 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
 
     /**
      * No more menu
+     *
      * @param menu
      * @return
      */
@@ -102,6 +103,7 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
 
     /**
      * We do not provide a menu.
+     *
      * @param item
      * @return
      */

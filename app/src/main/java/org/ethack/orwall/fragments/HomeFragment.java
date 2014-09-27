@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
 
         this.sharedPreferences = this.getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        this.initializeIptables  = new InitializeIptables(getActivity());
+        this.initializeIptables = new InitializeIptables(getActivity());
 
         Switch orwallStatus = (Switch) view.findViewById(R.id.orwall_status);
         Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);

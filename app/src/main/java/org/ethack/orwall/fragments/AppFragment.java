@@ -3,8 +3,8 @@ package org.ethack.orwall.fragments;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +23,18 @@ import java.util.List;
 
 /**
  * Manage "apps" tab fragment.
+ *
  * @link org.ethack.orwall.TabbedMain
  */
 public class AppFragment extends Fragment {
 
-    private final static  String TAG = "AppFragment";
+    private final static String TAG = "AppFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
 
-        ListView listView = (ListView)view.findViewById(R.id.id_enabled_apps);
+        ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
 
         // get enabled apps
         NatRules natRules = new NatRules(this.getActivity());
@@ -56,6 +57,7 @@ public class AppFragment extends Fragment {
     /**
      * List all disabled application. Meaning: installed app requiring Internet, but NOT in NatRules.
      * It also filters out special apps like orbot and i2p.
+     *
      * @return List of AppRule
      */
     private List<AppRule> listDisabledApps() {
@@ -66,10 +68,10 @@ public class AppFragment extends Fragment {
 
         List<PackageInfo> pkgInstalled = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
 
-        for (PackageInfo pkgInfo: pkgInstalled) {
+        for (PackageInfo pkgInfo : pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
-                if (!natRules.isAppInRules((long)pkgInfo.applicationInfo.uid)) {
-                    AppRule tmp = new AppRule(pkgInfo.packageName, (long)pkgInfo.applicationInfo.uid, "None", (long)0, "None");
+                if (!natRules.isAppInRules((long) pkgInfo.applicationInfo.uid)) {
+                    AppRule tmp = new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, "None", (long) 0, "None");
                     pkgList.add(tmp);
                 }
             }
@@ -114,7 +116,7 @@ public class AppFragment extends Fragment {
     private boolean isReservedApp(PackageInfo pkg) {
         return (
                 pkg.packageName.equals(Constants.ORBOT_APP_NAME) ||
-                pkg.packageName.equals(Constants.I2P_APP_NAME)
+                        pkg.packageName.equals(Constants.I2P_APP_NAME)
         );
     }
 }

@@ -94,7 +94,7 @@ public class AppRule {
     }
 
     public String getAppName() {
-        return  this.appName;
+        return this.appName;
     }
 
     public void setAppName(String appName) {

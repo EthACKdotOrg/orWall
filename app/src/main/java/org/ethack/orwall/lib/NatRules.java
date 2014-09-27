@@ -18,9 +18,9 @@ import java.util.Set;
  * Helper: manage apps in SQLite, in order to prevent concurrent accesses to the DB.
  */
 public class NatRules {
+    private final static String TAG = "NatRules";
     private OpenHelper dbHelper;
     private Context context;
-    private final static String TAG = "NatRules";
 
     public NatRules(Context context) {
         this.dbHelper = new OpenHelper(context);
@@ -98,7 +98,7 @@ public class NatRules {
         };
         Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, selection, null, null, null, null, null);
 
-        if (!cursor.moveToFirst()){
+        if (!cursor.moveToFirst()) {
             Log.e(TAG, "getAllRules size is null!");
             return list;
         }
@@ -118,7 +118,7 @@ public class NatRules {
 
         cursor.close();
         db.close();
-        Log.e(TAG, "getAllRules size: "+ String.valueOf(list.size()));
+        Log.e(TAG, "getAllRules size: " + String.valueOf(list.size()));
         return list;
     }
 
@@ -157,7 +157,7 @@ public class NatRules {
         contentValues.put(OpenHelper.COLUMN_PORTTYPE, appRule.getPortType());
 
         String filter = OpenHelper.COLUMN_APPUID + "=?";
-        String[] filterArgs = { String.valueOf(appRule.getAppUID()) };
+        String[] filterArgs = {String.valueOf(appRule.getAppUID())};
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
 
         int nb_row = 0;
@@ -207,7 +207,7 @@ public class NatRules {
             );
         } else {
             appRule = new AppRule(null, null, null, null, null);
-            Log.e(TAG, "Unable to get rules for "+ String.valueOf(appUID));
+            Log.e(TAG, "Unable to get rules for " + String.valueOf(appUID));
         }
         cursor.close();
         db.close();

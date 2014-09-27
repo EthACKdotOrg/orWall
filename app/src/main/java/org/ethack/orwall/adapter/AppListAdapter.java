@@ -187,13 +187,6 @@ public class AppListAdapter extends ArrayAdapter {
     }
 
     /**
-     * Simple holder — allows a faster view
-     */
-    static class ViewHolder {
-        protected CheckBox checkBox;
-    }
-
-    /**
      * Function called when we touch an app in the "app" tab
      *
      * @param checked boolean: is checkbox checked?
@@ -457,5 +450,12 @@ public class AppListAdapter extends ArrayAdapter {
             Log.e(TAG, "ERROR while updating object in DB!");
         }
 
+    }
+
+    /**
+     * Simple holder — allows a faster view
+     */
+    static class ViewHolder {
+        protected CheckBox checkBox;
     }
 }

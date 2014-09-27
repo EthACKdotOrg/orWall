@@ -141,7 +141,7 @@ public class IptRules {
                 ),
         };
 
-        for (String rule: rules) {
+        for (String rule : rules) {
             if (!applyRule(rule)) {
                 Log.e(
                         "bypass",
@@ -167,7 +167,7 @@ public class IptRules {
                 ),
         };
 
-        for (String rule: rules) {
+        for (String rule : rules) {
             if (!applyRule(rule)) {
                 Log.e(
                         "fenced",
