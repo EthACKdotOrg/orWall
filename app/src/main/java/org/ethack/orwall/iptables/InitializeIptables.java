@@ -321,6 +321,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Check if init-script is supported by the user device OS
+     * It also save this state for later reference if needed
+     * @return true if init is supported.
+     */
     public boolean initSupported() {
         File dstDir = new File(dir_dst);
         boolean support = dstDir.exists();
