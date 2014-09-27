@@ -144,11 +144,11 @@ public class HomeFragment extends Fragment {
         InstallScripts installScripts = new InstallScripts(getActivity());
         installScripts.run();
         boolean enforceInit = sharedPreferences.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-        boolean disableInit = initializeIptables.initSupported();
-        status_initscript.setChecked(enforceInit);
-        status_initscript.setEnabled(!disableInit);
+        boolean initSupported = initializeIptables.initSupported();
+        status_initscript.setChecked( (enforceInit && initSupported) );
+        status_initscript.setEnabled(initSupported);
         // If init script cannot be enabled, display why
-        if (!enforceInit && disableInit) {
+        if (!initSupported) {
             TextView explain = (TextView) view.findViewById(R.id.status_initscript_description);
             explain.setText(
                     String.format(

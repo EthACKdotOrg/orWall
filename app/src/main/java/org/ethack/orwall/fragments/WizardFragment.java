@@ -111,12 +111,12 @@ public class WizardFragment extends Fragment {
             // install init as default behavior
             initializeIptables.installInitScript();
             boolean enforceInit = preferenceManager.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-            boolean disableInit = initializeIptables.initSupported();
+            boolean initSupported = initializeIptables.initSupported();
 
             Switch initScript = new Switch(getActivity());
-            initScript.setChecked(enforceInit);
+            initScript.setChecked( (enforceInit && initSupported) );
             initScript.setText(getString(R.string.wizard_init_script_text));
-            initScript.setEnabled(!disableInit);
+            initScript.setEnabled(initSupported);
 
             initScript.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
