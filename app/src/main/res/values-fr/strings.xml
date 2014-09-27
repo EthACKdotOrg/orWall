@@ -108,7 +108,7 @@
 
     <string name="start_wizard">Démarrer l\'assistant</string>
     <string name="wizard_step">Étape</string>
-    <string name="wizard_title_one">Qu\'est-ce qu\'orWall ?</string>
+    <string name="wizard_title_one">Qu\'est-ce qu\'orWall</string>
     <string name="wizard_title_two">Réglages rapides</string>
     <string name="wizard_title_three">Réglages des applications</string>
     <string name="title_activity_wizard">Bienvenue dans orWall</string>
@@ -122,6 +122,7 @@
     <string name="wizard_init_ipt_comments_text">Support des commentaires dans IPTables (lecture seule) :</string>
     <string name="wizard_orbot_status_text">Orbot (lecture seule):</string>
 
+    <!-- TODO: translation -->
     <string name="wizard_first">
         <b>Welcome to orWall!</b>\n
         This wizard will let you learn what orWall can do and what it cannot. It will also give you some
