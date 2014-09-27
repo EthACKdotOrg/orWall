@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -142,11 +143,12 @@ public class HomeFragment extends Fragment {
         // Init script: try to install it and so on
         InstallScripts installScripts = new InstallScripts(getActivity());
         installScripts.run();
+        boolean enforceInit = sharedPreferences.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
         boolean disableInit = sharedPreferences.getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
-        status_initscript.setChecked(disableInit);
-        status_initscript.setEnabled(disableInit);
+        status_initscript.setChecked(enforceInit);
+        status_initscript.setEnabled(!disableInit);
         // If init script cannot be enabled, display why
-        if (!disableInit) {
+        if (!enforceInit && disableInit) {
             TextView explain = (TextView) view.findViewById(R.id.status_initscript_description);
             explain.setText(
                     String.format(
@@ -156,6 +158,18 @@ public class HomeFragment extends Fragment {
             );
             explain.setVisibility(View.VISIBLE);
         }
+        // add a listener to this switch
+        status_initscript.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                boolean checked = compoundButton.isChecked();
+                if (checked) {
+                    initializeIptables.installInitScript();
+                } else {
+                    initializeIptables.removeIniScript();
+                }
+            }
+        });
         // Do we have root access ?
         status_root.setChecked(RootCommands.rootAccessGiven());
         // Hopefully there IS iptables on this device…
