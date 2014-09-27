@@ -30,7 +30,6 @@ public class PreferencesActivity extends PreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         String prepend = "org.ethack.orwall.PreferencesActivity$";
         String[] fragments = {
-                prepend + "ScriptPrefs",
                 prepend + "SpecialApps",
                 prepend + "NetworkPrefs",
                 prepend + "ProxyPorts",
@@ -42,42 +41,6 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    public static class ScriptPrefs extends PreferenceFragment {
-
-        private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                InitializeIptables iptables = new InitializeIptables(getActivity());
-                if (sharedPreferences.getBoolean(s, true) && s.equals("enforce_init_script")) {
-                    iptables.installInitScript(getActivity());
-                }
-                if (sharedPreferences.getBoolean(s, true) && s.equals("deactivate_init_script") && !sharedPreferences.getBoolean("enforce_init_script", true)) {
-                    iptables.removeIniScript();
-                }
-            }
-        };
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            PreferenceManager.setDefaultValues(getActivity(), R.xml.network_preference, true);
-            addPreferencesFromResource(R.xml.fragment_init_pref);
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(listener);
-        }
     }
 
     public static class SpecialApps extends PreferenceFragment {

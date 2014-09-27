@@ -17,13 +17,13 @@
     <string name="main_counter" formatted="false">%d minutes, %d secondes avant la fin des permissions.</string>
     <string name="main_end_of_browser">Fin des exceptions pour le Navigateur.</string>
 
-    <string name="menu_action_settings">Paramètres</string>
-    <string name="menu_action_about">A propos</string>
+    <string name="button_settings">Paramètres</string>
+    <string name="button_about">A propos</string>
     <string name="menu_search">Chercher une application</string>
-    <string name="menu_enable_sip">Activer SIP</string>
+    <string name="switch_sip">Activer SIP</string>
     <string name="menu_disable_sip">Désactiver SIP</string>
     <string name="menu_disable_browser">Désactiver le Navigateur</string>
-    <string name="menu_authorize_browser">Autoriser le Navigateur</string>
+    <string name="switch_browser">Autoriser le Navigateur</string>
 
     <string name="title_activity_preferences">Préférences</string>
 
@@ -36,7 +36,7 @@
 
     <string name="network">Réseau</string>
     <string name="summary_network">Gèrer quelques options du réseau. Attention, cela peut vous mettre en danger!</string>
-    <string name="enable_lan">Autoriser les accès depuis le LAN</string>
+    <string name="switch_lan">Autoriser les accès depuis le LAN</string>
     <string name="summary_enable_lan">
         Permettre au LAN de passer outre le firewall et Orbot.\n
         \n
@@ -47,7 +47,7 @@
     <string name="enable_ssh">Permettre les connexions SSH entrantes</string>
     <string name="summary_enable_ssh">Permet les connexions entrantes TCP:22 pour vous connecter en SSH sur votre appareil.</string>
     <string name="tethering">Partage de connexion</string>
-    <string name="enable_tethering">Activer le partage de connexion réseau (Tethering)</string>
+    <string name="switch_tethering">Activer le partage de connexion réseau (Tethering)</string>
     <string name="disable_tethering">Désactiver le partage de connexion réseau (Tethering)</string>
     <string name="summary_enable_tethering">Attention! Cela implique que *tous* le trafic de vos appareil secondaire va être autorisé! Cela signifie que vous pourriez être compromis!</string>
     <string name="tethering_bypass">L\'appareil secondaire passe outre Orbot</string>
@@ -99,7 +99,7 @@
     </string>
     <string name="alert_install_script_accept">Installer</string>
     <string name="alert_install_script_refuse">Refuser</string>
-    <string name="alert_install_no_support" formatted="false">
+    <string name="explain_no_initscript" formatted="false">
         Cette application utilise un script d\'init %s.\n
         Malheureusement, il semble que votre appareil Android ne le supporte pas.\n
         \n

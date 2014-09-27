@@ -150,7 +150,7 @@ public class HomeFragment extends Fragment {
             TextView explain = (TextView) view.findViewById(R.id.status_initscript_description);
             explain.setText(
                     String.format(
-                            getString(R.string.alert_install_no_support),
+                            getString(R.string.explain_no_initscript),
                             InitializeIptables.dst_file
                     )
             );
@@ -160,6 +160,9 @@ public class HomeFragment extends Fragment {
         status_root.setChecked(RootCommands.rootAccessGiven());
         // Hopefully there IS iptables on this device…
         status_iptables.setChecked(initializeIptables.iptablesExists());
+        if (!initializeIptables.iptablesExists()) {
+            view.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
+        }
         // Does current kernel supports comments in iptables?
         initializeIptables.supportComments();
         status_ipt_comments.setChecked(sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
@@ -263,7 +266,7 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-            alertDialog.setNegativeButton(getString(R.string.main_dismiss), new DialogInterface.OnClickListener() {
+            alertDialog.setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     ((Switch) view).setChecked(true);
@@ -288,7 +291,7 @@ public class HomeFragment extends Fragment {
         TextView version = (TextView) v_about.findViewById(R.id.about_version);
         version.setText(versionName);
         new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK)
-                .setTitle(getString(R.string.menu_action_about))
+                .setTitle(getString(R.string.button_about))
                 .setView(v_about)
                 .show();
     }

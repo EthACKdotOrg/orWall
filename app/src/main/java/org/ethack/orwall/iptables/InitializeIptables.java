@@ -362,8 +362,8 @@ public class InitializeIptables {
         } else {
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
             alert.setTitle(R.string.alert_install_script_title);
-            alert.setMessage(String.format(context.getString(R.string.alert_install_no_support), dir_dst));
-            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
+            alert.setMessage(String.format(context.getString(R.string.explain_no_initscript), dir_dst));
+            alert.setNeutralButton(R.string.alert_cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();

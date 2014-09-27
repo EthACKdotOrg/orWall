@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:id="@+id/tethering_status"
-        android:text="@string/enable_tethering"
+        android:text="@string/switch_tethering"
         android:textOn="@string/enabled"
         android:textOff="@string/disabled" />
 
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:id="@+id/browser_status"
-        android:text="@string/menu_authorize_browser"
+        android:text="@string/switch_browser"
         android:textOn="@string/enabled"
         android:textOff="@string/disabled" />
 
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:id="@+id/sip_status"
-        android:text="@string/menu_enable_sip"
+        android:text="@string/switch_sip"
         android:textOn="@string/enabled"
         android:textOff="@string/disabled" />
 
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:id="@+id/lan_status"
-        android:text="@string/enable_lan"
+        android:text="@string/switch_lan"
         android:textOn="@string/enabled"
         android:textOff="@string/disabled" />
         <Space
@@ -84,6 +84,12 @@
             android:text="@string/wizard_init_iptables_text"
             android:enabled="false"
             android:id="@+id/status_iptables" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/status_iptables_description"
+            android:text="@string/explain_no_iptables"
+            android:visibility="gone"/>
         <Switch
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -110,7 +116,7 @@
             android:gravity="center"
             android:id="@+id/id_about"
             style="?android:attr/borderlessButtonStyle"
-            android:text="@string/menu_action_about"/>
+            android:text="@string/button_about"/>
 
         <Button
             android:layout_width="0dp"
@@ -128,6 +134,6 @@
             android:gravity="center"
             android:id="@+id/id_settings"
             style="?android:attr/borderlessButtonStyle"
-            android:text="@string/menu_action_settings" />
+            android:text="@string/button_settings" />
     </LinearLayout>
 </LinearLayout>
