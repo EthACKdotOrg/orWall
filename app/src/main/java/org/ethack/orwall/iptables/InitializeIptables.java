@@ -321,6 +321,13 @@ public class InitializeIptables {
         }
     }
 
+    public boolean initSupported() {
+        File dstDir = new File(dir_dst);
+        boolean support = dstDir.exists();
+        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, !support).apply();
+        return support;
+    }
+
     public void installInitScript() {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
@@ -328,9 +335,7 @@ public class InitializeIptables {
         CheckSum check_src = new CheckSum(src_file);
         CheckSum check_dst = new CheckSum(dst_file);
 
-        File dstDir = new File(dir_dst);
-
-        if (dstDir.exists()) {
+        if (initSupported()) {
 
             if (!check_dst.hash().equals(check_src.hash())) {
                 doInstallScripts(src_file, dst_file);
@@ -338,7 +343,6 @@ public class InitializeIptables {
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
         } else {
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, true).apply();
         }
     }
 
