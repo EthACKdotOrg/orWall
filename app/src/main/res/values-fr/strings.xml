@@ -13,7 +13,7 @@
 
     <string name="network">Réseau</string>
     <string name="summary_network">Gèrer quelques options du réseau. Attention, cela peut vous mettre en danger!</string>
-    <string name="switch_lan">Autoriser les accès depuis le LAN</string>
+    <string name="switch_lan">Autoriser les accès vers le LAN</string>
     <string name="summary_enable_lan">
         Permettre au LAN de passer outre le firewall et Orbot.\n
         \n
