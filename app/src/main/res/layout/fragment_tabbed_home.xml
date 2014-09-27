@@ -67,6 +67,11 @@
             android:layout_height="wrap_content"
             android:text="@string/wizard_init_script_text"
             android:id="@+id/status_initscript"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/status_initscript_description"
+            android:visibility="gone"/>
         <Switch
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

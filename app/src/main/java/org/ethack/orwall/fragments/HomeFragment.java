@@ -145,6 +145,17 @@ public class HomeFragment extends Fragment {
         boolean disableInit = sharedPreferences.getBoolean(Constants.PREF_KEY_DISABLE_INIT, false);
         status_initscript.setChecked(disableInit);
         status_initscript.setEnabled(disableInit);
+        // If init script cannot be enabled, display why
+        if (!disableInit) {
+            TextView explain = (TextView) view.findViewById(R.id.status_initscript_description);
+            explain.setText(
+                    String.format(
+                            getString(R.string.alert_install_no_support),
+                            InitializeIptables.dst_file
+                    )
+            );
+            explain.setVisibility(View.VISIBLE);
+        }
         // Do we have root access ?
         status_root.setChecked(RootCommands.rootAccessGiven());
         // Hopefully there IS iptables on this device…
