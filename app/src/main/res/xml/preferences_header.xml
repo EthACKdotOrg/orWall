@@ -2,16 +2,10 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
     <header
-        android:fragment="org.ethack.orwall.PreferencesActivity$ScriptPrefs"
-        android:icon="@drawable/ic_action_secure"
-        android:summary="@string/summary_manage_init_script"
-        android:title="@string/init_script" />
-
-    <header
         android:fragment="org.ethack.orwall.PreferencesActivity$NetworkPrefs"
         android:icon="@drawable/ic_action_settings"
         android:summary="@string/summary_network"
-        android:title="@string/network"></header>
+        android:title="@string/network" />
 
     <header
         android:fragment="org.ethack.orwall.PreferencesActivity$SpecialApps"

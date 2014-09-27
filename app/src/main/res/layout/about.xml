@@ -29,7 +29,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:text="@string/about_orwall" />
+                android:text="@string/about_orwall"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -45,7 +46,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="30dp"
-                android:text="- Unknown -" />
+                android:text="- Unknown -"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -60,7 +62,8 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingLeft="30dp"
-                android:text="@string/about_links" />
+                android:text="@string/about_links"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -74,7 +77,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:text="@string/license" />
+                android:text="@string/license"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -89,7 +93,8 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:paddingLeft="30dp"
-                android:text="@string/about_author_list" />
+                android:text="@string/about_author_list"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -103,7 +108,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:text="@string/about_external_libs_content" />
+                android:text="@string/about_external_libs_content"
+                android:textColor="#ffffff" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -117,7 +123,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:text="@string/about_legal_tor" />
+                android:text="@string/about_legal_tor"
+                android:textColor="#ffffff" />
         </LinearLayout>
     </ScrollView>
 
