@@ -13,7 +13,10 @@ import android.view.MenuItem;
 
 import org.ethack.orwall.adapter.TabsPagerAdapter;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 import org.sufficientlysecure.rootcommands.util.Log;
+
+import java.util.Set;
 
 /**
  * New main layout: using a tabbed layout allows to get a cleaner view
@@ -28,7 +31,7 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
     private ViewPager viewPager;
     private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
-    // TODO: use R content for tab names if possible.
+    // TODO: use R content for tab names if needed.
     private String[] tabs = {"Home", "Apps", "Logs"};
 
     @Override
@@ -52,6 +55,15 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_main);
 
+        // Import old settings to SQLite, and remove them from SharedPreferences
+        NatRules natRules = new NatRules(this);
+        Set oldRules = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
+        if (natRules.getRuleCount() == 0 && oldRules != null) {
+            natRules.importFromSharedPrefs(oldRules);
+            getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
+        }
+
+        // Is it the first application run? If so, start wizard!
         boolean first_run = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_FIRST_RUN, true);
         if (first_run) {
             Intent wizard = new Intent(this, WizardActivity.class);
