@@ -215,25 +215,46 @@ public class InitializeIptables {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
         if (subnet != null) {
-            if (allow && iptRules.genericRule(String.format("-C OUTPUT -d %s -j LAN", subnet))) {
+
+            // Get subnet from SharedPreferences
+            SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+            String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, "none");
+
+            // If both subnets match, that means we already have applied the rule
+            if (allow && subnet.equals(old_subnet)) {
                 Log.d("LANPolicy", "Already applied");
                 return;
             }
-            if (!allow && !iptRules.genericRule(String.format("-C OUTPUT -d %s -j LAN", subnet))) {
+
+            if (!allow && old_subnet.equals("none")) {
                 Log.d("LANPolicy", "Nothing to do");
                 return;
             }
+
             if (allow) {
                 if (iptRules.genericRule("-N LAN")) {
                     iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
                     iptRules.genericRule("-A LAN -j ACCEPT");
                 }
+            } else {
+                // remove sharedPreference key as we want to cut LAN.
+                sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
             }
+
+            if (allow && !old_subnet.equals("none")) {
+                // Remove rules if we got another subnet in sharedPref
+                iptRules.LanNoNat(old_subnet, false);
+            }
+            // Do what's needed with current subnet
             iptRules.LanNoNat(subnet, allow);
 
+            // Flush LAN chain and remove it
             if (!allow) {
                 iptRules.genericRule("-F LAN");
                 iptRules.genericRule("-X LAN");
+            } else {
+                // Or save new subnet
+                sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
             }
         }
     }

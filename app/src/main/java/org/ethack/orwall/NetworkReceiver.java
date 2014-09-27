@@ -18,7 +18,10 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Got a Network Change event");
+
+        String action = intent.getAction();
+
+        Log.d(TAG, "Got a Network Change event: " + action);
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
 
@@ -44,7 +47,10 @@ public class NetworkReceiver extends BroadcastReceiver {
             Log.d(TAG, "Tethering support is disabled");
         }
 
-        boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
-        initializeIptables.LANPolicy(lan_bypass);
+        if (action.equals("android.net.wifi.WIFI_STATE_CHANGED") || action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
+            Log.d(TAG, "Will do some LAN stuff");
+            boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
+            initializeIptables.LANPolicy(lan_bypass);
+        }
     }
 }
