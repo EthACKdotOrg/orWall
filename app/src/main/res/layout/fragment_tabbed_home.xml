@@ -3,12 +3,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_weight="1"
+        android:padding="10dp"
         android:layout_width="fill_parent"
         android:layout_height="0dp">
     <Switch
@@ -93,31 +93,36 @@
             android:id="@+id/status_orbot"/>
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
+        style="@android:style/ButtonBar"
         android:layout_width="fill_parent"
+        android:orientation="horizontal"
         android:layout_height="wrap_content">
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:id="@+id/id_about"
+            style="?android:attr/borderlessButtonStyle"
             android:text="@string/menu_action_about"/>
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_centerInParent="true"
             android:id="@+id/id_wizard"
+            style="?android:attr/borderlessButtonStyle"
             android:text="@string/start_wizard"/>
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:id="@+id/id_settings"
+            style="?android:attr/borderlessButtonStyle"
             android:text="@string/menu_action_settings" />
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

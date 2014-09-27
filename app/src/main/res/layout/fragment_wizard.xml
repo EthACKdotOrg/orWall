@@ -25,16 +25,16 @@
             android:id="@+id/wizard_fragment_content" />
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
+        style="@android:style/ButtonBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:id="@+id/wizard_close"
+            style="?android:attr/borderlessButtonStyle"
             android:text="@string/wizard_close" />
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
