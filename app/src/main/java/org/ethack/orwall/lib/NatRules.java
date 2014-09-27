@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.ethack.orwall.database.OpenHelper;
+import org.ethack.orwall.database.natDBHelper;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ import java.util.Set;
  */
 public class NatRules {
     private final static String TAG = "NatRules";
-    private OpenHelper dbHelper;
+    private natDBHelper dbHelper;
     private Context context;
 
     public NatRules(Context context) {
-        this.dbHelper = new OpenHelper(context);
+        this.dbHelper = new natDBHelper(context);
         this.context = context;
     }
 
@@ -35,9 +35,9 @@ public class NatRules {
         };
 
         Cursor cursor = db.query(
-                OpenHelper.NAT_TABLE_NAME,
+                natDBHelper.NAT_TABLE_NAME,
                 null,
-                OpenHelper.COLUMN_APPUID + "=?",
+                natDBHelper.COLUMN_APPUID + "=?",
                 filterArgs,
                 null,
                 null,
@@ -51,11 +51,11 @@ public class NatRules {
     }
 
     public boolean removeAppFromRules(Long appUID) {
-        String filter = OpenHelper.COLUMN_APPUID + "=?";
+        String filter = natDBHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appUID)};
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        int result = db.delete(OpenHelper.NAT_TABLE_NAME, filter, filterArgs);
+        int result = db.delete(natDBHelper.NAT_TABLE_NAME, filter, filterArgs);
         db.close();
         return (result == 1);
     }
@@ -63,14 +63,14 @@ public class NatRules {
     public boolean addAppToRules(Long appUID, String appName, String onionType, Long onionPort, String portType) {
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(OpenHelper.COLUMN_APPNAME, appName);
-        contentValues.put(OpenHelper.COLUMN_APPUID, String.valueOf(appUID));
-        contentValues.put(OpenHelper.COLUMN_ONIONPORT, String.valueOf(onionPort));
-        contentValues.put(OpenHelper.COLUMN_ONIONTYPE, onionType);
-        contentValues.put(OpenHelper.COLUMN_PORTTYPE, portType);
+        contentValues.put(natDBHelper.COLUMN_APPNAME, appName);
+        contentValues.put(natDBHelper.COLUMN_APPUID, String.valueOf(appUID));
+        contentValues.put(natDBHelper.COLUMN_ONIONPORT, String.valueOf(onionPort));
+        contentValues.put(natDBHelper.COLUMN_ONIONTYPE, onionType);
+        contentValues.put(natDBHelper.COLUMN_PORTTYPE, portType);
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        long result = db.insert(OpenHelper.NAT_TABLE_NAME, null, contentValues);
+        long result = db.insert(natDBHelper.NAT_TABLE_NAME, null, contentValues);
         db.close();
         return (result > 0);
     }
@@ -90,13 +90,13 @@ public class NatRules {
 
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
         String[] selection = {
-                OpenHelper.COLUMN_APPNAME,
-                OpenHelper.COLUMN_APPUID,
-                OpenHelper.COLUMN_ONIONTYPE,
-                OpenHelper.COLUMN_ONIONPORT,
-                OpenHelper.COLUMN_PORTTYPE,
+                natDBHelper.COLUMN_APPNAME,
+                natDBHelper.COLUMN_APPUID,
+                natDBHelper.COLUMN_ONIONTYPE,
+                natDBHelper.COLUMN_ONIONPORT,
+                natDBHelper.COLUMN_PORTTYPE,
         };
-        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, selection, null, null, null, null, null);
+        Cursor cursor = db.query(natDBHelper.NAT_TABLE_NAME, selection, null, null, null, null, null);
 
         if (!cursor.moveToFirst()) {
             Log.e(TAG, "getAllRules size is null!");
@@ -124,7 +124,7 @@ public class NatRules {
 
     public int getRuleCount() {
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(OpenHelper.NAT_TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(natDBHelper.NAT_TABLE_NAME, null, null, null, null, null, null);
         cursor.moveToFirst();
 
         int total = cursor.getCount();
@@ -150,19 +150,19 @@ public class NatRules {
 
     public boolean update(AppRule appRule) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(OpenHelper.COLUMN_APPNAME, appRule.getPkgName());
-        contentValues.put(OpenHelper.COLUMN_APPUID, String.valueOf(appRule.getAppUID()));
-        contentValues.put(OpenHelper.COLUMN_ONIONPORT, String.valueOf(appRule.getOnionPort()));
-        contentValues.put(OpenHelper.COLUMN_ONIONTYPE, appRule.getOnionType());
-        contentValues.put(OpenHelper.COLUMN_PORTTYPE, appRule.getPortType());
+        contentValues.put(natDBHelper.COLUMN_APPNAME, appRule.getPkgName());
+        contentValues.put(natDBHelper.COLUMN_APPUID, String.valueOf(appRule.getAppUID()));
+        contentValues.put(natDBHelper.COLUMN_ONIONPORT, String.valueOf(appRule.getOnionPort()));
+        contentValues.put(natDBHelper.COLUMN_ONIONTYPE, appRule.getOnionType());
+        contentValues.put(natDBHelper.COLUMN_PORTTYPE, appRule.getPortType());
 
-        String filter = OpenHelper.COLUMN_APPUID + "=?";
+        String filter = natDBHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appRule.getAppUID())};
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
 
         int nb_row = 0;
         try {
-            nb_row = db.update(OpenHelper.NAT_TABLE_NAME, contentValues, filter, filterArgs);
+            nb_row = db.update(natDBHelper.NAT_TABLE_NAME, contentValues, filter, filterArgs);
         } catch (SQLiteConstraintException e) {
             Log.e(TAG, "Constraint exception");
             Log.e(TAG, e.getMessage());
@@ -179,17 +179,17 @@ public class NatRules {
                 String.valueOf(appUID)
         };
         String[] selection = {
-                OpenHelper.COLUMN_APPNAME,
-                OpenHelper.COLUMN_APPUID,
-                OpenHelper.COLUMN_ONIONTYPE,
-                OpenHelper.COLUMN_ONIONPORT,
-                OpenHelper.COLUMN_PORTTYPE,
+                natDBHelper.COLUMN_APPNAME,
+                natDBHelper.COLUMN_APPUID,
+                natDBHelper.COLUMN_ONIONTYPE,
+                natDBHelper.COLUMN_ONIONPORT,
+                natDBHelper.COLUMN_PORTTYPE,
         };
 
         Cursor cursor = db.query(
-                OpenHelper.NAT_TABLE_NAME,
+                natDBHelper.NAT_TABLE_NAME,
                 selection,
-                OpenHelper.COLUMN_APPUID + "=?",
+                natDBHelper.COLUMN_APPUID + "=?",
                 filterArgs,
                 null,
                 null,

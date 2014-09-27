@@ -10,7 +10,7 @@ import org.ethack.orwall.lib.Constants;
  * Simple DB helper in order to manage SQLite for NAT rules.
  * This also prepare the way for more features.
  */
-public class OpenHelper extends SQLiteOpenHelper {
+public class natDBHelper extends SQLiteOpenHelper {
 
     public static final String NAT_TABLE_NAME = "rules";
     public static final String COLUMN_APPUID = "appUID";
@@ -36,7 +36,7 @@ public class OpenHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DB_NAME = "nat.s3db";
 
-    public OpenHelper(Context context) {
+    public natDBHelper(Context context) {
         super(context, DB_NAME, null, DATABASE_VERSION);
     }
 
