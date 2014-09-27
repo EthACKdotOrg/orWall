@@ -313,7 +313,7 @@ public class HomeFragment extends Fragment {
         }
         TextView version = (TextView) v_about.findViewById(R.id.about_version);
         version.setText(versionName);
-        new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+        new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT)
                 .setTitle(getString(R.string.button_about))
                 .setView(v_about)
                 .show();
