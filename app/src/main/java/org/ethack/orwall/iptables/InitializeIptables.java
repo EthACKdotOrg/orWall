@@ -57,6 +57,10 @@ public class InitializeIptables {
         this.iptRules = new IptRules(this.supportComment);
     }
 
+    /**
+     * This method is called upon device boot, or when we re-enable orWall
+     * It adds new chains, and some rules in order to get iptables up n'running.
+     */
     public void boot() {
         boolean authorized;
         Long app_uid;
@@ -74,10 +78,11 @@ public class InitializeIptables {
         this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
         this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
 
-
+        // initialize main chains
         initOutputs(app_uid);
         initInput(app_uid);
 
+        // add some rules in order to get user's setup up
         authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
         if (authorized) {
             LANPolicy(true);
@@ -102,10 +107,6 @@ public class InitializeIptables {
             enableSSH(authorized);
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
-        if (authorized) {
-            allowPolipo(authorized);
-        }
         Log.d("Boot: ", "Finished initialization");
 
         Log.d("Boot: ", "Preparing NAT stuff");
@@ -170,11 +171,19 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Checks if iptables binary is on the device.
+     * @return true if it finds iptables
+     */
     public boolean iptablesExists() {
         File iptables = new File(Constants.IPTABLES);
         return iptables.exists();
     }
 
+    /**
+     * Checks if current kernel supports comments for iptables.
+     * Saves state in a sharedPreference.
+     */
     public void supportComments() {
         String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
         String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
@@ -189,11 +198,19 @@ public class InitializeIptables {
         this.supportComment = support;
     }
 
+    /**
+     * Checks if iptables was successfully initialized by the init-script.
+     * @return true if it finds the witness chain.
+     */
     public boolean isInitialized() {
         String rule = "-C witness -j RETURN";
         return iptRules.genericRule(rule);
     }
 
+    /**
+     * Apply or remove rules for LAN access.
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void LANPolicy(final boolean allow) {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
@@ -221,6 +238,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules for ADB access
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void enableADB(final boolean allow) {
         char action = (allow ? 'I' : 'D');
 
@@ -239,6 +260,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules for SSH access
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void enableSSH(final boolean allow) {
         char action = (allow ? 'I' : 'D');
 
@@ -259,6 +284,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Initialize OUTPUT chain in order to allow orbot network to go out
+     * @param orbot_uid long UID for orbot application
+     */
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
                 // flush all OUTPUT rules
@@ -297,6 +326,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Initialize INPUT chain
+     * @param orbot_uid long UID for orbot application
+     */
     public void initInput(final long orbot_uid) {
         String[] rules = {
                 "-F INPUT",
@@ -333,6 +366,9 @@ public class InitializeIptables {
         return support;
     }
 
+    /**
+     * Checks some system settings before calling the method installing for good the init-script
+     */
     public void installInitScript() {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
@@ -351,6 +387,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Really install init-script (copies it from app RAW directory)
+     * @param src_file String matching source init-script
+     * @param dst_file String matching destination init-script
+     */
     private void doInstallScripts(String src_file, String dst_file) {
         Shell shell = null;
         try {
@@ -386,6 +427,9 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Removes init-script.
+     */
     public void removeIniScript() {
         Shell shell = null;
         try {
@@ -416,6 +460,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules for SIP bypass
+     * @param status Boolean, true if we want to add rules, false otherwise
+     * @param uid Long, application UID
+     */
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
                 "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
@@ -429,6 +478,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules enabling a browser to perform a network login in a captive network
+     * @param status boolean, true if we want to enable this probe.
+     * @param uid long, application UID
+     */
     public void manageCaptiveBrowser(boolean status, Long uid) {
         String[] rules = {
                 "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
@@ -445,6 +499,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules in order to allow tethering.
+     * This doesn't work for now…
+     * @param status boolean, true if we want to enable this feature.
+     */
     public void enableTethering(boolean status) {
 
         char action = (status ? 'A' : 'D');
@@ -486,18 +545,22 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Just detect if tethering is enabled or not.
+     * @return boolean, true if enabled.
+     */
     public boolean isTetherEnabled() {
         return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
     }
 
-    public void allowPolipo(boolean status) {
-        String rule = "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED%s";
-        char action = (status ? 'A' : 'D');
-
-
-        iptRules.genericRule(String.format(rule, action, polipo_port, (this.supportComment ? " -m comment --comment \"Allow local polipo inputs\"" : "")));
-    }
-
+    /**
+     * Apply or remove rules for captive portal detection.
+     * Captive portal detection works with DNS and redirection detection.
+     * Once the device is connected, Android will probe the network in order to get a page, located on Google servers.
+     * If it can connect to it, this means we're not in a captive network; otherwise, it will prompt for network login.
+     * @param status boolean, true if we want to enable this probe.
+     * @param context application context
+     */
     public void enableCaptiveDetection(boolean status, Context context) {
         // TODO: find a way to disable it on android <4.4
         // TODO: we may want to get some setting writer directly through the API.
@@ -536,6 +599,4 @@ public class InitializeIptables {
 
         }
     }
-
-
 }
