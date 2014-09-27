@@ -321,7 +321,7 @@ public class InitializeIptables {
         }
     }
 
-    public void installInitScript(final Context context) {
+    public void installInitScript() {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
 
@@ -333,44 +333,12 @@ public class InitializeIptables {
         if (dstDir.exists()) {
 
             if (!check_dst.hash().equals(check_src.hash())) {
-
-                if (check_dst.hash().equals(Constants.E_NO_SUCH_FILE)) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                    alert.setTitle(R.string.alert_install_script_title);
-                    alert.setMessage(String.format(context.getString(R.string.alert_install_script_text), dst_file));
-                    alert.setNegativeButton(R.string.alert_install_script_refuse, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-                        }
-                    });
-
-                    alert.setPositiveButton(R.string.alert_install_script_accept, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            doInstallScripts(src_file, dst_file);
-                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
-                        }
-                    });
-
-                    alert.show();
-
-                } else {
-                    doInstallScripts(src_file, dst_file);
-                }
+                doInstallScripts(src_file, dst_file);
             }
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(context);
-            alert.setTitle(R.string.alert_install_script_title);
-            alert.setMessage(String.format(context.getString(R.string.explain_no_initscript), dir_dst));
-            alert.setNeutralButton(R.string.alert_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, true).apply();
-                }
-            });
-            alert.show();
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, true).apply();
         }
     }
 
@@ -430,6 +398,7 @@ public class InitializeIptables {
             } catch (TimeoutException e) {
                 Log.e("Shell", "Error while closing the Shell");
             } finally {
+                context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
                 try {
                     shell.close();
                 } catch (IOException e) {
