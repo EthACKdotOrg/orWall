@@ -117,6 +117,7 @@ public class AppListAdapter extends ArrayAdapter {
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     int getPosition = (Integer) compoundButton.getTag();
                     apps.get(getPosition).setChecked(compoundButton.isChecked());
+                    Log.d(TAG, "Toggle checkbox caught!");
 
                     String appName = apps.get(getPosition).getAppName();
                     if (compoundButton.isChecked()) {
@@ -163,9 +164,10 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.d(TAG, "Click caught!");
                     boolean checked = ((CheckBox) view).isChecked();
                     int getPosition = (Integer) view.getTag();
-                    toggleApp(checked, apps.get(getPosition));
+                    toggleApp(checked, getPosition);
                     apps.get(getPosition).setChecked(checked);
                 }
             });
@@ -212,12 +214,12 @@ public class AppListAdapter extends ArrayAdapter {
      * Function called when we touch an app in the "app" tab
      *
      * @param checked boolean: is checkbox checked?
-     * @param appRule AppRule object
+     * @param position integer: position in apps list
      */
-    public void toggleApp(boolean checked, AppRule appRule) {
+    public void toggleApp(boolean checked, int position) {
+        AppRule appRule = apps.get(position);
 
         String appName = appRule.getPkgName();
-
 
         long appUID = appRule.getAppUID();
 
@@ -242,7 +244,13 @@ public class AppListAdapter extends ArrayAdapter {
                 ).show();
             }
         } else {
-            bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+            if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
+            } else if (appRule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
+            } else {
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+            }
             boolean success = this.natRules.removeAppFromRules(appUID);
             if (success) {
                 Toast.makeText(context, context.getString(R.string.toast_remove_rule), Toast.LENGTH_SHORT).show();
@@ -259,6 +267,7 @@ public class AppListAdapter extends ArrayAdapter {
     public void showAdvanced(final View view) {
         LayoutInflater li = LayoutInflater.from(this.context);
         View l_view = li.inflate(R.layout.advanced_connection, null);
+        final int position = (Integer) view.getTag();
 
         // Get application information
         final String pkgName = view.getTag(R.id.id_appTag).toString();
@@ -392,6 +401,7 @@ public class AppListAdapter extends ArrayAdapter {
         AppRule updated = new AppRule();
         updated.setPkgName(appRule.getPkgName());
         updated.setAppUID(appRule.getAppUID());
+        final int position = (Integer) view.getTag();
 
         if (check_bypass.isChecked()) {
             updated.setOnionType(Constants.DB_ONION_TYPE_BYPASS);
@@ -492,7 +502,7 @@ public class AppListAdapter extends ArrayAdapter {
         } else {
             Log.e(TAG, "ERROR while updating object in DB!");
         }
-
+        apps.set(position, updated);
     }
 
     /**
