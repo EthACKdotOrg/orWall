@@ -5,6 +5,7 @@ package org.ethack.orwall.lib;
  */
 public class Constants {
     public final static String PREFERENCES = "org.ethack.orwall_preferences";
+    public final static String PREF_KEY_FIRST_RUN = "first_run";
     public final static String PREF_KEY_SIP_APP = "sip_app";
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
@@ -23,6 +24,10 @@ public class Constants {
     public final static String PREF_KEY_POLIPO_ENABLED = "enable_polipo";
     public final static String PREF_KEY_BROWSER_GRACETIME = "browser_gracetime";
     public final static String CONFIG_IPT_SUPPORTS_COMMENTS = "ipt_comments";
+    public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
+    public final static String PREF_KEY_LAN_ENABLED = "lan_enabled";
+    public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
+    public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
 
     public final static String IPTABLES = "/system/bin/iptables";
 
@@ -38,6 +43,14 @@ public class Constants {
     public final static String ACTION_TETHER = "org.ethack.orwall.backgroundProcess.action.tethering";
     public final static String PARAM_TETHER_STATUS = "org.ethack.orwall.backgroundProcess.action.tethering.status";
 
+    public final static String ACTION_DISABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.disable_orwall";
+    public final static String ACTION_ENABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.enable_orwall";
+
+    public final static String ACTION_RM_FENCED = "org.ethack.orwall.backgroundProcess.action.rmFenced";
+    public final static String ACTION_RM_BYPASS = "org.ethack.orwall.backgroundProcess.action.rmBypass";
+    public final static String ACTION_ADD_FENCED = "org.ethack.orwall.backgroundProcess.action.addFenced";
+    public final static String ACTION_ADD_BYPASS = "org.ethack.orwall.backgroundProcess.action.addBypass";
+
     public final static long ORBOT_SOCKS_PROXY = 9050;
     public final static long ORBOT_TRANSPROXY = 9040;
     public final static long ORBOT_DNS_PROXY = 5400;
@@ -49,7 +62,11 @@ public class Constants {
     public final static String E_NO_SUCH_ALGO = "E_NO_SUCH_ALGO";
 
     public final static String DB_PORT_TYPE_TRANS = "TransProxy";
+    public final static String DB_PORT_TYPE_SOCKS = "SOCKS";
+    public final static String DB_PORT_TYPE_FENCED = "Fenced";
     public final static String DB_ONION_TYPE_TOR = "Tor";
+    public final static String DB_ONION_TYPE_I2P = "i2p";
+    public final static String DB_ONION_TYPE_BYPASS = "Bypass";
 
     public final static String I2P_APP_NAME = "net.i2p.android.router";
     public final static String ORBOT_APP_NAME = "org.torproject.android";

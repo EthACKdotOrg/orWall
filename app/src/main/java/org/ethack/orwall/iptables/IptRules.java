@@ -102,10 +102,8 @@ public class IptRules {
     }
 
     public void LanNoNat(final String lan, final boolean allow) {
-        Character action = 'I';
-        if (!allow) {
-            action = 'D';
-        }
+        char action = (allow ? 'I' : 'D');
+
         String[] rules = {
                 "%s -%c OUTPUT -d %s -j LAN",
                 "%s -%c INPUT -d %s -j LAN",
@@ -126,5 +124,56 @@ public class IptRules {
 
     public boolean genericRule(final String rule) {
         return applyRule(String.format("%s %s", Constants.IPTABLES, rule));
+    }
+
+    public void bypass(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'I' : 'D');
+        String[] rules = {
+                String.format(
+                        "%s -t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        Constants.IPTABLES, action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
+                ),
+                String.format(
+                        "%s -%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
+                ),
+        };
+
+        for (String rule : rules) {
+            if (!applyRule(rule)) {
+                Log.e(
+                        "bypass",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
+    }
+
+    public void fenced(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'A' : 'D');
+
+        String[] rules = {
+                String.format(
+                        "%s -t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        Constants.IPTABLES, action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Fencing %s\"", appName) : "")
+                ),
+                String.format(
+                        "%s -%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        Constants.IPTABLES, action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                ),
+        };
+
+        for (String rule : rules) {
+            if (!applyRule(rule)) {
+                Log.e(
+                        "fenced",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
     }
 }

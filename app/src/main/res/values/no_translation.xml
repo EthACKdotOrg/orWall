@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">orWall</string>
+    <string name="app_name" translatable="false">orWall</string>
 
-    <string name="about_links">
-        https://orwall.org/\n
-        https://github.com/EthACKDotOrg/orWall
+    <string name="about_links" translatable="false">
+        https://orwall.org \nhttps://twitter.com/orWallApp \nhttps://github.com/EthACKDotOrg/orWall
     </string>
-        <string name="about_author_list">
-        EthACK (https://www.ethack.org/)\n
-        SwissTengu (https://www.swisstengu.ch/)
+        <string name="about_author_list" translatable="false">
+        EthACK (https://www.ethack.org) \nSwissTengu (https://www.swisstengu.ch)
     </string>
-    <string name="about_external_libs_content">
-        super-command (Apache2)\n
-        NetCipher (3-clauses BSD license)
+    <string name="about_external_libs_content" translatable="false">
+        super-command (Apache2) \nNetCipher (3-clauses BSD license) \ni2p (Apache2)
     </string>
-    <string name="license">GPLv3</string>
+    <string name="license" translatable="false">GPLv3</string>
 </resources>

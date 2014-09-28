@@ -3,16 +3,13 @@ package org.ethack.orwall;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.iptables.IptRules;
-import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
-import org.ethack.orwall.lib.NatRules;
 
-import java.util.ArrayList;
-
+/**
+ * Do think at startup.
+ */
 public class BootBroadcast extends BroadcastReceiver {
 
     public BootBroadcast() {
@@ -21,24 +18,21 @@ public class BootBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
 
-        boolean supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
-
         InitializeIptables initializeIptables = new InitializeIptables(context);
+
+        // We want to ensure we support comments — reboot may be due to
+        // some ROM change, hence kernel may have changed as well.
         initializeIptables.supportComments();
-        initializeIptables.boot();
 
-        IptRules iptRules = new IptRules(supportComment);
-
-        NatRules natRules = new NatRules(context);
-        Log.d("BootBroadcast: ", "Get NAT rules...");
-        ArrayList<AppRule> rules = natRules.getAllRules();
-        Log.d("BootBroadcast: ", "Length received: " + String.valueOf(rules.size()));
-
-        for (AppRule rule : rules) {
-            long uid = rule.getAppUID();
-            String name = rule.getAppName();
-            // TODO: take care of other rule content (port, proxytype and so on)
-            iptRules.natApp(context, uid, 'A', name);
+        // Enforce init-script if sharedpreference says it
+        // We want to do it the earlier.
+        // Also, we want to get a fresh status regarding the init-script support: this can be
+        // a reboot after a ROM upgrade or change.
+        boolean enforceInit = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
+        if (initializeIptables.initSupported() && enforceInit) {
+            initializeIptables.installInitScript();
         }
+        // Apply boot-up rules in order to enable traffic for orbot and other things.
+        initializeIptables.boot();
     }
 }

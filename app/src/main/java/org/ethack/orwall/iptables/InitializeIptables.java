@@ -11,8 +11,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.R;
+import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.NetworkHelper;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
@@ -30,9 +32,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class InitializeIptables {
 
+    public final static String dir_dst = "/system/etc/init.d";
+    public final static String dst_file = String.format("%s/91firewall", dir_dst);
     private final IptRules iptRules;
-    private final String dir_dst = "/system/etc/init.d";
-    private final String dst_file = String.format("%s/91firewall", dir_dst);
     private long trans_proxy;
     private long polipo_port;
     private long dns_proxy;
@@ -55,27 +57,33 @@ public class InitializeIptables {
         this.iptRules = new IptRules(this.supportComment);
     }
 
+    /**
+     * This method is called upon device boot, or when we re-enable orWall
+     * It adds new chains, and some rules in order to get iptables up n'running.
+     */
     public void boot() {
         boolean authorized;
         Long app_uid;
         PackageManager packageManager = context.getPackageManager();
 
         try {
-            app_uid = Long.valueOf(packageManager.getApplicationInfo("org.torproject.android", 0).uid);
+            app_uid = (long) packageManager.getApplicationInfo("org.torproject.android", 0).uid;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
-            app_uid = new Long(0); // prevents stupid compiler error… never used.
+            app_uid = (long) 0; // prevents stupid compiler error… never used.
             android.os.Process.killProcess(android.os.Process.myPid());
         }
 
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
         this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
+        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
 
-
+        // initialize main chains
         initOutputs(app_uid);
         initInput(app_uid);
 
-        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean("enable_lan", false);
+        // add some rules in order to get user's setup up
+        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
         if (authorized) {
             LANPolicy(true);
         }
@@ -99,18 +107,83 @@ public class InitializeIptables {
             enableSSH(authorized);
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_POLIPO_ENABLED, false);
-        if (authorized) {
-            allowPolipo(authorized);
-        }
         Log.d("Boot: ", "Finished initialization");
+
+        Log.d("Boot: ", "Preparing NAT stuff");
+        NatRules natRules = new NatRules(context);
+        Log.d("Boot: ", "Get NAT rules...");
+        ArrayList<AppRule> rules = natRules.getAllRules();
+        Log.d("Boot: ", "Length received: " + String.valueOf(rules.size()));
+
+        for (AppRule rule : rules) {
+
+            if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                iptRules.bypass(rule.getAppUID(), rule.getPkgName(), true);
+
+            } else if (rule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+                iptRules.fenced(rule.getAppUID(), rule.getPkgName(), true);
+
+            } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
+                iptRules.natApp(context, rule.getAppUID(), 'A', rule.getPkgName());
+            } else {
+                Log.e("Boot: ", "Don't know what to do for " + rule.getPkgName());
+            }
+        }
+        Log.d("Boot: ", "Finished NAT stuff");
     }
 
+    /**
+     * This method will deactivate the whole orWall iptables stuff.
+     * It must:
+     * - set INPUT and OUTPUT policy to ACCEPT
+     * - flush all rules we have in filter and nat tables
+     * - put back default accounting rules in INPUT and OUTPUT
+     * - remove any chain it created (though we want to keep the "witness" chain).
+     */
+    public void deactivate() {
+        String[] rules = {
+                // set OUTPUT policy back to ACCEPT
+                "-P OUTPUT ACCEPT",
+                // flush all OUTPUT rules
+                "-F OUTPUT",
+                // remove accounting_OUT chain
+                "-F accounting_OUT",
+                "-X accounting_OUT",
+                // add back default system accounting
+                "-A OUTPUT -j bw_OUTPUT",
+                // set INPUT policy back to ACCEPT
+                "-P INPUT ACCEPT",
+                // flush all INPUT rules
+                "-F INPUT",
+                // remove accounting_IN chain
+                "-F accounting_IN",
+                "-X accounting_IN",
+                // add back default system accounting
+                "-A INPUT -j bw_INPUT",
+                // flush nat OUTPUT
+                "-t nat -F OUTPUT",
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("deactivate", "Unable to remove rule");
+                Log.e("deactivate", rule);
+            }
+        }
+    }
+
+    /**
+     * Checks if iptables binary is on the device.
+     * @return true if it finds iptables
+     */
     public boolean iptablesExists() {
         File iptables = new File(Constants.IPTABLES);
         return iptables.exists();
     }
 
+    /**
+     * Checks if current kernel supports comments for iptables.
+     * Saves state in a sharedPreference.
+     */
     public void supportComments() {
         String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
         String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
@@ -125,29 +198,71 @@ public class InitializeIptables {
         this.supportComment = support;
     }
 
+    /**
+     * Checks if iptables was successfully initialized by the init-script.
+     * @return true if it finds the witness chain.
+     */
     public boolean isInitialized() {
         String rule = "-C witness -j RETURN";
         return iptRules.genericRule(rule);
     }
 
+    /**
+     * Apply or remove rules for LAN access.
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void LANPolicy(final boolean allow) {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
+        if (subnet != null) {
 
-        if (allow) {
-            if (iptRules.genericRule("-N LAN")) {
-                iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
-                iptRules.genericRule("-A LAN -j ACCEPT");
+            // Get subnet from SharedPreferences
+            SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+            String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, "none");
+
+            // If both subnets match, that means we already have applied the rule
+            if (allow && subnet.equals(old_subnet)) {
+                Log.d("LANPolicy", "Already applied");
+                return;
             }
-        }
-        iptRules.LanNoNat(subnet, allow);
 
-        if (!allow) {
-            iptRules.genericRule("-F LAN");
-            iptRules.genericRule("-X LAN");
+            if (!allow && old_subnet.equals("none")) {
+                Log.d("LANPolicy", "Nothing to do");
+                return;
+            }
+
+            if (allow) {
+                if (iptRules.genericRule("-N LAN")) {
+                    iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
+                    iptRules.genericRule("-A LAN -j ACCEPT");
+                }
+            } else {
+                // remove sharedPreference key as we want to cut LAN.
+                sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
+            }
+
+            if (allow && !old_subnet.equals("none")) {
+                // Remove rules if we got another subnet in sharedPref
+                iptRules.LanNoNat(old_subnet, false);
+            }
+            // Do what's needed with current subnet
+            iptRules.LanNoNat(subnet, allow);
+
+            // Flush LAN chain and remove it
+            if (!allow) {
+                iptRules.genericRule("-F LAN");
+                iptRules.genericRule("-X LAN");
+            } else {
+                // Or save new subnet
+                sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
+            }
         }
     }
 
+    /**
+     * Apply or remove rules for ADB access
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void enableADB(final boolean allow) {
         char action = (allow ? 'I' : 'D');
 
@@ -166,6 +281,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules for SSH access
+     * @param allow boolean, true if we want to add rules, false otherwise.
+     */
     public void enableSSH(final boolean allow) {
         char action = (allow ? 'I' : 'D');
 
@@ -186,6 +305,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Initialize OUTPUT chain in order to allow orbot network to go out
+     * @param orbot_uid long UID for orbot application
+     */
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
                 // flush all OUTPUT rules
@@ -224,6 +347,10 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Initialize INPUT chain
+     * @param orbot_uid long UID for orbot application
+     */
     public void initInput(final long orbot_uid) {
         String[] rules = {
                 "-F INPUT",
@@ -248,59 +375,44 @@ public class InitializeIptables {
         }
     }
 
-    public void installInitScript(final Context context) {
+    /**
+     * Check if init-script is supported by the user device OS
+     * It also save this state for later reference if needed
+     * @return true if init is supported.
+     */
+    public boolean initSupported() {
+        File dstDir = new File(dir_dst);
+        boolean support = dstDir.exists();
+        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, !support).apply();
+        return support;
+    }
+
+    /**
+     * Checks some system settings before calling the method installing for good the init-script
+     */
+    public void installInitScript() {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
 
         CheckSum check_src = new CheckSum(src_file);
         CheckSum check_dst = new CheckSum(dst_file);
 
-        File dstDir = new File(dir_dst);
-
-        if (dstDir.exists()) {
+        if (initSupported()) {
 
             if (!check_dst.hash().equals(check_src.hash())) {
-
-                if (check_dst.hash().equals(Constants.E_NO_SUCH_FILE)) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                    alert.setTitle(R.string.alert_install_script_title);
-                    alert.setMessage(String.format(context.getString(R.string.alert_install_script_text), dst_file));
-                    alert.setNegativeButton(R.string.alert_install_script_refuse, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-                        }
-                    });
-
-                    alert.setPositiveButton(R.string.alert_install_script_accept, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            doInstallScripts(src_file, dst_file);
-                            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
-                        }
-                    });
-
-                    alert.show();
-
-                } else {
-                    doInstallScripts(src_file, dst_file);
-                }
+                doInstallScripts(src_file, dst_file);
             }
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(context);
-            alert.setTitle(R.string.alert_install_script_title);
-            alert.setMessage(String.format(context.getString(R.string.alert_install_no_support), dir_dst));
-            alert.setNeutralButton(R.string.main_dismiss, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
-                    context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, true).apply();
-                }
-            });
-            alert.show();
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
         }
     }
 
+    /**
+     * Really install init-script (copies it from app RAW directory)
+     * @param src_file String matching source init-script
+     * @param dst_file String matching destination init-script
+     */
     private void doInstallScripts(String src_file, String dst_file) {
         Shell shell = null;
         try {
@@ -336,6 +448,9 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Removes init-script.
+     */
     public void removeIniScript() {
         Shell shell = null;
         try {
@@ -357,6 +472,7 @@ public class InitializeIptables {
             } catch (TimeoutException e) {
                 Log.e("Shell", "Error while closing the Shell");
             } finally {
+                context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
                 try {
                     shell.close();
                 } catch (IOException e) {
@@ -365,6 +481,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules for SIP bypass
+     * @param status Boolean, true if we want to add rules, false otherwise
+     * @param uid Long, application UID
+     */
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
                 "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
@@ -378,6 +499,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules enabling a browser to perform a network login in a captive network
+     * @param status boolean, true if we want to enable this probe.
+     * @param uid long, application UID
+     */
     public void manageCaptiveBrowser(boolean status, Long uid) {
         String[] rules = {
                 "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
@@ -394,6 +520,11 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Apply or remove rules in order to allow tethering.
+     * This doesn't work for now…
+     * @param status boolean, true if we want to enable this feature.
+     */
     public void enableTethering(boolean status) {
 
         char action = (status ? 'A' : 'D');
@@ -435,18 +566,22 @@ public class InitializeIptables {
         }
     }
 
+    /**
+     * Just detect if tethering is enabled or not.
+     * @return boolean, true if enabled.
+     */
     public boolean isTetherEnabled() {
         return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
     }
 
-    public void allowPolipo(boolean status) {
-        String rule = "-%c INPUT -i lo -p tcp --dport %d -j accounting_IN -m conntrack --ctstate NEW,RELATED,ESTABLISHED%s";
-        char action = (status ? 'A' : 'D');
-
-
-        iptRules.genericRule(String.format(rule, action, polipo_port, (this.supportComment ? " -m comment --comment \"Allow local polipo inputs\"" : "")));
-    }
-
+    /**
+     * Apply or remove rules for captive portal detection.
+     * Captive portal detection works with DNS and redirection detection.
+     * Once the device is connected, Android will probe the network in order to get a page, located on Google servers.
+     * If it can connect to it, this means we're not in a captive network; otherwise, it will prompt for network login.
+     * @param status boolean, true if we want to enable this probe.
+     * @param context application context
+     */
     public void enableCaptiveDetection(boolean status, Context context) {
         // TODO: find a way to disable it on android <4.4
         // TODO: we may want to get some setting writer directly through the API.
@@ -485,6 +620,4 @@ public class InitializeIptables {
 
         }
     }
-
-
 }

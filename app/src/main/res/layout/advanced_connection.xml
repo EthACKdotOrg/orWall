@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/radio_connection_providers"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/advanced_connection_provider"
+            android:textSize="20sp" />
+
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radio_connection_types"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/advanced_connection_type"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/id_radio_force"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced_connection_type_force" />
+
+        <RadioButton
+            android:id="@+id/id_radio_fenced"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced_connection_type_native" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/id_checkbox_bypass"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/advanced_connection_bypass" />
+</LinearLayout>
