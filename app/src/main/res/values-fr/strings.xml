@@ -97,6 +97,8 @@
     <string name="toast_remove_rule">Les règles sont enlevées</string>
     <string name="toast_error" formatted="false">Une erreur est survenue, merci de contacter le développeur ! #%d</string>
 
+    <string name="hint_long_press">Un appui long sur une application vous montrera les paramètres avancés</string>
+    <string name="hint_close">Fermer</string>
     <string name="advanced_connection_settings_title" formatted="false">Réglages avancés pour %s</string>
     <string name="advanced_connection_provider">Fournisseur de connectivité</string>
     <string name="advanced_connection_type">Type de connection</string>

@@ -90,6 +90,8 @@
     <string name="toast_remove_rule">Rules are being removed</string>
     <string name="toast_error" formatted="false">An error occurred, please contact the dev! #%d</string>
 
+    <string name="hint_long_press">Long press on an app will show you advanced settings</string>
+    <string name="hint_close">Close</string>
     <string name="advanced_connection_settings_title" formatted="false">Advanced settings for %s</string>
     <string name="advanced_connection_provider">Connection provider</string>
     <string name="advanced_connection_type">Connection type</string>
