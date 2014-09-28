@@ -8,6 +8,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +27,11 @@ import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
+import org.ethack.orwall.lib.PackageInfoData;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.List;
+import java.util.Map;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
 
@@ -65,6 +70,7 @@ public class AppListAdapter extends ArrayAdapter {
     private RadioButton radioFenced;
     private RadioButton radioI2p;
     private CheckBox check_bypass;
+    private Map<String, PackageInfoData> specialApps;
 
     /**
      * Constructor.
@@ -79,6 +85,7 @@ public class AppListAdapter extends ArrayAdapter {
         this.packageManager = context.getPackageManager();
         this.natRules = new NatRules(context);
         this.sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        this.specialApps = PackageInfoData.specialApps();
     }
 
     /**
@@ -129,17 +136,26 @@ public class AppListAdapter extends ArrayAdapter {
 
         AppRule appRule = this.apps.get(position);
 
-        PackageManager packageManager = this.context.getPackageManager();
         ApplicationInfo applicationInfo = null;
-        try {
-            applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), PackageManager.GET_PERMISSIONS);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Application not found: " + appRule.getPkgName());
+        PackageInfoData packageInfoData = null;
+        Drawable appIcon = null;
+
+        if (appRule.getPkgName().startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+            packageInfoData = specialApps.get(appRule.getPkgName());
+            Bitmap b = BitmapFactory.decodeResource(context.getResources(), R.drawable.android_unknown_app);
+            appIcon = new BitmapDrawable(context.getResources(), b);
+        } else {
+            PackageManager packageManager = this.context.getPackageManager();
+            try {
+                applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), PackageManager.GET_PERMISSIONS);
+                appIcon = packageManager.getApplicationIcon(applicationInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, "Application not found: " + appRule.getPkgName());
+            }
         }
 
-        if (applicationInfo != null) {
+        if (applicationInfo != null || packageInfoData != null) {
 
-            Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
             appIcon.setBounds(0, 0, 40, 40);
 
             holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
@@ -162,7 +178,13 @@ public class AppListAdapter extends ArrayAdapter {
             });
 
             if (appRule.getLabel() == null) {
-                String appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                String appName = null;
+
+                if (packageInfoData != null) {
+                    appName = ((PackageInfoData) specialApps.get(appRule.getPkgName())).getName();
+                } else {
+                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                }
                 appRule.setAppName(appName);
                 if (appRule.getOnionType().equals("None")) {
                     holder.checkBox.setText(appName);
@@ -239,22 +261,33 @@ public class AppListAdapter extends ArrayAdapter {
         View l_view = li.inflate(R.layout.advanced_connection, null);
 
         // Get application information
-        final String appName = view.getTag(R.id.id_appTag).toString();
+        final String pkgName = view.getTag(R.id.id_appTag).toString();
         ApplicationInfo applicationInfo = null;
-        try {
-            applicationInfo = this.packageManager.getApplicationInfo(appName, PackageManager.GET_PERMISSIONS);
-        } catch (PackageManager.NameNotFoundException e) {
+        PackageInfoData packageInfoData = null;
+        String appName = null;
+        long uid = -1;
+        if (pkgName.startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+            packageInfoData = specialApps.get(pkgName);
+            uid = packageInfoData.getUid();
+            appName = packageInfoData.getName();
+        } else {
+            try {
+                applicationInfo = this.packageManager.getApplicationInfo(pkgName, PackageManager.GET_PERMISSIONS);
+                uid = applicationInfo.uid;
+                appName = (String) this.packageManager.getApplicationLabel(applicationInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+            }
         }
 
-        if (applicationInfo != null) {
+        if (applicationInfo != null || packageInfoData != null) {
 
             // get current application rule
-            final AppRule appRule = this.natRules.getAppRule((long) applicationInfo.uid);
+            final AppRule appRule = this.natRules.getAppRule(uid);
 
             // is it a known app? If not, populate some information about it anyway.
             if (appRule.getPkgName() == null) {
-                appRule.setAppUID((long) applicationInfo.uid);
-                appRule.setPkgName(applicationInfo.packageName);
+                appRule.setAppUID(uid);
+                appRule.setPkgName(pkgName);
             }
 
             // Add Proxy providers if available
@@ -336,7 +369,8 @@ public class AppListAdapter extends ArrayAdapter {
             // Display alert
             alert.setTitle(String.format(
                             this.context.getString(R.string.advanced_connection_settings_title),
-                            this.packageManager.getApplicationLabel(applicationInfo))
+                            appName
+                    )
             ).setView(l_view).show();
         }
     }
@@ -436,14 +470,23 @@ public class AppListAdapter extends ArrayAdapter {
             this.context.startService(bgNewRules);
 
             ApplicationInfo applicationInfo = null;
-            try {
-                applicationInfo = this.packageManager.getApplicationInfo(updated.getPkgName(), PackageManager.GET_PERMISSIONS);
-            } catch (PackageManager.NameNotFoundException e) {
+            PackageInfoData packageInfoData = null;
+            String appName = null;
+
+            if (updated.getPkgName().startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+                packageInfoData = specialApps.get(updated.getPkgName());
+                appName = packageInfoData.getName();
+            } else {
+                try {
+                    applicationInfo = this.packageManager.getApplicationInfo(updated.getPkgName(), PackageManager.GET_PERMISSIONS);
+                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                } catch (PackageManager.NameNotFoundException e) {
+                }
             }
-            if (applicationInfo != null) {
-                CharSequence label = packageManager.getApplicationLabel(applicationInfo);
+            if (appName != null) {
                 CheckBox checkBox = (CheckBox) view;
-                checkBox.setText(label + " (via " + updated.getOnionType() + ")");
+                String label = String.format("%s (%s via %s)", appName, updated.getPortType(), updated.getOnionType());
+                checkBox.setText(label);
                 checkBox.setChecked(true);
             }
         } else {

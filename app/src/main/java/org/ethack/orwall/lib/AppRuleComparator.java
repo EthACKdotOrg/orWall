@@ -20,22 +20,31 @@ public class AppRuleComparator implements Comparator<AppRule> {
 
     @Override
     public int compare(AppRule appRule1, AppRule appRule2) {
-        PackageInfo pkgInfo1 = null;
-        try {
-            pkgInfo1 = packageManager.getPackageInfo(appRule1.getPkgName(), PackageManager.GET_PERMISSIONS);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, e.getMessage());
-        }
-        PackageInfo pkgInfo2 = null;
-        try {
-            pkgInfo2 = packageManager.getPackageInfo(appRule2.getPkgName(), PackageManager.GET_PERMISSIONS);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, e.getMessage());
+        String label1 = null;
+        if (appRule1.getPkgName().startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+            label1 = PackageInfoData.specialApps().get(appRule1.getPkgName()).getName();
+        } else {
+            try {
+                PackageInfo pkgInfo1 = packageManager.getPackageInfo(appRule1.getPkgName(), PackageManager.GET_PERMISSIONS);
+                label1 = packageManager.getApplicationLabel(pkgInfo1.applicationInfo).toString();
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
 
-        if (pkgInfo1 != null && pkgInfo2 != null) {
-            String label1 = packageManager.getApplicationLabel(pkgInfo1.applicationInfo).toString();
-            String label2 = packageManager.getApplicationLabel(pkgInfo2.applicationInfo).toString();
+        String label2 = null;
+        if (appRule2.getPkgName().startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+            label2 = PackageInfoData.specialApps().get(appRule2.getPkgName()).getName();
+        } else {
+            try {
+                PackageInfo pkgInfo2 = packageManager.getPackageInfo(appRule2.getPkgName(), PackageManager.GET_PERMISSIONS);
+                label2 = packageManager.getApplicationLabel(pkgInfo2.applicationInfo).toString();
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+
+        if (label1 != null && label2 != null) {
             return label1.compareTo(label2);
         } else {
             return 0;

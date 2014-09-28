@@ -17,10 +17,13 @@ import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
+import org.ethack.orwall.lib.PackageInfoData;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Manage "apps" tab fragment.
@@ -61,6 +64,11 @@ public class AppFragment extends Fragment {
 
         // get disabled apps (filtered with enabled)
         List<AppRule> disabledApps = listDisabledApps();
+        // Get special, disabled apps
+        List<AppRule> specialDisabled = listSpecialApps();
+
+        // Merge both disabled apps
+        disabledApps.addAll(specialDisabled);
 
         // Sort collection using a dedicated method
         Collections.sort(enabledApps, new AppRuleComparator(getActivity().getPackageManager()));
@@ -90,11 +98,24 @@ public class AppFragment extends Fragment {
         for (PackageInfo pkgInfo : pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
                 if (!natRules.isAppInRules((long) pkgInfo.applicationInfo.uid)) {
-                    AppRule tmp = new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, "None", (long) 0, "None");
-                    pkgList.add(tmp);
+                    pkgList.add(new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, "None", (long) 0, "None"));
                 }
             }
         }
+        return pkgList;
+    }
+
+    private List<AppRule> listSpecialApps() {
+        NatRules natRules = new NatRules(this.getActivity());
+        List<AppRule> pkgList = new ArrayList<AppRule>();
+        Map<String,PackageInfoData> specialApps = PackageInfoData.specialApps();
+
+        for (PackageInfoData pkgInfo: specialApps.values()) {
+            if (!natRules.isAppInRules(pkgInfo.getUid())) {
+                pkgList.add(new AppRule(pkgInfo.getPkgName(), pkgInfo.getUid(), "None", (long) 0, "None"));
+            }
+        }
+
         return pkgList;
     }
 
@@ -138,4 +159,5 @@ public class AppFragment extends Fragment {
                         pkg.packageName.equals(Constants.I2P_APP_NAME)
         );
     }
+
 }
