@@ -27,6 +27,7 @@ public class Constants {
     public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
     public final static String PREF_KEY_LAN_ENABLED = "lan_enabled";
     public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
+    public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
 
     public final static String IPTABLES = "/system/bin/iptables";
 
