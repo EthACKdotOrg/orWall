@@ -12,7 +12,7 @@
     <string name="title_activity_preferences">Préférences</string>
 
     <string name="network">Réseau</string>
-    <string name="summary_network">Gèrer quelques options du réseau. Attention, cela peut vous mettre en danger!</string>
+    <string name="summary_network">Gérer quelques options du réseau. Attention, cela peut vous mettre en danger !</string>
     <string name="switch_lan">Autoriser les accès vers le LAN</string>
     <string name="summary_enable_lan">
         Permettre au LAN de passer outre le firewall et Orbot.\n
@@ -24,20 +24,20 @@
     <string name="enable_ssh">Permettre les connexions SSH entrantes</string>
     <string name="summary_enable_ssh">Permet les connexions entrantes TCP:22 pour vous connecter en SSH sur votre appareil.</string>
 
-    <string name="switch_tethering">Paratage de connexion (Tethering)</string>
+    <string name="switch_tethering">Partage de connexion (Tethering)</string>
 
-    <string name="captive_portal">Détection de protail captif</string>
+    <string name="captive_portal">Détection de portail captif</string>
     <string name="enable_captive_detection">Activer la détection de portail captif</string>
-    <string name="summary_enable_captive_detection">Attention! Cela peut conduire à la fuite de données car l\'OS va sonder le réseau à chaque fois que vous vous connecterez au sans-fil!</string>
+    <string name="summary_enable_captive_detection">Attention ! Cela peut conduire à la fuite de données car l\'OS va sonder le réseau à chaque fois que vous vous connecterez au sans-fil!</string>
     <string name="captive_browser_gracetime">Délai de grâce du navigateur (défaut: 5)</string>
     <string name="summary_captive_browser_gracetime">Définissez un délai de grâce pour la connexion au portail captif. Cinq minutes devraient suffire.</string>
 
     <string name="special_apps">Applications particulières</string>
-    <string name="summary_special_apps">Sélectionnez les applications avec des droits particuliers, comme votre navigateur préféré pour l\'authentification au portail captif, ou la VoIP.</string>
+    <string name="summary_special_apps">Sélectionnez les applications avec des droits particuliers, comme votre navigateur préféré pour l\'authentification au portail captif, ou à la VoIP.</string>
     <string name="portal_browser">Navigateur pour la connexion au portail</string>
-    <string name="select_browser">Chosir l\'application navigateur</string>
-    <string name="summary_select_browser">Ce navigateur sera autorisé, sur demande, à passez outre Tor afin de se connecter sur un portail captif. Vous pouvez activer ce passe droit temporairement directement depuis le menu..</string>
-    <string name="sip_application">Chosir l\'application SIP</string>
+    <string name="select_browser">Choisir l\'application navigateur</string>
+    <string name="summary_select_browser">Ce navigateur sera autorisé, sur demande, à passez outre Tor afin de se connecter sur un portail captif. Vous pouvez activer ce passe droit temporairement directement depuis le menu.</string>
+    <string name="sip_application">Choisir l\'application SIP</string>
     <string name="summary_sip_application">L\'application sélectionnée verra son trafic UDP autorisé en dehors de TOR.</string>
 
     <string name="set_ports">Changer les ports proxy</string>
@@ -76,8 +76,8 @@
         Nous ne pouvons rien faire contre cela :(.
     </string>
 
-    <string name="tether_activated_in_orwall">Partage de connection activé dans orWall</string>
-    <string name="tether_deactivated_in_orwall">Partage de connection désactivé orWall</string>
+    <string name="tether_activated_in_orwall">Partage de connexion activé dans orWall</string>
+    <string name="tether_deactivated_in_orwall">Partage de connexion désactivé dans orWall</string>
 
     <string name="home_enable_orwall">Statut d\'orWall</string>
     <string name="enabling_orwall">orWall est en cours d\'initialisation</string>
@@ -101,8 +101,8 @@
     <string name="hint_close">Fermer</string>
     <string name="advanced_connection_settings_title" formatted="false">Réglages avancés pour %s</string>
     <string name="advanced_connection_provider">Fournisseur de connectivité</string>
-    <string name="advanced_connection_type">Type de connection</string>
-    <string name="advanced_connection_type_force">Forcer connection (utilise REDIRECT)</string>
+    <string name="advanced_connection_type">Type de connexion</string>
+    <string name="advanced_connection_type_force">Forcer connexion (utilise REDIRECT)</string>
     <string name="advanced_connection_type_native">Utiliser les capacités natives de l\'application (Chemin clôturé)</string>
     <string name="advanced_connection_bypass">Autoriser cette application à passer outre le proxy</string>
     <string name="alert_save">Enregistrer</string>
