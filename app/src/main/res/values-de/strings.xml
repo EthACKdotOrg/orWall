@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Thanks @ChristianTanner! -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thanks goes to
+					@ChristianTanner
+					@CHEF-KOCH
+ -->
 <resources>
 
     <string name="main_counter" formatted="false">%d Minuten, %d Sekunden bevor die Berechtigungen auslaufen.</string>
@@ -6,204 +10,205 @@
 
     <string name="button_settings">Einstellungen</string>
     <string name="button_about">Über</string>
-    <string name="switch_sip">SIP aktivieren</string>
-    <string name="switch_browser">Browser aktivieren</string>
+    <string name="switch_sip">SIP-Verbindungen aktivieren</string>
+    <string name="switch_browser">Browser-Verbindungen aktivieren</string>
 
     <string name="title_activity_preferences">Einstellungen</string>
 
     <string name="network">Netzwerk</string>
-    <string name="summary_network">Netzwerk Optionen verwalten. Aufgepasst, kann Löcher aufreissen!</string>
-    <string name="switch_lan">LAN Verbindungen aktivieren</string>
+    <string name="summary_network">Netzwerk Optionen verwalten. Dies kann Löcher verursachen!</string>
+    <string name="switch_lan">LAN-Verbindungen aktivieren</string>
     <string name="summary_enable_lan">
         Erlaubt dem LAN, die Firewall und Orbot zu umgehen.\n
         \n
-        WARNUNG: diese Einstellung erlaubt allen Anwendungen Zugriff auf das LAN. .onion Adressen werden nicht mehr aufgelöst.
+        WARNUNG: Diese Einstellung erlaubt allen Anwendungen Zugriff auf das LAN. .onion-Adressen werden nicht mehr aufgelöst.
     </string>
     <string name="enable_adb">Android Debug Bridge (ADB) aktivieren</string>
-    <string name="summary_enable_adb">TCP 5555 in beiden Richtungen öffnen um über das Netzwerk auf dein Gerät zuzugreifen</string>
-    <string name="enable_ssh">Eingehende SSH Verbindungen aktivieren</string>
-    <string name="summary_enable_ssh">Öffnet TCP Port 22 für eingehende Verbindungen, damit Du Dich mit Deinem Gerät via SSH verbinden kannst</string>
+    <string name="summary_enable_adb">TCP-Port 5555 in beiden Richtungen öffnen um über das Netzwerk auf dein Gerät zugreifen zu können</string>
+    <string name="enable_ssh">Eingehende SSH-Verbindungen aktivieren</string>
+    <string name="summary_enable_ssh">Öffnet TCP-Port 22 für eingehende Verbindungen, damit du dich mit deinem Gerät via SSH verbinden kannst</string>
 
     <string name="switch_tethering">Tethering aktivieren</string>
 
-    <string name="captive_portal">Captive portal auffinden</string>
-    <string name="enable_captive_detection">Captive portal Identifikation aktivieren</string>
-    <string name="summary_enable_captive_detection">Vorsicht! Das OS wird bei jeder Verbindung zum Wireless das Netzwerk testen. Datenlecks können nicht ausgeschlossen werden</string>
-    <string name="captive_browser_gracetime">Zeitlimite in Minuten für Browser (default: 5)</string>
-    <string name="summary_captive_browser_gracetime">Zeitlimite, um bei Captive Portals einzuloggen. Fünf Minuten sollten komfortable ausreichen.</string>
+    <string name="captive_portal">Captive Portal auffinden</string>
+    <string name="enable_captive_detection">Captive Portal Identifikation aktivieren</string>
+    <string name="summary_enable_captive_detection">Vorsicht! Das Android OS wird bei jeder Verbindung zum Wireless das Netzwerk testen. Datenlecks können nicht ausgeschlossen werden</string>
+    <string name="captive_browser_gracetime">Zeitlimit (in Min.) für den Browser (Standard: 5)</string>
+    <string name="summary_captive_browser_gracetime">Zeitlimit, um bei Captive Portals einzuloggen. 5 Minuten sollten ausreichen.</string>
 
     <string name="special_apps">Besondere Anwendungen</string>
-    <string name="summary_special_apps">Hier kannst du Anwendungen bestimmen, welche Privilegien erhalten, wie zum Beispiel einen Browser für Captive Portal logins oder VoIP Anwendungen.</string>
-    <string name="portal_browser">Browser für Portal login</string>
+    <string name="summary_special_apps">Hier kannst du Anwendungen bestimmen, welche erhöhte Privilegien erhalten, wie zum Beispiel einen Browser für Captive Portal logins oder VoIP-Anwendungen.</string>
+    <string name="portal_browser">Browser für Portal Login</string>
     <string name="select_browser">Browser auswählen</string>
     <string name="summary_select_browser">Dieser Browser darf sich auf Anfrage an Tor vorbei direkt bei Captive Portals anmelden. Du kannst die temporäre Umgehung von Tor direkt im Menu aktivieren.</string>
-    <string name="sip_application">SIP Anwendung auswählen</string>
-    <string name="summary_sip_application">Die ausgewählte Anwendung kann ihren UDP Traffic an Tor vorbei senden und empfangen.</string>
-
-    <string name="set_ports">Proxy ports festlegen</string>
-    <string name="summary_set_ports">Proxy Ports für Orbot festlegen falls Du sie in der Konfiguration geändert hast</string>
-    <string name="proxy_socks">Proxy SOCKS port (Default: 9050)</string>
-    <string name="proxy_transport">Transparent proxy port (Default: 9040)</string>
-    <string name="proxy_dns">DNS Proxy port (Default: 5400)</string>
-    <string name="proxy_polipo">Polipo port (Default: 8118)</string>
+    <string name="sip_application">SIP-Anwendung auswählen</string>
+    <string name="summary_sip_application">Die ausgewählte Anwendung kann ihren UDP-Verkehr an Tor vorbei leiten.</string>
+	
+    <string name="set_ports">Proxy Ports festlegen</string>
+    <string name="summary_set_ports">Proxy Ports für Orbot festlegen falls du sie in der Konfiguration geändert hast</string>
+    <string name="proxy_socks">Proxy SOCKS Port (Standard: 9050)</string>
+    <string name="proxy_transport">Transparent Proxy Port (Standard: 9040)</string>
+    <string name="proxy_dns">DNS-Proxy Port (Standard: 5400)</string>
+    <string name="proxy_polipo">Polipo Port (Standard: 8118)</string>
 
     <string name="about_urls">Projekt Links</string>
 
     <string name="about_license">Lizenz</string>
-    <string name="about_torproject">Unabhängig vom Tor Project</string>
-    <string name="about_legal_tor">Diese Anwendung wird unabhängig vom Tor® Anonymitäts Projekt entwickelt und kommt ohne Garantie vom Tor Projekt bezüglich Qualität, Tauglichkeit oder irgendeine andere Eigenschaft. </string>
+    <string name="about_torproject">Unabhängig vom Tor Projekt</string>
+    <string name="about_legal_tor">Diese Anwendung wird unabhängig vom Tor® Anonymitäts Projekt entwickelt und kommt ohne Garantie vom Tor Projekt bezüglich Qualität, Tests oder anderen Eigenschaften des original Projekts aus. </string>
     <string name="about_author">Author(en)</string>
 
-    <string name="about_orwall">Stell alle APPS hinter Orbit und blockiere sämtliche ungewollte Netzwerk Traffic in einem einzigen Schritt.</string>
+    <string name="about_orwall">Stellt alle Apps hinter Orbot und blockiere sämtliche ungewollte Netzwerkverkehr in einem einzigen Schritt.</string>
     <string name="about_external_libs">Externe Libraries</string>
 
-    <string name="alert_install_script_title">Init script Installation</string>
+    <string name="alert_install_script_title">Init-Skript Installation</string>
     <string name="alert_install_script_text" formatted="false">
-        Diese Anwendung verwendet ein Init-script.\n
-        Das Script unterbindet sämtlich IP Traffic während dem Bootvorgang und verhindert so Datenlecks Deines Geräts.\n
-        Wir empfehlen die Verwendng dieses Scripts wärmstens.\n
+        Diese Anwendung verwendet ein Init-Skript.\n
+        Das Skript unterbindet sämtlich IP-Verkehr während dem Bootvorgang und verhindert so Datenlecks.\n
+        Wir empfehlen die Verwendung dieses Skripts.\n
         \n
-        Das Script befindet sich an folgender Stelle: %s
+        Das Skript befindet sich unter folgendem Ordner: %s
     </string>
     <string name="alert_install_script_accept">Installieren</string>
     <string name="alert_install_script_refuse">Ablehnen</string>
     <string name="explain_no_initscript" formatted="false">
-        Diese Anwendung verwendet ein Init-script in %s.\n
-        Es sieht so aus, als ob es von Deinem Android Gerät nicht unterstützt wird.\n
+        Diese Anwendung verwendet ein Init-Skript unter: %s.\n
+        Es sieht so aus, als ob es von deinem Android OS nicht unterstützt wird.\n
         \n
-        <b>Das bedeutet, dass während des Bootvorgangs Datenlecks bestehen können.</b>\n
+        <b>Das bedeutet, dass während des Bootvorgangs Datenlecks enstehen können.</b>\n
         \n
-        Leider können wir dagegen nichts unterbehmen :(.
+        Leider können wir dagegen nichts unternehmen.
     </string>
 
-    <string name="tether_activated_in_orwall">Tethering in OrWall ist aktiv</string>
-    <string name="tether_deactivated_in_orwall">Thethering in OrWall ist deaktiviert</string>
+    <string name="tether_activated_in_orwall">Tethering in OrWall ist aktiviert</string>
+    <string name="tether_deactivated_in_orwall">Tethering in OrWall ist deaktiviert</string>
 
     <string name="home_enable_orwall">orWall Status</string>
     <string name="enabling_orwall">orWall wird initialisiert</string>
     <string name="enabled">aktiviert</string>
     <string name="disabled">deaktiviert</string>
-    <string name="disable_orwall_title">Deaktivieren orWall?</string>
+    <string name="disable_orwall_title">orWall deaktivieren?</string>
     <string name="disable_orwall_msg">
-        Sie sind dabei, orWall deaktivieren.\n\n
-         Das bedeutet, dass Ihr Gerät alle ausgehenden Verbindungen zu ermöglichen. Auch Verbindungen
-         Ausgehende nicht über einen Proxy-Anonymisierungs gezwungen werden.\n\n
+        Du bist dabei, orWall zu deaktivieren.\n\n
+         Das bedeutet, dass dein Gerät alle ausgehenden Verbindungen erlaubt, auch ausgehende Verbindungen
+         die nicht über einen Proxy-Anonymisierungsdienst gezwungen werden.\n\n
          Dies kann gefährlich sein!\n\n
-         Halten Sie daran, dass diese Deaktivierung wird beim nächsten Neustart verfallen Gerät.
+         Achte darauf, dass diese Deaktivierung nach einem Geräteneustart zurückgesetzt wird.
     </string>
     <string name="alert_accept">Akzeptieren</string>
 
     <string name="toast_new_rule">Die neuen Regeln werden hinzugefügt</string>
-    <string name="toast_remove_rule">Die Regeln werden entfernt</string>
-    <string name="toast_error" formatted="false">Ein Fehler ist aufgetreten, danke an den Entwickler wenden! #%d</string>
+    <string name="toast_remove_rule">Die alten Regeln werden entfernt</string>
+    <string name="toast_error" formatted="false">Ein Fehler ist aufgetreten, bitte wende dich an den Entwickler! #%d</string>
 
-    <string name="hint_long_press">Langes Drücken auf eine App wird Dich auf Erweiterte Einstellungen anzeigen</string>
+    <string name="hint_long_press">Langes drücken auf eine App, zeigt dir die Erweiterte Einstellungen an</string>
     <string name="hint_close">Schließen</string>
     <string name="advanced_connection_settings_title" formatted="false">Erweiterte Einstellungen für %s</string>
-    <string name="advanced_connection_provider">Connectivity-Anbieter</string>
+    <string name="advanced_connection_provider">Verbindungsanbieter</string>
     <string name="advanced_connection_type">Art der Verbindung</string>
-    <string name="advanced_connection_type_force">Erzwingen Verbindung (mit REDIRECT)</string>
-    <string name="advanced_connection_type_native">Verwendung Anwendung native Kapazität (eingezäunt Pfad)</string>
-    <string name="advanced_connection_bypass">Lassen Sie diese Anwendung, um den Proxy zu umgehen</string>
+    <string name="advanced_connection_type_force">Verbindung erzwingen (via 'REDIRECT')</string>
+    <string name="advanced_connection_type_native">Verwendung für Anwendung mit native Kapazität (abgesteckter Pfad)</string>
+    <string name="advanced_connection_bypass">Nutze diese Anwendung, um den Proxy zu umgehen</string>
     <string name="alert_save">Registrieren</string>
     <string name="alert_cancel">Stornieren</string>
 
     <string name="start_wizard">Assistent starten</string>
+	<string name="wizard_close">Den Assistenten schließen</string>
     <string name="wizard_step">Schritt</string>
-    <string name="wizard_title_one">Was orWall</string>
+    <string name="wizard_title_one">Was is orWall</string>
     <string name="wizard_title_two">Schnelleinstellungen</string>
     <string name="wizard_title_three">Anwendungseinstellungen</string>
-    <string name="title_activity_wizard">Willkommen orWall</string>
-    <string name="wizard_close">Den Assistenten schließen</string>
+    <string name="title_activity_wizard">Willkommen bei orWall</string>
 
     <string name="wizard_init_script_text">Aktivierung des Init-Skript:</string>
 
     <string name="wizard_init_root_text">Root-Zugriff (nur lesen):</string>
     <string name="wizard_init_iptables_text">Iptables Anwesenheit (nur lesen):</string>
-    <string name="explain_no_iptables">Wir haben kein IPTables gefunden. orWall nicht funktioniert.</string>
+    <string name="explain_no_iptables">orWall hat keine IPTables gefunden. orWall wird nicht funktionieren.</string>
     <string name="wizard_init_ipt_comments_text">Unterstützung Kommentare in iptables (nur lesen) :</string>
     <string name="wizard_orbot_status_text">Orbot (nur lesen):</string>
 
-    <!-- TODO: translation -->
-    <string name="warning_init">Warning! IPTables doesn\'t seem to be initialized!</string>
+    <string name="warning_init">Achtung! IPTables sind nicht installiert!</string>
     <string name="wizard_first">
-        <b>Welcome to orWall!</b>\n
-        This wizard will let you learn what orWall can do and what it cannot. It will also give you some
-        hints on what might or might not be done.\n
+        <b>Willkommen zu orWall!</b>\n
+		Dieser Assistent zeigt dir was orWall kann und was nicht. Er wird dir auch einige
+        Tipps geben können welche Optionen empfohlen werden und welche nicht.\n
         \n
-        <b>orWall is not a firewall</b>\n
-        Keep it in mind. orWall will not replace AFWall nor DroidWall nor anything like that.\n
-        orWall main aim is to allow you forcing apps though some local proxy when those apps don\'t
-        know how to talk to this proxy; it will also allow you to prevent any leaks, using an init-script.\n
+        <b>orWall ist keine Firewall</b>\n
+        Bitte beachte das orWall kein Ersatz für AFWall+ oder DroidWall ist, oder andere Firewalls.\n
+		orWall's Hauptziel ist es das deine Apps durch einen lokalen Proxy kommunizieren zu können,
+		außerdem werden alle Datenlecks beim Start des OS durch ein init-Skript verhindert.\n
         \n
-        <b>How to use orWall</b>\n
-        You will find three panels:\n
+        <b>Wie nutze ich orWall?</b>\n
+        Du findest Drei Kategorien:\n
         - Home\n
         - Apps\n
-        - Logs (which isn\'t available for now)\n
+        - Logs (aktuell noch nicht vorhanden)\n
         \n
-        On the Home panel, you will find some main settings.\n
-        From there, you are able to deactivate orWall (until next reboot), activate Tethering support (by default,
-        orWall rules block that usage), as well as give a temporary authorization to a web browser to bypass the whole proxy
-        thing, enable SIP application to send UDP requests, and enable Local Area Network (LAN) connections.\n
+		In der Home Kategorie findest du die Haupteinstellungen.\n
+		Von hier aus kannst du orWall temporär deaktivieren (bis zum Neustart), Tethering-Unterstützung aktivieren
+		(Standardgemäß blockiert orWall diese Benutzer-Regeln), sowie temporären Zugriff auf deinen Browser um die Proxyeinstellungen umgehen zu können. Außerdem können SIP-Anwendungen UDP-Requests erlaubt werden und 
+		eingehende Local Area Network (LAN) Verbindungen aktiviert werden.\n
         \n
-        On the Apps panel, you will find a list of your installed applications.\n
+        In der Apps Kategorie, wirst du eine Liste deiner Installierten Apps finden.\n
         \n
-        Bellow you will find some information about current orWall status. Note that some switches may be disabled.
-        This happens if, for some reason, an option isn\'t available on your device. It is also true for read-only settings.
+		Weiter unten findest du orWall Statusinformationen. Beachte hierbei das einige Optionen vielleicht deaktiviert sein 
+		können, da diese Option evtl. auf deinem Gerät nicht verfügbar ist oder nur Lesezugriff besitzt.
     </string>
     <string name="wizard_second">
-        <b>Disable orWall</b>\n
-        This option let you deactivate orWall. Just keep in mind the deactivation will ends once you reboot
-        your device.
+        <b>orWall deaktivieren</b>\n
+		Diese Option deaktiviert orWall, bis du dein Gerät neu gestartet hast.
         \n
-        <b>Enable tethering</b>\n
-        You\'ll need to activate this option if you want to share your Internet connection from your device.\n
-        Once this option is enabled, orWall will detect automatically when you enable the connection sharing, and
-        activate a subset of firewall rules.\n
+        <b>Tethering aktivieren</b>\n
+		Diese Option wird benötigt wenn du deine Internet-Verbindung von deinem Gerät teilen möchtest.\n
+		Sobald diese Option aktiviert ist wird orWall alle Tethering-Verbindungen erkennen und weitere Firewall-Regeln
+		aktivieren.\n
         \n
-        It may take a while before this takes effect.\n
-        <b>WARNING!</b> This option doesn\'t work as expected for now :(.\n
+		Dieser Prozess kann evtl. etwas Zeit benötigen bis der gewünschte Effekt eintritt.\n
+        <b>Warnung!</b> Diese Option funktioniert aktuell nicht wie erwartet.\n
         \n
-        <b>Authorize browser</b>\n
-        This option allows you to lock up your device, while still being able to authenticate to some
-        captive portal (like in hotels). An application you select through Settings>Special Applications
-        will get an unlimited access to the network for a give time.\n
-        Once you enable this option, a timer will start. Once it reaches the end of the grace time, the
-        browser will be locked as previously.\n
-        The grace time may be set in Settings>Network. Default value is 5 minutes.\n
+        <b>Browser-Autorisierung</b>\n
+		Diese Option sperrt deine Geräte-Verbindungen, trotzdem kannst du zu Captive Portals kommunizieren 
+		(z.B. in Hotels). Eine ausgewählte Anwendung unter 'Einstellungen - Spezielle Anwendung' wird für eine gewisse Zeit 
+		vollen Zugriff auf das Netzwerk erhalten.\n
+		Sobald du diese Option aktiviert hast wird ein Timer starten, der wenn das voreingestellte Zeitlimit erreicht wird,
+		die Browser-Einstellungen die zuvor genutzt wurden wiederherstellt.\n
+		Das Zeitlimit kann unter 'Einstellungen - Netzwerk' geändert werden. Der Standardwert beträgt 5 Minuten.\n
         \n
-        <b>Enable SIP</b>\n
-        Toggling this option will allow a selected application to access remote hosts using UDP protocol.\n
+        <b>SIP-Verbindungen aktivieren</b>\n
+		Diese Option erlaubt es ausgewählten Apps Remote-Hosts-Verbindungen via dem UDP-Protokoll aufzubauen.\n
         \n
-        <b>Enable LAN connections</b>\n
-        This will let you access to your Local Area Network.
+        <b>LAN-Verbindungen aktivieren</b>\n
+        Diese Option aktiviert den internen Local Area Network (LAN) Zugriff.
     </string>
     <string name="wizard_third">
-        <b>Default behavior</b>\n
-        When you touch an app in the "Apps" tab, it will toggle its status: either the app can access the Net
-        using Orbot, or it\'s locked out.\n
-        The list view will refresh eventually when you come back to orWall later (this must be improved).\n
+        <b>Standard-Verhalten</b>\n
+		Wenn du eine App unter der 'Apps-Kategorie' berührst wird dessen Status geändert: Entweder die App hat 
+		Internet-Zugang via Orbot, oder sie ist blockiert.\n
+		Die App-Listenansicht wird evtl. erneuert falls du später zurück zu orWall kommst. (Dies muss verbessert werden).\n
         \n
-        <b>Advanced settings</b>\n
-        A long touch will display a dialog in order to let you configure a bit more the app accesses.\n
-        The following options are available for now:\n
-        - Connection provider: let you chose between Tor and… well, Tor for now.\n
-        - Connection type: either the application can be configured in order to use a local proxy, or you\'ll need
-        to force it through the proxy.\n
-        - Complete bypass: this option shouldn\'t be use at all, as it will allow the application to bypass completely
-        your proxy, for life.\n
+        <b>Erweiterte Einstellungen</b>\n
+		Ein langer Fingerdruck wird einen Dialog zeigen der die App-Konfigurations-Verbindung anpassen kann.\n
+        Die folgenden Optionen stehen zur Verfügung:\n
+		
+        - Verbindungsmanager: Lässt dich zwischen Tor und ... Tor wählen (mehr kommt evtl. noch).\n
+        - Verbidnungstyp: Entweder die Anwendung kann für einen Lokalen Proxy konfiguriert werden, oder 
+		du zwingst sie durch einen Proxy.\n
+        - Kompletter Bypass: Diese Option sollte nicht verwendet werden, da diese es erlaubt deine Anwendungen 
+		um den Proxy herum zu leiten (Keine Firewall!).\n
         \n
-        <b>Forced connection</b>\n
-        It uses iptables REDIRECT target in order to force the application through local proxy\n
-        It will be shown on the application list as "TransProxy via [proxy]".\n
+        <b>Zwangsverbindung</b>\n
+		Diese Option nutzt die iptables 'REDIRECT'-Regel um die Anwendungen durch den Lokalel Proxy zu leiten.\n
+		Dies wird in der Anwendungsliste als "TransProxy mittels [Proxy]" aufgelistet.\n
         \n
-        <b>Fenced connection</b>\n
-        This is for application aware of proxy settings. Some applications like Twidere, Lightning or ChatSecure
-        already embed settings allowing you to make them go through Orbot or other proxies.\n
-        Selecting this option in orWall will allow such application to connect to the Proxy, while preventing them to connect
-        to other services.\n
-        Imagine this option as a fenced road: You may access freely the content of the road, but you can\'t go elsewhere.
+        <b>Abgegrenzte-Verbindung</b>\n
+		Diese Option ist für Anwendungen die Kenntnis von den Proxy-Einstellungen besitzt. Einige Apps wie Twidere,
+		Lightning oder ChatSecure besitzen ihre eigene Kenntnis der Proxy-Einstellungen um mit Orbot oder anderen Proxy's
+		klar zu kommen.\n
+		Wähle diese Option in orWall um solche Anwendungen eine Proxy-Verbindung zu erlauben und um zu verhindern das diese 
+		in andere Netze kommunizieren.\n
+		Stell dir diese Option als eine eingezäunte Straße vor, du kannst die Straße unbehindert betreten, aber nirgends wohin andersweitig hingehen.
+		<!-- TODO: translation -->
     </string>
 </resources>
 
