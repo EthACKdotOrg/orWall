@@ -41,6 +41,12 @@
         border-image: none;
         border-radius: 3px;
       }
+      .bs-callout-danger {
+        border-left-color: #ff3300;
+      }
+      .bs-callout-danger h4 {
+        color: #ff3300;
+      }
       .bs-callout-warning {
         border-left-color: #F0AD4E;
       }
@@ -106,6 +112,21 @@
         </div>
       </div>
       <div>
+        <div class="bs-callout bs-callout-danger">
+          <h4>Be careful!</h4>
+          <p>
+          This application takes care of your connection, NOT what's your sending or receiving! <b>This means you must use applications
+            providing enough privacy in order to avoid sending out your complet device information</b>.<br>
+          We were told some people seem to use orWall on their android device <b>with stock browser</b>. Without any settings.
+          Meaning they are <b>sending away their information like browser type, device type and, even, MAC or some hash strings</b>.<br>
+          Of course <b>this isn't the right way to use Tor</b> or any other Onion Router system.<br>
+          Of course <b>this is the best way for you to be tracked down</b>.
+          </p>
+          <p>
+          Please be sure of what you're doing. If you want to visit hidden services, please use Orfox or any privacy-aware browser! orWall doesn't take
+          care of what your apps send to the Net. At all. And won't do it. Never. This is not orWall goal. And will never be.
+          </p>
+        </div>
         <h3>How does it work?</h3>
         <p>
         orWall will force selected applications through <a href="https://guardianproject.info/apps/orbot/">Orbot</a>
