@@ -57,18 +57,8 @@
         z-index:10;
         margin-top:20px;
       }
-      @media (min-width: 800px) {
-        #release a {
-          margin-top:40%;
-        }
-      }
-      @media (max-width: 800px) {
-        .jumbotron>div {
-          padding-left:100px;
-        }
-        #release_block {
-          display:inline;
-        }
+      #release a {
+        margin-top:40%;
       }
       .thumbnail {
         height:470px;
@@ -111,14 +101,8 @@
           and block all unwanted traffic in one go.
           </p>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2" id="release">
           <a class="btn btn-primary btn-lg" href="https://f-droid.org/repository/browse/?fdid=org.ethack.orwall">On F-Droid</a>
-          <div id="release_block">
-            <span id="release">
-              <a class="btn btn-primary btn-lg" href="https://github.com/EthACKdotOrg/orWall/releases">Get it now!</a>
-            </span>
-            <span id="sig"></span>
-          </div>
         </div>
       </div>
       <div>
@@ -378,17 +362,6 @@ reboot</pre>
       }, function() {
         $('#qr_litecoin').hide();
       });
-      $.getJSON('https://api.github.com/repos/EthACKdotOrg/orWall/releases', function(data) {
-          latest_release = data[0];
-          url_apk = latest_release['assets'][0]['url']
-          url_sig = latest_release['assets'][1]['url']
-          $.getJSON(url_apk, function(apk, links) {
-            $('#release').html('<a class="btn btn-primary btn-lg" href="'+apk['browser_download_url']+'">Get '+latest_release['name']+'</a>');
-          });
-          $.getJSON(url_sig, function(sig, links) {
-            $('#sig').html('<a href="'+sig['browser_download_url']+'">gpg signature</a>');
-          });
-          });
       $('#latest_commits').append('<h3>Latest commits</h3>');
       $.getJSON('https://api.github.com/repos/EthACKdotOrg/orWall/commits', function(commits) {
           $.each(commits, function(i) {
