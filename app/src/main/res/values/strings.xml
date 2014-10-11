@@ -204,4 +204,7 @@
         to other services.\n
         Imagine this option as a fenced road: You may access freely the content of the road, but you can\'t go elsewhere.
     </string>
+
+    <string name="notification_deactivated_title">orWall is deactivated</string>
+    <string name="notification_deactivated_text">You may be at risk!</string>
 </resources>

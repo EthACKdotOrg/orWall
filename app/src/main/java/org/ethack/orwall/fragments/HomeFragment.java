@@ -1,6 +1,9 @@
 package org.ethack.orwall.fragments;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -268,12 +272,21 @@ public class HomeFragment extends Fragment {
         boolean checked = ((Switch) view).isChecked();
 
         final Intent bgpProcess = new Intent(this.getActivity(), BackgroundProcess.class);
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(getActivity())
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setContentTitle(getString(R.string.notification_deactivated_title))
+                .setContentText(getString(R.string.notification_deactivated_text))
+                .setSmallIcon(R.drawable.v2);
+
+        final NotificationManager notificationManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (checked) {
             bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ENABLE_ORWALL);
             getActivity().startService(bgpProcess);
             sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
             Toast.makeText(this.getActivity(), getString(R.string.enabling_orwall), Toast.LENGTH_LONG).show();
+            notificationManager.cancel(1);
 
         } else {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this.getActivity());
@@ -286,6 +299,7 @@ public class HomeFragment extends Fragment {
                     bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_DISABLE_ORWALL);
                     getActivity().startService(bgpProcess);
                     sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, false).apply();
+                    notificationManager.notify(1, notification.build());
                 }
             });
 
