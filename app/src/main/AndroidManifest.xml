@@ -62,6 +62,13 @@
             android:name="org.ethack.orwall.BackgroundProcess"
             android:exported="false" />
 
+        <service android:name=".vpn.Service"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+            </service>
+
         <receiver
             android:name="org.ethack.orwall.NetworkReceiver"
             android:enabled="true"
@@ -74,7 +81,7 @@
 
         <activity
             android:name="org.ethack.orwall.WizardActivity"
-            android:label="@string/title_activity_wizard"></activity>
+            android:label="@string/title_activity_wizard" />
     </application>
 
 </manifest>
