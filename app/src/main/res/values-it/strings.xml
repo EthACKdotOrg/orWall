@@ -74,137 +74,123 @@ In questo caso non possiamo farci niente :(.
 
     <string name="tether_activated_in_orwall">Funzionalità di Tethering abilitata in orWall</string>
     <string name="tether_deactivated_in_orwall">Funzionalità di Tethering disabilitata in orWall</string>
-
-    <!-- TODO: translation -->
-    <string name="home_enable_orwall">Statut d\'orWall</string>
-    <string name="enabling_orwall">orWall est en cours d\'initialisation</string>
-    <string name="enabled">Activé</string>
-    <string name="disabled">Désactivé</string>
-    <string name="disable_orwall_title">Désactiver orWall ?</string>
-    <string name="disable_orwall_msg">
-        Vous êtes sur le point de désactiver orWall.\n\n
-        Cela signifie que votre appareil autorisera toutes les connexions sortantes. Aussi, les connexions
-        sortantes ne seront plus forcées via un proxy anonymisant.\n\n
-        Cela peut être dangereux !\n\n
-        Gardez à l\'esprit que cette désactivation prendra fin lors du prochain redémarrage de l\'appareil.
-    </string>
-    <string name="alert_accept">Accepter</string>
-
-    <string name="toast_new_rule">Les nouvelles règles sont ajoutées</string>
-    <string name="toast_remove_rule">Les règles sont enlevées</string>
-    <string name="toast_error" formatted="false">Une erreur est survenue, merci de contacter le développeur ! #%d</string>
-
-    <string name="hint_long_press">Premere a lungo su un app vi mostrerà le impostazioni avanzate</string>
-    <string name="hint_close">Chiudere</string>
-    <string name="advanced_connection_settings_title" formatted="false">Réglages avancés pour %s</string>
-    <string name="advanced_connection_provider">Fournisseur de connectivité</string>
-    <string name="advanced_connection_type">Type de connection</string>
-    <string name="advanced_connection_type_force">Forcer connection (utilise REDIRECT)</string>
-    <string name="advanced_connection_type_native">Utiliser les capacités natives de l\'application (Chemin clôturé)</string>
-    <string name="advanced_connection_bypass">Autoriser cette application à passer outre le proxy</string>
-    <string name="alert_save">Registrare</string>
-    <string name="alert_cancel">Cancellare</string>
-
-    <string name="start_wizard">Démarrer l\'assistant</string>
-    <string name="wizard_step">Étape</string>
-    <string name="wizard_title_one">Qu\'est-ce qu\'orWall</string>
-    <string name="wizard_title_two">Réglages rapides</string>
-    <string name="wizard_title_three">Réglages des applications</string>
-    <string name="title_activity_wizard">Bienvenue dans orWall</string>
-    <string name="wizard_close">Fermer l\'assistant</string>
-
-    <string name="wizard_init_script_text">Activation du script d\'initialisation :</string>
-
-    <string name="wizard_init_root_text">Accès root (lecture seule) :</string>
-    <string name="wizard_init_iptables_text">Présence d\'IPTables (lecture seule):</string>
-    <string name="explain_no_iptables">Nous n\'avons pas trouvé IPTables sur ce système. orWall ne fonctionnera pas.</string>
-    <string name="wizard_init_ipt_comments_text">Support des commentaires dans IPTables (lecture seule) :</string>
-    <string name="wizard_orbot_status_text">Orbot (lecture seule):</string>
-
-    <string name="warning_init">Attention ! IPTables ne semble pas être initialisé !</string>
-    <string name="wizard_first">
-        <b>Welcome to orWall!</b>\n
-        This wizard will let you learn what orWall can do and what it cannot. It will also give you some
-        hints on what might or might not be done.\n
-        \n
-        <b>orWall is not a firewall</b>\n
-        Keep it in mind. orWall will not replace AFWall nor DroidWall nor anything like that.\n
-        orWall main aim is to allow you forcing apps though some local proxy when those apps don\'t
-        know how to talk to this proxy; it will also allow you to prevent any leaks, using an init-script.\n
-        \n
-        <b>How to use orWall</b>\n
-        You will find three panels:\n
-        - Home\n
-        - Apps\n
-        - Logs (which isn\'t available for now)\n
-        \n
-        On the Home panel, you will find some main settings.\n
-        From there, you are able to deactivate orWall (until next reboot), activate Tethering support (by default,
-        orWall rules block that usage), as well as give a temporary authorization to a web browser to bypass the whole proxy
-        thing, enable SIP application to send UDP requests, and enable Local Area Network (LAN) connections.\n
-        \n
-        On the Apps panel, you will find a list of your installed applications.\n
-        \n
-        Bellow you will find some information about current orWall status. Note that some switches may be disabled.
-        This happens if, for some reason, an option isn\'t available on your device. It is also true for read-only settings.
-    </string>
-    <string name="wizard_second">
-        <b>Disable orWall</b>\n
-        This option let you deactivate orWall. Just keep in mind the deactivation will ends once you reboot
-        your device.
-        \n
-        <b>Enable tethering</b>\n
-        You\'ll need to activate this option if you want to share your Internet connection from your device.\n
-        Once this option is enabled, orWall will detect automatically when you enable the connection sharing, and
-        activate a subset of firewall rules.\n
-        \n
-        It may take a while before this takes effect.\n
-        <b>WARNING!</b> This option doesn\'t work as expected for now :(.\n
-        \n
-        <b>Authorize browser</b>\n
-        This option allows you to lock up your device, while still being able to authenticate to some
-        captive portal (like in hotels). An application you select through Settings>Special Applications
-        will get an unlimited access to the network for a give time.\n
-        Once you enable this option, a timer will start. Once it reaches the end of the grace time, the
-        browser will be locked as previously.\n
-        The grace time may be set in Settings>Network. Default value is 5 minutes.\n
-        \n
-        <b>Enable SIP</b>\n
-        Toggling this option will allow a selected application to access remote hosts using UDP protocol.\n
-        \n
-        <b>Enable LAN connections</b>\n
-        This will let you access to your Local Area Network.
-    </string>
-    <string name="wizard_third">
-        <b>Default behavior</b>\n
-        When you touch an app in the "Apps" tab, it will toggle its status: either the app can access the Net
-        using Orbot, or it\'s locked out.\n
-        The list view will refresh eventually when you come back to orWall later (this must be improved).\n
-        \n
-        <b>Advanced settings</b>\n
-        A long touch will display a dialog in order to let you configure a bit more the app accesses.\n
-        The following options are available for now:\n
-        - Connection provider: let you chose between Tor and… well, Tor for now.\n
-        - Connection type: either the application can be configured in order to use a local proxy, or you\'ll need
-        to force it through the proxy.\n
-        - Complete bypass: this option shouldn\'t be use at all, as it will allow the application to bypass completely
-        your proxy, for life.\n
-        \n
-        <b>Forced connection</b>\n
-        It uses iptables REDIRECT target in order to force the application through local proxy\n
-        It will be shown on the application list as "TransProxy via [proxy]".\n
-        \n
-        <b>Fenced connection</b>\n
-        This is for application aware of proxy settings. Some applications like Twidere, Lightning or ChatSecure
-        already embed settings allowing you to make them go through Orbot or other proxies.\n
-        Selecting this option in orWall will allow such application to connect to the Proxy, while preventing them to connect
-        to other services.\n
-        Imagine this option as a fenced road: You may access freely the content of the road, but you can\'t go elsewhere.
-    </string>
-
-    <string name="notification_deactivated_title">orWall is deactivated</string>
-    <string name="notification_deactivated_text">You may be at risk!</string>
-
-    <string name="warning_iptables">IPTables was not detected</string>
-    <string name="warning_root">It seems root access has been denied</string>
+<string name="home_enable_orwall">Modalità d\'orWall</string>
+<string name="enabling_orwall">orWall è in fase d\'inizializzazione</string>
+<string name="enabled">Attivato</string>
+<string name="disabled">Disattivato</string>
+<string name="disable_orwall_title">Disattivare orWall ?</string>
+<string name="disable_orwall_msg">
+    Stai per disattivare orWall.\n\n
+    Ciò significa che il dispositivo permetterà tutte le connessioni in uscita. Così facendo,
+    le connessioni in uscita non saranno più inoltrate obbligatoriamente tramite un proxy anonimizzante\n\n
+    Questo può essere pericoloso!\n\n
+    Tenete a mente che tale disattivazione rimarrà operativa solo fino al prossimo riavvio del dispositivo
+</string>
+<string name="alert_accept">Accettare</string>
+<string name="toast_new_rule">Le nuove regole sono state aggiunte</string>
+<string name="toast_remove_rule">Le regole sono state rimosse</string>
+<string name="toast_error" formatted="false">Si è verificato un errore, si prega di contattare lo sviluppatore! #%d</string>
+<string name="hint_long_press">Premere a lungo su un app vi mostrerà le impostazioni avanzate</string>
+<string name="hint_close">Chiudere</string>
+<string name="advanced_connection_settings_title" formatted="false">Impostazioni avanzate per %s</string>
+<string name="advanced_connection_provider">Fornitore di connettività</string>
+<string name="advanced_connection_type">Tipo de connessione</string>
+<string name="advanced_connection_type_force">Imporre connessione (utilizza REDIRECT)</string>
+<string name="advanced_connection_type_native">Utilizzare le funzionalità native dell\'applicazione (Percorso recintato)</string>
+<string name="advanced_connection_bypass">Permettre a questa applicazione d\' oltrepassare il proxy</string>
+<string name="alert_save">Registrare</string>
+<string name="alert_cancel">Cancellare</string>
+<string name="start_wizard">Avvia procedura guidata</string>
+<string name="wizard_step">Sezione</string>
+<string name="wizard_title_one">Cos\'é orWall</string>
+<string name="wizard_title_two">Impostazioni veloci</string>
+<string name="wizard_title_three">Impostazioni delle applicazioni</string>
+<string name="title_activity_wizard">Benvenuto\/a in orWall</string>
+<string name="wizard_close">Chiudere la procedura guidata</string>
+<string name="wizard_init_script_text">Attivazione delllo script d\' inizializzazione :</string>
+<string name="wizard_init_root_text">Accesso root (solo lettura) :</string>
+<string name="wizard_init_iptables_text">Presenza d\'IPTables (solo lettura):</string>
+<string name="explain_no_iptables">La funzionalità IPTables non è stata trovata in questo sistema. orWall non potrà funzionare.</string>
+<string name="wizard_init_ipt_comments_text">Possibilità d\'inserire commenti in IPTables (solo lettura) :</string>
+<string name="wizard_orbot_status_text">Orbot (solo lettura):</string>
+<string name="warning_init">Attenzione ! A quanto pare IPTables non è inizializzato !</string>
+<string name="wizard_first">
+    <b>Benvenute\/i in orWall!</b>\n
+    Questa procedura guidata vi permetterà di capire cosa orWall può fare e ciò che non può. Essa vi darà anche qualche suggerimento su ciò che potrebbe o non potrebbe essere fatto.\n
+    \n
+    <b>orWall non è un firewall</b>\n
+    Tenetelo a mente: orWall non rimpiazza ne AFWall ne DroidWall ne simili.\n
+    Lo scopo di orWall consiste nel permettervi di imporre alle applicazioni di passare da un proxy locale nonostante quest\'ultime non siano programmate per farlo;
+    Inoltre, permette di evitare qualsiasi fuoga di dati, tramite uno script init.\n
+    \n
+    <b>Come usare orWall</b>\n
+    Troverete tre pannelli:\n
+    - Home\n
+    - Apps\n
+    - Logs (non ancora disponibile)\n
+    \n
+    Nel pannello Home, troverete alcune delle impostazioni principali.\n
+    È da qui che potete disabilitare orWall (fino al prossimo riavvio), abilitare il Tethering ( la regola predefinita di orWall non lo consente),
+    definire un eccezione temporanea al fine di permettere al browser di oltrepassare il proxy, permettere alle applicazioni SIP di mandare delle richieste UDP,
+    e abilitare le connessioni LAN.\n
+    \n
+    Nel pannello Apps, troverete la lista delle applicazioni installate\n
+    \n
+    Qui sotto troverete alcune informazioni relative allo stato attuale di orWall. È possibile che alcuni bottoni appaiono disabilitati.
+    Questo succede se, per una qualche ragione, un\'opzione non è disponibile sul tuo dispositivo. Cio vale anche per le impostazioni in sola lettura.
+</string>
+<string name="wizard_second">
+    <b>Disabilitare orWall</b>\n
+    Questa opzione ti permette di disattivare orWall. Ricordati, pero\', che questa disattivazione terminerà al prossimo riavvio.
+    \n
+    <b>Abilita tethering</b>\n
+    Ti servirà attivare questa opzione se desideri condividere la connessione Internet del tuo dispositivo.
+    Una volta attivata, orWall rivelerà automaticamente l’attivazione la condivisione internet, attivando tutta una serie di regole apposite nel firewall.\n
+    \n
+    Potrebbe metterci un\'attimo prima dell attivazione effettiva\n
+    <b>WARNING!</b> Questa opzione NON funziona per adesso :(.\n
+    \n
+    Questa opzione permette di bloccare il dispositivo, lasciandoti comunque la possibilità di identificarti su alcuni captive portal (come quelli degli hotels).
+    Un applicazione scelta tramite Impostazioni>Applicazioni Speciali otterrà un accesso illimitato alla rete per un periodo definito.\n
+    L’attivazione di questa opzione, innesca un timer. Appena quest\’ultimo sancisce la fine del periodo di permesso accordato, il browser ritornerà bloccato come prima.\n
+    La quantità di tempo accordato puo\’ essere specificata tramite Impostazioni>Rete. Il valore predefinito è di 5 minuti.\n
+    \n
+    <b>Abilita SIP</b>\n
+    L’attivazione di questa opzione permetterà ad una applicazione scelta di accedere a degli host remoti tramite il protocollo UDP.\n
+    \n
+    <b>Abilita le connessioni LAN</b>\n
+    Questa opzione ti consente di accedere al Local Area Network.
+</string>
+<string name="wizard_third">
+    <b>Comportamento predefinito</b>\n
+    Eseguendo un tocco su un\’applicazione presente nella colonna «Apps», se ne cambia lo stato: da libera di accedere a Internet usando Orbot,
+    a completamente bloccata. \n
+    La visuale di questa colonna sarà eventualmente aggiornata quando tornerai successivamente in orWall (opzione da migliorare).\n
+    \n
+    <b>Impostazioni avanzate</b>\n
+    Un tocco prolungato farà apparire delle opzioni atte a configurare più precisamente l\’accesso del\’app.\n
+    Attualmente le opzioni disponibili sono:\n
+    - Provider di connessione: ti permette di scegliere fra Tor e… Tor, per adesso.\n
+    - Tipo di connessione: l\’applicazione pou essere configurata per utilizzare un proxy locale, oppure quest\’ultima dovrà
+    per forza passare dal proxy.\n
+    - Bypass totale: questa opzione non dovrebbe mai essere usata, in quanto permette all’applicazione di bypassare completamente
+    il proxy, per sempre.\ns
+    \n
+    <b>Connessione forzata</b>\n
+    Fa uso del REDIRECT destinazione di iptables al fine di obbligare l\’applicazione a passare dal proxy locale.\n
+    Apparirà nella lista delle applicazioni come "TransProxy via [proxy]".\n
+    \n
+    <b>Connessione recintata</b>\n
+    Opzione destinata alle applicazioni capaci di gestire un proxy. Alcune applicazioni come Twidere, Lightning o ChatSecure
+    presentano delle impostazioni che ti permettono di definire il transito tramite Orbot o altri proxy.\n
+    Selezionando questa opzione in orWall permetterà a tali applicazioni di connettersi al proxy, prevenendo la connessione
+    ad altri servizi.\n
+    Si immagini questa opzione come una strada recintata: si può accedere liberamente a qualsiasi contenuto sulla strada,
+    ma non può andare altrove.
+    \n
+</string>
+<string name="notification_deactivated_title">orWall è disattivato</string>
+<string name="notification_deactivated_text">Potresti essere a rischio!</string>
+<string name="warning_iptables">IPTables non è stato individuato</string>
+<string name="warning_root">A quanto pare non è stato concesso l\'accesso root </string>
 </resources>
