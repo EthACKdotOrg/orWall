@@ -1,6 +1,7 @@
 package org.ethack.orwall.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -36,48 +37,57 @@ public class AppFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
 
-        ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
+        View view;
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
 
-        // Toggle hint layer
-        boolean hide_hint = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, false);
+        if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
 
-        if (hide_hint) {
-            view.findViewById(R.id.hint_press).setVisibility(View.GONE);
+            view  = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
+            ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
+
+            // Toggle hint layer
+            boolean hide_hint = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+                    .getBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, false);
+
+            if (hide_hint) {
+                view.findViewById(R.id.hint_press).setVisibility(View.GONE);
+            } else {
+                view.findViewById(R.id.id_hide_hint).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ((View) view.getParent()).setVisibility(View.GONE);
+                        getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+                                .edit()
+                                .putBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, true).apply();
+                    }
+                });
+            }
+
+            // get enabled apps
+            NatRules natRules = new NatRules(this.getActivity());
+            List<AppRule> enabledApps = natRules.getAllRules();
+
+            // get disabled apps (filtered with enabled)
+            List<AppRule> disabledApps = listDisabledApps();
+            // Get special, disabled apps
+            List<AppRule> specialDisabled = listSpecialApps();
+
+            // Merge both disabled apps
+            disabledApps.addAll(specialDisabled);
+
+            // Sort collection using a dedicated method
+            Collections.sort(enabledApps, new AppRuleComparator(getActivity().getPackageManager()));
+            Collections.sort(disabledApps, new AppRuleComparator(getActivity().getPackageManager()));
+
+            // merge both collections so that enabled apps are above disabled
+            enabledApps.addAll(disabledApps);
+
+            listView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
         } else {
-            view.findViewById(R.id.id_hide_hint).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ((View) view.getParent()).setVisibility(View.GONE);
-                    getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, true).apply();
-                }
-            });
+            view  = inflater.inflate(R.layout.fragment_tabbed_noapps, container, false);
         }
 
-        // get enabled apps
-        NatRules natRules = new NatRules(this.getActivity());
-        List<AppRule> enabledApps = natRules.getAllRules();
-
-        // get disabled apps (filtered with enabled)
-        List<AppRule> disabledApps = listDisabledApps();
-        // Get special, disabled apps
-        List<AppRule> specialDisabled = listSpecialApps();
-
-        // Merge both disabled apps
-        disabledApps.addAll(specialDisabled);
-
-        // Sort collection using a dedicated method
-        Collections.sort(enabledApps, new AppRuleComparator(getActivity().getPackageManager()));
-        Collections.sort(disabledApps, new AppRuleComparator(getActivity().getPackageManager()));
-
-        // merge both collections so that enabled apps are above disabled
-        enabledApps.addAll(disabledApps);
-
-        listView.setAdapter(new AppListAdapter(this.getActivity(), enabledApps));
         return view;
     }
 

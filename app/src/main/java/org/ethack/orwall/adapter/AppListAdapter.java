@@ -115,6 +115,13 @@ public class AppListAdapter extends ArrayAdapter {
                  */
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
+                    // And display a notification
+                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     int getPosition = (Integer) compoundButton.getTag();
                     apps.get(getPosition).setChecked(compoundButton.isChecked());
                     Log.d(TAG, "Toggle checkbox caught!");
@@ -164,6 +171,12 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
+                    // And display a notification
+                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     Log.d(TAG, "Click caught!");
                     boolean checked = ((CheckBox) view).isChecked();
                     int getPosition = (Integer) view.getTag();
@@ -174,7 +187,13 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    showAdvanced(view);
+                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
+                    // And display a notification
+                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
+                    } else {
+                        showAdvanced(view);
+                    }
                     return true;
                 }
             });
