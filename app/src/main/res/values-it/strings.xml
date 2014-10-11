@@ -121,7 +121,7 @@ In questo caso non possiamo farci niente :(.
     <b>orWall non è un firewall</b>\n
     Tenetelo a mente: orWall non rimpiazza ne AFWall ne DroidWall ne simili.\n
     Lo scopo di orWall consiste nel permettervi di imporre alle applicazioni di passare da un proxy locale nonostante quest\'ultime non siano programmate per farlo;
-    Inoltre, permette di evitare qualsiasi fuoga di dati, tramite uno script init.\n
+    Inoltre, permette di evitare qualsiasi fuga di dati, tramite uno script init.\n
     \n
     <b>Come usare orWall</b>\n
     Troverete tre pannelli:\n
