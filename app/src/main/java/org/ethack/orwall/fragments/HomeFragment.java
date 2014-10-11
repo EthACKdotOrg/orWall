@@ -184,12 +184,24 @@ public class HomeFragment extends Fragment {
             }
         });
         // Do we have root access ?
-        status_root.setChecked(RootCommands.rootAccessGiven());
+        if (RootCommands.rootAccessGiven()) {
+            status_root.setChecked(true);
+            view.findViewById(R.id.warn_root).setVisibility(View.GONE);
+        } else {
+            status_root.setChecked(false);
+            view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
+        }
         // Hopefully there IS iptables on this device…
-        status_iptables.setChecked(initializeIptables.iptablesExists());
-        if (!initializeIptables.iptablesExists()) {
+        if (initializeIptables.iptablesExists()) {
+            status_iptables.setChecked(true);
+            view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
+            view.findViewById(R.id.status_iptables_description).setVisibility(View.GONE);
+        } else {
+            status_iptables.setChecked(false);
+            view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
             view.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
         }
+
         // Does current kernel supports comments in iptables?
         initializeIptables.supportComments();
         status_ipt_comments.setChecked(sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));

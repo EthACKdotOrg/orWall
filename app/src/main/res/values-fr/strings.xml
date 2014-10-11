@@ -208,4 +208,7 @@
 
     <string name="notification_deactivated_title">orWall est désactivé</string>
     <string name="notification_deactivated_text">Vous pouvez être en danger !</string>
+
+    <string name="warning_iptables">"IPTables n'a pas été trouvé"</string>
+    <string name="warning_root">"L'accès root n'a pas été autorisé"</string>
 </resources>

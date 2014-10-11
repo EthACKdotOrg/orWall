@@ -211,5 +211,8 @@
   <!-- TODO: translation -->
   <string name="notification_deactivated_title">orWall is deactivated</string>
   <string name="notification_deactivated_text">You may be at risk!</string>
+
+    <string name="warning_iptables">IPTables was not detected</string>
+    <string name="warning_root">It seems root access has been denied</string>
 </resources>
 

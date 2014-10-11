@@ -4,6 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <TextView
+        android:id="@+id/warn_init"
+        android:visibility="gone"
+        android:background="#ff3300"
+        android:drawableLeft="@android:drawable/ic_dialog_alert"
+        android:drawableStart="@android:drawable/ic_dialog_alert"
+        android:text="@string/warning_init"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/warn_root"
+        android:visibility="gone"
+        android:background="#ff3300"
+        android:drawableLeft="@android:drawable/ic_dialog_alert"
+        android:drawableStart="@android:drawable/ic_dialog_alert"
+        android:text="@string/warning_root"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/warn_iptables"
+        android:visibility="gone"
+        android:background="#ff3300"
+        android:drawableLeft="@android:drawable/ic_dialog_alert"
+        android:drawableStart="@android:drawable/ic_dialog_alert"
+        android:text="@string/warning_iptables"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="fill_parent"

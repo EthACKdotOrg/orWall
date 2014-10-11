@@ -14,11 +14,13 @@ import android.widget.ListView;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.adapter.AppListAdapter;
+import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
+import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,23 @@ public class AppFragment extends Fragment {
         if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
 
             view  = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
+            InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+            // Do we have root access ?
+            if (RootCommands.rootAccessGiven()) {
+                view.findViewById(R.id.warn_root).setVisibility(View.GONE);
+            } else {
+                view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
+            }
+            // Hopefully there IS iptables on this device…
+            if (initializeIptables.iptablesExists()) {
+                view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
+            } else {
+                view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
+            }
+            if (initializeIptables.initSupported() && !initializeIptables.isInitialized()) {
+                view.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
+            }
+
             ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
 
             // Toggle hint layer
