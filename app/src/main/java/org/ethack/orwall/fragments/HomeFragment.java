@@ -1,5 +1,6 @@
 package org.ethack.orwall.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -32,6 +33,7 @@ import org.ethack.orwall.WizardActivity;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.vpn.Service;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.concurrent.TimeUnit;
@@ -61,6 +63,7 @@ public class HomeFragment extends Fragment {
         boolean initSupported = initializeIptables.initSupported();
 
         Switch orwallStatus = (Switch) view.findViewById(R.id.orwall_status);
+        Switch orwallVPN = (Switch) view.findViewById(R.id.orwall_vpn);
         Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);
         Switch sipStatus = (Switch) view.findViewById(R.id.sip_status);
         Switch lanStatus = (Switch) view.findViewById(R.id.lan_status);
@@ -92,6 +95,24 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 toggleOrwall(view);
+            }
+        });
+
+        orwallVPN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = Service.prepare(getActivity());
+                if (intent != null) {
+                    startActivityForResult(intent, 0);
+                } else {
+                    onActivityResult(0, Activity.RESULT_OK, null);
+                }
+            }
+            protected void onActivityResult(int request, int result, Intent data) {
+                if (result == Activity.RESULT_OK) {
+                    Intent intent = new Intent(getActivity(), Service.class);
+                    getActivity().startService(intent);
+                }
             }
         });
 

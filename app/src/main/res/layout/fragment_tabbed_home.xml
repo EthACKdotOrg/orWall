@@ -58,6 +58,15 @@
                 android:textOn="@string/enabled" />
 
             <Switch
+                android:id="@+id/orwall_vpn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="VPN test"
+                android:textOff="@string/disabled"
+                android:textOn="@string/enabled" />
+
+            <Switch
                 android:id="@+id/tethering_status"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
