@@ -29,21 +29,18 @@ public class DebugPacket {
         version = buffer >> 4;
         headerLength = buffer & 0x0F;
         headerLength *= 4;
-        Log.d(TAG, "IP Version:"+version);
-        Log.d(TAG, "Header Length:"+headerLength);
+
         status += "Header Length:"+headerLength;
 
         buffer = packet.get(); //DSCP + EN
         buffer = packet.getChar(); //Total Length
         totalLength = buffer;
-        Log.d(TAG, "Total Length:" + totalLength);
 
         buffer = packet.getChar(); //Identification
         buffer = packet.getChar(); //Flags + Fragment Offset
         buffer = packet.get(); //Time to Live
         buffer = packet.get(); //Protocol
         protocol_id = buffer;
-        Log.d(TAG, "Protocol:"+ protocol_id);
         status += " Protocol:"+ protocol_id;
 
         buffer = packet.getChar(); //Header checksum
@@ -59,7 +56,6 @@ public class DebugPacket {
         srcIP += ".";
         buffer = packet.get(); //Source IP 4th Octet
         srcIP += buffer;
-        Log.d(TAG, "Source IP:"+ srcIP);
         status += " Source IP:"+ srcIP;
 
         buffer = packet.get(); //Destination IP 1st Octet
@@ -73,7 +69,6 @@ public class DebugPacket {
         dstIP += ".";
         buffer = packet.get(); //Destination IP 4th Octet
         dstIP += buffer;
-        Log.d(TAG, "Destination IP:"+ dstIP);
         status += " Destination IP:"+ dstIP;
     }
 
