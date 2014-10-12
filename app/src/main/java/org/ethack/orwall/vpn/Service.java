@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.DebugPacket;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -69,7 +70,7 @@ public class Service extends VpnService implements Runnable{
 
             run(server);
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, e.toString(), e);
             try {
                 netInterface.close();
             } catch (Exception e1) {
@@ -170,7 +171,7 @@ public class Service extends VpnService implements Runnable{
                         }
 
                     } catch (Exception e) {
-                        Log.d(TAG, e.toString());
+                        Log.d(TAG, e.toString(), e);
                     }
                 }
             }
@@ -191,7 +192,8 @@ public class Service extends VpnService implements Runnable{
             builder.addAddress("10.0.2.0", 24);
             builder.setSession(TAG);
             builder.addRoute("0.0.0.0", 0);
-            builder.addDnsServer(orbotAddress + ":" + orbotDNS);
+            // returns "Not a numeric address: 127.0.0.1:5400" — maybe using some other format.
+            // builder.addDnsServer(orbotAddress + ":" + orbotDNS);
 
             // ensure we do not already have an opened interface
             try {
