@@ -518,6 +518,17 @@ public class InitializeIptables {
             Log.d("ManageCaptiveBrowser", String.format(rule, action, uid));
             iptRules.genericRule(String.format(rule, action, uid));
         }
+        // As android now uses kernel resolver for DNS, we have to allow dns to be freed…
+        // This is described in issue #60 and was spotted by Mike Perry, from Tor Project.
+        String rule;
+        if (status) {
+            // we enable browser, hence we remove the DNS redirection
+            rule = "-t nat -I OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN";
+        } else {
+            // we disable browser, hence we put back DNS redirection.
+            rule = "-t nat -D OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN";
+        }
+        iptRules.genericRule(rule);
     }
 
     /**
