@@ -105,7 +105,7 @@ In questo caso non possiamo farci niente :(.
 <string name="wizard_title_one">Cos\'é orWall</string>
 <string name="wizard_title_two">Impostazioni veloci</string>
 <string name="wizard_title_three">Impostazioni delle applicazioni</string>
-<string name="title_activity_wizard">Benvenuto\/a in orWall</string>
+<string name="title_activity_wizard">Benvenuto/a in orWall</string>
 <string name="wizard_close">Chiudere la procedura guidata</string>
 <string name="wizard_init_script_text">Attivazione delllo script d\' inizializzazione :</string>
 <string name="wizard_init_root_text">Accesso root (solo lettura) :</string>
@@ -115,7 +115,7 @@ In questo caso non possiamo farci niente :(.
 <string name="wizard_orbot_status_text">Orbot (solo lettura):</string>
 <string name="warning_init">Attenzione ! A quanto pare IPTables non è inizializzato !</string>
 <string name="wizard_first">
-    <b>Benvenute\/i in orWall!</b>\n
+    <b>Benvenute/i in orWall!</b>\n
     Questa procedura guidata vi permetterà di capire cosa orWall può fare e ciò che non può. Essa vi darà anche qualche suggerimento su ciò che potrebbe o non potrebbe essere fatto.\n
     \n
     <b>orWall non è un firewall</b>\n
