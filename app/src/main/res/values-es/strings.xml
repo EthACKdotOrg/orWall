@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_counter" formatted="false">%d minutos, %d segundos hasta el final del permiso.</string>
+    <string name="main_end_of_browser">Fin de la desviación del navegador.</string>
+
+    <string name="button_settings">Ajustes</string>
+    <string name="button_about">Acerca de</string>
+
+    <string name="switch_sip">Activar SIP</string>
+    <string name="switch_browser">Autorizar navegador</string>
+
+    <string name="title_activity_preferences">Preferencias</string>
+
+    <string name="network">Conectividad</string>
+    <string name="summary_network">Gestiona algunas opciones de conexión. ¡Ten cuidado, podrías navegar de forma insegura!</string>
+    <string name="switch_lan">conexiones LAN</string>
+    <string name="summary_enable_lan">
+        Permite al LAN desviar el cortafuegos y Orbot.\n
+        \n
+        ATENCIÓN: esto permitirá a TODAS las aplicaciones acceder al LAN. Y .onion no se resolverá.
+    </string>
+    <string name="enable_adb">Activar el Puente de Depuración de Android (ADB)</string>
+    <string name="summary_enable_adb">Abrir TCP 5555 en ambas direcciones para conseguir conectar el dispositivo a públicamente a la conexión</string>
+    <string name="enable_ssh">Activar SSH en las conexiones entrantes</string>
+    <string name="summary_enable_ssh">Abrir las TCP entrantes del puerto 22 y así conectar el dispositivo por SSH.</string>
+
+    <string name="switch_tethering">Reglas de conexión a Internet</string>
+
+    <string name="captive_portal">Detección del portal capacitivo</string>
+    <string name="enable_captive_detection">Activar detección del portal capacitivo</string>
+    <string name="summary_enable_captive_detection">¡Atención! ¡Esto puede producir filtración de datos cada vez que el SO intente a conectarse por Wi-Fi!</string>
+    <string name="captive_browser_gracetime">Periodo de gracia en minutos del navegador (por defecto: 5)</string>
+    <string name="summary_captive_browser_gracetime">Establecer tiempo de gracia para registrar los portales capacitivos. Cinco minutos deberían ser suficientes.</string>
+
+    <string name="special_apps">Aplicaciones especiales</string>
+    <string name="summary_special_apps">Seleccionar aplicaciones con derechos especiales, como tu aplicación favorita como navegador para la autentificación del Portal capacitivo, o VoIP.</string>
+    <string name="portal_browser">Navegador para el inicio de sesión del portal</string>
+    <string name="select_browser">Elegir navegador</string>
+    <string name="summary_select_browser">Este navegador será autorizado, como se ha pedido, para desviar Tor para conectar con el Portal capacitivo. Puedes activar temporalmente esta desviación directamente desde el Menú.</string>
+    <string name="sip_application">Elegir aplicación SIP</string>
+    <string name="summary_sip_application">La aplicación seleccionada verá su tráfico UDP permitido fuera de TOR.</string>
+
+    <string name="set_ports">Establecer puertos proxy</string>
+    <string name="summary_set_ports">Establecer puertos proxy de Orbot si los cambiaste en la configuración</string>
+    <string name="proxy_socks">Puerto de proxy SOCKS (Por defecto: 9050)</string>
+    <string name="proxy_transport">Puerto de proxy transparente (Por defecto: 9040)</string>
+    <string name="proxy_dns">Puerto Proxy DNS (Por defecto: 5400)</string>
+    <string name="proxy_polipo">Puerto Polipo (Por defecto: 8118)</string>
+
+    <string name="about_urls">Enlaces del proyecto</string>
+
+    <string name="about_license">Licencia</string>
+    <string name="about_torproject">Desenlazar del Proyecto Tor</string>
+    <string name="about_legal_tor">Este producto está hecho independientemente del software de anonimicidad Tor® y no conlleva garantías del Proyecto Tor de calidad, idoneidad o de ningún otro tipo.</string>
+    <string name="about_author">Autor(es)</string>
+
+    <string name="about_orwall">Pone tus aplicaciones detrás de Orbot y bloquea todo el tráfico que no quieres de una sola vez.</string>
+    <string name="about_external_libs">Bibliotecas externas</string>
+
+    <string name="alert_install_script_title">Iniciar script de instalación</string>
+    <string name="alert_install_script_text" formatted="false">
+        Esta aplicación usa un script de instalación.\n
+        Este script bloquea todas las comunicaciones IP en el tiempo de arranque, previniendo posibles filtrados desde tu dispositivo.\n
+        Recomendamos encarecidamente que aceptes este script.\n
+        \n
+        La ubicación del script es %s
+    </string>
+    <string name="alert_install_script_accept">Instalar</string>
+    <string name="alert_install_script_refuse">Cancelar</string>
+
+    <string name="tether_activated_in_orwall">Conexión activada en orWall</string>
+    <string name="tether_deactivated_in_orwall">Conexión desactivada en orWall</string>
+
+    <string name="home_enable_orwall">Estado de orWall</string>
+    <string name="enabling_orwall">orWall está iniciándose</string>
+    <string name="enabled">Activado</string>
+    <string name="disabled">Desactivado</string>
+    <string name="disable_orwall_title">¿Desactivar orWall?</string>
+    <string name="disable_orwall_msg">Vas a desactivar orWall.\n\n
+        Esto significa que tu dispositivo permitirá todas las conexiones salientes. Por lo tanto, las conexiones salientes
+        no serán obligadas a pasar por ningún servidor proxy anónimo.\n
+        \n
+        ¡Esto podría ser peligroso!\n
+        \n
+        Por favor, ten en mente que la desactivación se mantendrá hasta que reinicies.
+    </string>
+    <string name="alert_accept">Aceptar</string>
+
+    <string name="toast_new_rule">Nuevas normas han sido añadidas</string>
+    <string name="toast_remove_rule">Las normas han sido eliminadas</string>
+    <string name="toast_error" formatted="false">¡Ha ocurrido un error, por favor, contacta con el desarrollador! #%d</string>
+
+    <string name="hint_long_press">Mantener pulsada la aplicación para que muestre las opciones avanzadas</string>
+    <string name="hint_close">Cerrar</string>
+    <string name="advanced_connection_settings_title" formatted="false">Opciones avanzadas para %s</string>
+    <string name="advanced_connection_provider">Proveedor de conexión</string>
+    <string name="advanced_connection_type">Tipo de conexión</string>
+    <string name="advanced_connection_type_force">Forzar la conexión (usando REDIRECCIONAMIENTO)</string>
+    <string name="advanced_connection_type_native">Usar la capacidad nativa de la aplicación (Camino cerrado)</string>
+    <string name="advanced_connection_bypass">Permitir a la aplicación evitar el Proxy</string>
+    <string name="alert_save">Guardar</string>
+    <string name="alert_cancel">Cancelar</string>
+
+    <string name="start_wizard">Primeros pasos</string>
+    <string name="wizard_step">Paso</string>
+    <string name="wizard_title_one">Qué es orWall</string>
+    <string name="wizard_title_two">Ajustes rápidos</string>
+    <string name="wizard_title_three">Ajustes de la aplicación</string>
+    <string name="title_activity_wizard">Bienvenido a orWall</string>
+    <string name="wizard_close">Cerrar</string>
+
+    <string name="wizard_init_script_text">Iniciar script de activación:</string>
+        <string name="explain_no_initscript" formatted="false">
+        Esta aplicación usa un script de iniciación en %s.\n
+        Desafortunadamente, parece que tu dispositivo Android no lo soporta.\n
+        \n
+        <b>Seguramente experimentes filtraciones de datos en el arranque.</b>\n
+        \n
+        No podemos hacer nada contra eso :(.
+    </string>
+    <string name="wizard_init_root_text">Acceso Root (sólo lectura):</string>
+    <string name="wizard_init_iptables_text">IPTables instaladas (sólo lectuea):</string>
+    <string name="explain_no_iptables">No hemos podido encontrar los iptables binarios en esta ROM… La aplicación no funcionará.</string>
+    <string name="wizard_init_ipt_comments_text">Comentar soporte en IPTables (sólo lectura):</string>
+    <string name="wizard_orbot_status_text">Orbot (sólo lectura):</string>
+
+    <string name="warning_init">¡Atención! parece que las IPTables no se han iniciado!</string>
+    <string name="wizard_first">
+        <b>Bienvenido a orWall!</b>\n
+        Estos primeros pasos te enseñarán qué puede o no orWall. Además, te dará cierta idea
+        de lo que podrás o no hacer.\n
+        \n
+        <b>orWall no es un cortafuegos</b>\n
+        Tenlo en cuenta. orWall no reemplazará AFWall ni a DroidWall ni a ningún otro.\n
+        orWall anima mayormente a permitir que obligues a las plicaciones a pasar por un proxy local cuando no pueden hacerlo por sí mismas; 
+        esto también te prevendrá de cualquier filtrado de información, usando un script de iniciación.\n
+        \n
+        <b>Cómo usar orWall</b>\n
+        Encontrarás tres paneles:\n
+        - Inicio\n
+        - Aplicaciones\n
+        - Registros (aunque aún no están disponibles)\n
+        \n
+        En el panel de Inicio, encontrarás las opciones principales.\n
+        Desde ahí, podrás desactivar orWall (hasta el próximo reinicio), activar el soporte de conexión (por defecto,
+        las normas de orWall bloquean su uso), por lo tento tendrás autorización temporal al navegador para evitar todo lo del proxy,
+        activar la aplicación SIP para mandar peticiones UDP, y activar conexiones locales (LAN).\n
+        \n
+        En el panel de Aplicaciones, encontrarás una lista de tus aplicaciones instaladas.\n
+        \n
+        Debajo encontrarás información sobre el estado actual de orWall. Ten en cuenta de que agunos cambios serán desactivados.
+        Si esto pasa, por el motivo que sea, una opción no estará disponible para tu dispositivo. También se aplica a las opciones de sólo lectura.
+    </string>
+    <string name="wizard_second">
+        <b>Desactivar orWall</b>\n
+        Esta opción te permitirá desactivar orWall. Tan solo ten en cuenta que lo desactivará hasta que reinicies
+        tu dispositivo.
+        \n
+        <b>Activar conexiones (tethering)</b>\n
+        Necesitarás activar esta opción si quieres compartir tu conexión a Internet desde tu dispositivo.\n
+        Una vez activada, orWall detectará automáticamente cuándo activas la conexión para compartir, y
+        activar un subconjunto de las normas del cortafuegos.\n
+        \n
+        Tardará un tiempo para que puedas usarlo.\n
+        <b>¡ATENCIÓN!</b> Esta opción no está disponible por ahora :(.\n
+        \n
+        <b>Autorizar navegador</b>\n
+        Esta opción permite bloquear el dispositivo, mientras sigue identificando algún
+        portal capacitivo (como en los hoteles). Una aplicación seleccionada a través de Ajustes>Aplicaciones especiales
+        tendrá acceso ilimitado a la conexión durante el tiempo permitido.\n
+        Una vez activada esta opción, se activa un contador. Una vez que llegue al timepo de gracia, el navegador
+        volverá a bloquearse.\n
+        El tiempo de gracia se establece en Ajustes>Conectividad. El tiempo predeterminado son 5 minutos.\n
+        \n
+        <b>Activar SIP</b>\n
+        Activar esta opción permitirá acceder a un servidor remoto usando un protocolo UDP a una apicación.\n
+        \n
+        <b>Activar conexiones LAN</b>\n
+        Te permitirá acceder a conexiones locales.
+    </string>
+    <string name="wizard_third">
+        <b>Comportamiento predeterminado</b>\n
+        Cuando pulsas una aplicación en el panel "Aplicaciones", se activará el estado: cualquier aplicación puede acceder a la Internet
+        usando Orbot, o se le bloqueará el acceso.\n
+        La vista de previa de la lista se actualizará eventualmente, cuando vuelvas a orWall (esto debe ser mejorado).\n
+        \n
+        <b>Opciones avanzadas</b>\n
+        Una pulsación larga mostrará un mensaje para dejarte configurar un poco más el acceso de la aplicación.\n
+        Las opciones permitidas por ahora son:\n
+        - Proveedor de conexión: te permite elegir entre Tor y… bueno, por ahora Tor.\n
+        - Tipo de conexión: cualquier aplicación puede ser configurada para usarse en un proxy local, o necesitarás 
+        forzarlo a través del proxy.\n
+        - Evitar totalmente: esta opción no debería usarse, ya que esto permite a la aplicación evitar completamente
+        tu proxy, de por vida.\n
+        \n
+        <b>Forzar la conexión</b>\n
+        Esto usa iptables de REDIRECCIONAMIENTO con el fin de forzar a la aplicación a pasar por un proxy local\n
+        Esto se mostrará en la lista de aplicaciones como "TransProxy vía [proxy]".\n
+        \n
+        <b>Conexión cerrada</b>\n
+        Esto sirve para que la aplicación se de cuenta de los ajustes del proxy. Algunas aplicaciones como Twidere, Lightning o ChatSecure
+        ya mantienen estas opciones permitidas para hacertlas pasar por Orbot u otras proxies.\n
+        Al seleccionar esta opción en orWall permitirá a la aplicación conectarse al Proxy, mientras se previene conectarse a
+        otros servicios.\n
+        Imagina esta opción como una carretera cortada: Podrás acceder si sientes que la carretera está realmente despejada, pero no podrás continuar de otro modo.
+    </string>
+
+    <string name="notification_deactivated_title">orWall está desactivado</string>
+    <string name="notification_deactivated_text">¡Hazlo bajo tu propio riesgo!</string>
+
+    <string name="warning_iptables">No se han detectado IPTablesd</string>
+    <string name="warning_root">Parece que se ha denegado el acceso Root</string>
+</resources>
