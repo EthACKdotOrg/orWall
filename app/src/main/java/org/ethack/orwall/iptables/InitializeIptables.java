@@ -120,7 +120,7 @@ public class InitializeIptables {
             if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
                 iptRules.bypass(rule.getAppUID(), rule.getPkgName(), true);
 
-            } else if (rule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+            } else if (rule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
                 iptRules.fenced(rule.getAppUID(), rule.getPkgName(), true);
 
             } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
