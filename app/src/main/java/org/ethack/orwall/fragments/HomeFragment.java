@@ -28,6 +28,7 @@ import android.widget.Toast;
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.PreferencesActivity;
 import org.ethack.orwall.R;
+import org.ethack.orwall.TabbedMain;
 import org.ethack.orwall.WizardActivity;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
@@ -284,9 +285,14 @@ public class HomeFragment extends Fragment {
         boolean checked = ((Switch) view).isChecked();
 
         final Intent bgpProcess = new Intent(this.getActivity(), BackgroundProcess.class);
+        
+        Intent intent = new Intent(this.getActivity(), TabbedMain.class);
+        final PendingIntent pintent = PendingIntent.getActivity(this.getActivity(), 0, intent, 0);
+
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(getActivity())
                 .setAutoCancel(false)
                 .setOngoing(true)
+                .setContentIntent(pintent)
                 .setContentTitle(getString(R.string.notification_deactivated_title))
                 .setContentText(getString(R.string.notification_deactivated_text))
                 .setSmallIcon(R.drawable.v2);
