@@ -34,6 +34,8 @@ public class InitializeIptables {
 
     public final static String dir_dst = "/system/etc/init.d";
     public final static String dst_file = String.format("%s/91firewall", dir_dst);
+    public final static String dir_dst1 = "/data/local/userinit.d/";
+    public final static String dst_file1 = String.format("%s/91firewall", dir_dst1);
     private final IptRules iptRules;
     private long trans_proxy;
     private long polipo_port;
@@ -401,6 +403,13 @@ public class InitializeIptables {
 
             if (!check_dst.hash().equals(check_src.hash())) {
                 doInstallScripts(src_file, dst_file);
+            }
+            File local_dst = new File(dir_dst1);
+            if (local_dst.exists()) {
+                CheckSum check_dst1 = new CheckSum(dst_file1);
+                if (!check_dst1.hash().equals(check_src.hash())) {
+                    doInstallScripts(src_file, dst_file1);
+                }
             }
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
         } else {
