@@ -285,7 +285,7 @@ public class HomeFragment extends Fragment {
         boolean checked = ((Switch) view).isChecked();
 
         final Intent bgpProcess = new Intent(this.getActivity(), BackgroundProcess.class);
-        
+
         Intent intent = new Intent(this.getActivity(), TabbedMain.class);
         final PendingIntent pintent = PendingIntent.getActivity(this.getActivity(), 0, intent, 0);
 
