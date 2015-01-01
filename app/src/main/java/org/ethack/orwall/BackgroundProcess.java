@@ -6,6 +6,7 @@ import android.content.Intent;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.Constants;
+import org.sufficientlysecure.rootcommands.util.Log;
 
 /**
  * Allows to run background commands in order to avoid any blocking stuff in main thread.
@@ -26,39 +27,46 @@ public class BackgroundProcess extends IntentService {
         this.iptRules = new IptRules(supportComment);
 
         String action = workIntent.getStringExtra(Constants.ACTION);
-        if (action.equals(Constants.ACTION_PORTAL)) {
-            boolean activate = workIntent.getBooleanExtra(Constants.PARAM_ACTIVATE, false);
-            managePortal(activate);
 
-        } else if (action.equals(Constants.ACTION_ADD_RULE)) {
-            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-            addRule(appUID, appName);
+        if (action != null) {
+            if (action.equals(Constants.ACTION_PORTAL)) {
+                boolean activate = workIntent.getBooleanExtra(Constants.PARAM_ACTIVATE, false);
+                managePortal(activate);
 
-        } else if (action.equals(Constants.ACTION_RM_RULE)) {
-            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-            rmRule(appUID, appName);
+            } else if (action.equals(Constants.ACTION_ADD_RULE)) {
+                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
+                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+                addRule(appUID, appName);
 
-        } else if (action.equals(Constants.ACTION_TETHER)) {
-            boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
-            manageTether(activate);
+            } else if (action.equals(Constants.ACTION_RM_RULE)) {
+                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
+                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+                rmRule(appUID, appName);
 
-        } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
-            this.initializeIptables.deactivate();
+            } else if (action.equals(Constants.ACTION_TETHER)) {
+                boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
+                manageTether(activate);
 
-        } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
-            this.initializeIptables.boot();
+            } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
+                this.initializeIptables.deactivate();
 
-        } else if (action.equals(Constants.ACTION_RM_BYPASS) || action.equals(Constants.ACTION_ADD_BYPASS)) {
-            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-            iptRules.bypass(appUID, appName, action.equals(Constants.ACTION_ADD_BYPASS));
+            } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
+                this.initializeIptables.boot();
 
-        } else if (action.equals(Constants.ACTION_RM_FENCED) || action.equals(Constants.ACTION_ADD_FENCED)) {
-            String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-            long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-            iptRules.fenced(appUID, appName, action.equals(Constants.ACTION_ADD_FENCED));
+            } else if (action.equals(Constants.ACTION_RM_BYPASS) || action.equals(Constants.ACTION_ADD_BYPASS)) {
+                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
+                iptRules.bypass(appUID, appName, action.equals(Constants.ACTION_ADD_BYPASS));
+
+            } else if (action.equals(Constants.ACTION_RM_FENCED) || action.equals(Constants.ACTION_ADD_FENCED)) {
+                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
+                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
+                iptRules.fenced(appUID, appName, action.equals(Constants.ACTION_ADD_FENCED));
+            } else {
+                Log.e("BackgroundProcess", "Just got an unknown action!");
+            }
+        } else {
+            Log.e("BackgroundProcess", "Just got an undefined action!");
         }
     }
 
