@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.CheckSum;
@@ -117,19 +119,28 @@ public class InitializeIptables {
         ArrayList<AppRule> rules = natRules.getAllRules();
         Log.d("Boot: ", "Length received: " + String.valueOf(rules.size()));
 
+        // Use internal queuing
+        final Intent bgpProcess = new Intent(this.context, BackgroundProcess.class);
+
         for (AppRule rule : rules) {
+            bgpProcess.putExtra(Constants.PARAM_APPUID, rule.getAppUID());
+            bgpProcess.putExtra(Constants.PARAM_APPNAME, rule.getPkgName());
 
             if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                iptRules.bypass(rule.getAppUID(), rule.getPkgName(), true);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_BYPASS);
 
             } else if (rule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                iptRules.fenced(rule.getAppUID(), rule.getPkgName(), true);
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_FENCED);
 
             } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
-                iptRules.natApp(context, rule.getAppUID(), 'A', rule.getPkgName());
+                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+
             } else {
                 Log.e("Boot: ", "Don't know what to do for " + rule.getPkgName());
+                bgpProcess.putExtra(Constants.ACTION, "UNKNOWN");
             }
+            Log.d("Boot: ", "pushed new app in queue: " + rule.getPkgName());
+            this.context.startService(bgpProcess);
         }
         Log.d("Boot: ", "Finished NAT stuff");
     }
