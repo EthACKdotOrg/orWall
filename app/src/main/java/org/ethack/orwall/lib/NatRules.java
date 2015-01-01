@@ -118,7 +118,7 @@ public class NatRules {
 
         cursor.close();
         db.close();
-        Log.e(TAG, "getAllRules size: " + String.valueOf(list.size()));
+        Log.d(TAG, "getAllRules size: " + String.valueOf(list.size()));
         return list;
     }
 
