@@ -38,7 +38,7 @@
     <string name="select_browser">Choose browser application</string>
     <string name="summary_select_browser">This browser will be authorized, on request, to bypass Tor in order to connect to a Captive Portal. You can activate the temporary bypass directly from the Menu.</string>
     <string name="sip_application">Choose SIP application</string>
-    <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of TOR.</string>
+    <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of Tor.</string>
 
     <string name="set_ports">Set proxy ports</string>
     <string name="summary_set_ports">Set Orbot proxy ports if you changed them in its configuration</string>
