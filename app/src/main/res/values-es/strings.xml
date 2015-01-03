@@ -38,7 +38,7 @@
     <string name="select_browser">Elegir navegador</string>
     <string name="summary_select_browser">Este navegador será autorizado, como se ha pedido, para desviar Tor para conectar con el Portal capacitivo. Puedes activar temporalmente esta desviación directamente desde el Menú.</string>
     <string name="sip_application">Elegir aplicación SIP</string>
-    <string name="summary_sip_application">La aplicación seleccionada verá su tráfico UDP permitido fuera de TOR.</string>
+    <string name="summary_sip_application">La aplicación seleccionada verá su tráfico UDP permitido fuera de Tor.</string>
 
     <string name="set_ports">Establecer puertos proxy</string>
     <string name="summary_set_ports">Establecer puertos proxy de Orbot si los cambiaste en la configuración</string>

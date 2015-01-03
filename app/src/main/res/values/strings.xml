@@ -20,7 +20,7 @@
         WARNING: this will allow ALL apps to access LAN. And .onion won\'t resolve anymore.
     </string>
     <string name="enable_adb">Enable Android Debug Bridge (ADB)</string>
-    <string name="summary_enable_adb">Open TCP 5555 in both direction so that you may connect to your device overt network</string>
+    <string name="summary_enable_adb">Open TCP 5555 in both directions so that you may connect to your device over the network.</string>
     <string name="enable_ssh">Enable SSH incoming connections</string>
     <string name="summary_enable_ssh">Opens incoming TCP 22 port so that you may connect to your device through SSH.</string>
 
@@ -30,15 +30,15 @@
     <string name="enable_captive_detection">Enable captive portal detection</string>
     <string name="summary_enable_captive_detection">Caution! This may leads to data leakage as the OS will probe network each time you connect to the Wireless!</string>
     <string name="captive_browser_gracetime">Browser grace time in minutes (default: 5)</string>
-    <string name="summary_captive_browser_gracetime">Set up grace time in order to log in captive portals. Five minutes should be enough though.</string>
+    <string name="summary_captive_browser_gracetime">Set up grace time in order to log into captive portals. Five minutes should be enough.</string>
 
     <string name="special_apps">Special applications</string>
-    <string name="summary_special_apps">Select applications with special rights, like your preferred browser app for Captive Portal authentication, or VoIP.</string>
+    <string name="summary_special_apps">Select applications with special rights, like your preferred browser app for Captive Portal authentication or VoIP.</string>
     <string name="portal_browser">Browser for Portal login</string>
     <string name="select_browser">Choose browser application</string>
     <string name="summary_select_browser">This browser will be authorized, on request, to bypass Tor in order to connect to a Captive Portal. You can activate the temporary bypass directly from the Menu.</string>
     <string name="sip_application">Choose SIP application</string>
-    <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of TOR.</string>
+    <string name="summary_sip_application">Selected application will see its UDP traffic allowed outside of Tor.</string>
 
     <string name="set_ports">Set proxy ports</string>
     <string name="summary_set_ports">Set Orbot proxy ports if you changed them in its configuration</string>

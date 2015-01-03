@@ -38,7 +38,7 @@
     <string name="select_browser">Choisir l\'application navigateur</string>
     <string name="summary_select_browser">Ce navigateur sera autorisé, sur demande, à passez outre Tor afin de se connecter sur un portail captif. Vous pouvez activer ce passe droit temporairement directement depuis le menu.</string>
     <string name="sip_application">Choisir l\'application SIP</string>
-    <string name="summary_sip_application">L\'application sélectionnée verra son trafic UDP autorisé en dehors de TOR.</string>
+    <string name="summary_sip_application">L\'application sélectionnée verra son trafic UDP autorisé en dehors de Tor.</string>
 
     <string name="set_ports">Changer les ports proxy</string>
     <string name="summary_set_ports">Changer les ports proxy d\'Orbot si vous avez changé la configuration</string>
@@ -51,7 +51,7 @@
 
     <string name="about_license">Licence</string>
     <string name="about_torproject">Indépendant du projet Tor</string>
-    <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® et ne reçoit aucune garantie du projet TOR concernant la qualité, pertinence ou quoi que ce soit d\'autre.</string>
+    <string name="about_legal_tor">Ce produit est développé indépendamment du logiciel d\'anonymat Tor® et ne reçoit aucune garantie du projet Tor concernant la qualité, pertinence ou quoi que ce soit d\'autre.</string>
     <string name="about_author">Auteur(s)</string>
 
     <string name="about_orwall">Mettez votre application derrière Orbot et bloquez tout le trafic non choisi en une fois.</string>
