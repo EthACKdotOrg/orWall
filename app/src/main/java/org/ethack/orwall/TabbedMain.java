@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.ethack.orwall.adapter.TabsPagerAdapter;
+import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.sufficientlysecure.rootcommands.util.Log;
@@ -63,9 +64,13 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
             getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
         }
 
-        // Is it the first application run? If so, start wizard!
+        // Is it the first application run?
         boolean first_run = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_FIRST_RUN, true);
         if (first_run) {
+            // Initialize orWall iptables rules - #72 should be better after that
+            InitializeIptables initializeIptables = new InitializeIptables(this);
+            initializeIptables.boot();
+            // Start Wizard
             Intent wizard = new Intent(this, WizardActivity.class);
             startActivity(wizard);
         }
