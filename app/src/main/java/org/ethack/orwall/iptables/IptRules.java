@@ -18,10 +18,17 @@ import java.util.concurrent.TimeoutException;
 public class IptRules {
 
     private boolean supportComment;
+    private Shell shell = null;
 
     public IptRules(boolean supportComment) {
         this.supportComment = supportComment;
+        try {
+            shell = Shell.startRootShell();
+        } catch (IOException e) {
+            Log.e("Shell", "NO shell !");
+        }
     }
+
 
     /**
      * Apply an IPTables rule
@@ -30,30 +37,18 @@ public class IptRules {
      * @return true if success
      */
     private boolean applyRule(final String rule) {
-        Shell shell = null;
-        try {
-            shell = Shell.startRootShell();
-        } catch (IOException e) {
-            Log.e("Shell", "NO shell !");
-        }
-
-        if (shell != null) {
+        if (this.shell != null) {
             SimpleCommand cmd = new SimpleCommand(rule);
             try {
-                shell.add(cmd).waitForFinish();
+                this.shell.add(cmd).waitForFinish();
                 return (cmd.getExitCode() == 0);
             } catch (IOException e) {
                 Log.e("Shell", "Unable to run simple command");
                 Log.e("Shell", rule);
+                Log.e("Trace", e.getMessage());
             } catch (TimeoutException e) {
                 Log.e("Shell", "A timeout was reached");
                 Log.e("Shell", e.getMessage());
-            } finally {
-                try {
-                    shell.close();
-                } catch (IOException e) {
-                    Log.e("Shell", "Error while closing the Shell");
-                }
             }
         }
         return false;
