@@ -3,23 +3,46 @@
 IP6TABLES=/system/bin/ip6tables
 IPTABLES=/system/bin/iptables
 
-$IPTABLES -P OUTPUT DROP
-$IPTABLES -I OUTPUT -j REJECT
-$IPTABLES -I OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+log() {
+	command log -t orwall "$@"
+}
 
-$IPTABLES -P INPUT DROP
-$IPTABLES -I INPUT -j REJECT
-$IPTABLES -I INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+run() {
+	log "$@"
 
-$IPTABLES -P FORWARD ACCEPT
+	su --context "u:r:init:s0" -c "$@" 2>&1 | while read line ; do
+		log "  $line"
+	done
+}
 
-$IPTABLES -N witness
-$IPTABLES -A witness -j RETURN
+log "Starting orwall init as $(id)"
+
+# FIXME: Running iptables first time seems to initalize it.
+sleep 1
+
+run "$IPTABLES -w --flush"
+
+run "$IPTABLES -w --list"
+
+run "$IPTABLES -w -P OUTPUT DROP"
+run "$IPTABLES -w -I OUTPUT -j REJECT"
+run "$IPTABLES -w -I OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
+
+run "$IPTABLES -w -P INPUT DROP"
+run "$IPTABLES -w -I INPUT -j REJECT"
+run "$IPTABLES -w -I INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
+
+run "$IPTABLES -w -P FORWARD ACCEPT"
+
+run "$IPTABLES -w -N witness"
+run "$IPTABLES -w -A witness -j RETURN"
 
 ## Block all traffic at boot ##
-$IP6TABLES -t nat -F
-$IP6TABLES -F
-$IP6TABLES -A INPUT -j LOG --log-prefix "Denied bootup IPv6 input: "
-$IP6TABLES -A INPUT -j DROP
-$IP6TABLES -A OUTPUT -j LOG --log-prefix "Denied bootup IPv6 output: "
-$IP6TABLES -A OUTPUT -j DROP
+run "$IP6TABLES -w -t nat -F"
+run "$IP6TABLES -w -F"
+run "$IP6TABLES -w -A INPUT -j LOG --log-prefix 'Denied bootup IPv6 input: '"
+run "$IP6TABLES -w -A INPUT -j DROP"
+run "$IP6TABLES -w -A OUTPUT -j LOG --log-prefix 'Denied bootup IPv6 output: '"
+run "$IP6TABLES -w -A OUTPUT -j DROP"
+
+run "$IPTABLES --list"
