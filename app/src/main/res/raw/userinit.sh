@@ -1,5 +1,10 @@
 #!/system/bin/sh
 
+if [ ! -d '/data/data/org.ethack.orwall' ]; then
+  log -p i -t orwall "orWall doesn't seem to be installed."
+  exit 0
+fi
+
 IP6TABLES=/system/bin/ip6tables
 IPTABLES=/system/bin/iptables
 
