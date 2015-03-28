@@ -9,15 +9,14 @@ IP6TABLES=/system/bin/ip6tables
 IPTABLES=/system/bin/iptables
 
 log() {
-	command log -t orwall "$@"
+  command log -p d -t orwall "$@"
 }
 
 run() {
-	log "$@"
-
-	su --context "u:r:init:s0" -c "$@" 2>&1 | while read line ; do
-		log "  $line"
-	done
+  log "$@"
+  command $@ 2>&1 | while read line ; do
+    log "  $line"
+  done
 }
 
 log "Starting orwall init as $(id)"
@@ -50,4 +49,7 @@ run "$IP6TABLES -w -A INPUT -j DROP"
 run "$IP6TABLES -w -A OUTPUT -j LOG --log-prefix 'Denied bootup IPv6 output: '"
 run "$IP6TABLES -w -A OUTPUT -j DROP"
 
-run "$IPTABLES --list"
+# output iptables status: filter
+run "$IPTABLES -nL -t filter"
+# output iptables status: nat
+run "$IPTABLES -nL -t nat"
