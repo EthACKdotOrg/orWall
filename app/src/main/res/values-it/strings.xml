@@ -30,11 +30,11 @@
     <string name="enable_captive_detection">Abilita il rilevamento dei Captive Portal</string>
     <string name="summary_enable_captive_detection">Attenzione! Può causare una fuga di dati poiché l\'OS cercherà di sondare la rete ogni volta che ti connetterai al WiFi!</string>
     <string name="captive_browser_gracetime">Periodo di autorizzazione del browser in minuti (default: 5)</string>
-    <string name="summary_captive_browser_gracetime">Imposta l'intervallo di tempo concesso per loggarsi a un Captive Portal. Cinque minuti dovrebbero bastare.</string>
+    <string name="summary_captive_browser_gracetime">Imposta l\'intervallo di tempo concesso per loggarsi a un Captive Portal. Cinque minuti dovrebbero bastare.</string>
 
     <string name="special_apps">Applicazioni speciali</string>
     <string name="summary_special_apps">Scegli le app con permessi speciali, come il tuo browser preferito per autenticarti ai Captive Portal o per il VoIP</string>
-    <string name="portal_browser">Browser per l'autenticazione ai Captive Portal</string>
+    <string name="portal_browser">Browser per l\'autenticazione ai Captive Portal</string>
     <string name="select_browser">Scegli il browser</string>
     <string name="summary_select_browser">Questo browser sarà autorizzato, su richiesta, a bypassare Tor per connettersi a un Captive Portal. Puoi attivare il bypass temporaneo direttamente dal Menu</string>
     <string name="sip_application">Scegli l\'app SIP</string>
