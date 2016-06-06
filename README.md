@@ -1,6 +1,12 @@
+# Important announcement
+This application isn't up-to-date, and won't be updated anymore. There are several reasons for that state.
+
+Feel free to take the code and update it for your need.
+
 # orWall
 
 Because real life is a Dystopia
+
 
 ## Website
 https://orwall.org/
