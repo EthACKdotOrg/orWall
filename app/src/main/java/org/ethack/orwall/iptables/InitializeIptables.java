@@ -83,6 +83,7 @@ public class InitializeIptables {
         this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
 
         // initialize main chains
+        initIPv6();
         initOutputs(app_uid);
         initInput(app_uid);
 
@@ -153,6 +154,7 @@ public class InitializeIptables {
      * - put back default accounting rules in INPUT and OUTPUT
      * - remove any chain it created (though we want to keep the "witness" chain).
      */
+
     public void deactivate() {
         String[] rules = {
                 // set OUTPUT policy back to ACCEPT
@@ -184,12 +186,36 @@ public class InitializeIptables {
         }
     }
 
+    public void deactivateV6() {
+        String[] rules = {
+                // set OUTPUT policy back to ACCEPT
+                "-P OUTPUT ACCEPT",
+                // flush all OUTPUT rules
+                "-F OUTPUT",
+                // set INPUT policy back to ACCEPT
+                "-P INPUT ACCEPT",
+                // flush all INPUT rules
+                "-F INPUT"
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRuleV6(rule)) {
+                Log.e("deactivate", "Unable to remove IPv6 rule");
+                Log.e("deactivate", rule);
+            }
+        }
+    }
+
     /**
      * Checks if iptables binary is on the device.
      * @return true if it finds iptables
      */
     public boolean iptablesExists() {
         File iptables = new File(Constants.IPTABLES);
+        return iptables.exists();
+    }
+
+    public boolean ip6tablesExists() {
+        File iptables = new File(Constants.IP6TABLES);
         return iptables.exists();
     }
 
@@ -316,6 +342,30 @@ public class InitializeIptables {
                 Log.e("enableSSH", String.format(rule, action));
             }
         }
+    }
+
+    /**
+     * fix IPv6 leak
+     */
+
+    public void initIPv6(){
+      if (!ip6tablesExists()) return;
+
+      String[] rules = {
+              // flush all OUTPUT rules
+              "-F OUTPUT",
+              "-P OUTPUT DROP",
+              "-A OUTPUT -j REJECT --reject-with icmp6-adm-prohibited",
+              "-F INPUT",
+              "-P INPUT DROP",
+              "-A INPUT -j REJECT --reject-with icmp6-adm-prohibited"
+      };
+      for (String rule : rules) {
+          if (!iptRules.genericRuleV6(rule)) {
+              Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
+              Log.e(InitializeIptables.class.getName(), rule);
+          }
+      }
     }
 
     /**
