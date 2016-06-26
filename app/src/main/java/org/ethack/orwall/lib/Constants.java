@@ -31,6 +31,7 @@ public class Constants {
 
     public final static String SPECIAL_APPS_PREFIX = "orwall.special.";
     public final static String IPTABLES = "/system/bin/iptables";
+    public final static String IP6TABLES = "/system/bin/ip6tables";
 
     public final static String ACTION = "org.ethack.orwall.backgroundProcess.action";
     public final static String ACTION_PORTAL = "org.ethack.orwall.backgroundProcess.action.portal";

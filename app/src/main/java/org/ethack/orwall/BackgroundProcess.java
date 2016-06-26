@@ -49,7 +49,8 @@ public class BackgroundProcess extends IntentService {
 
             } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
                 this.initializeIptables.deactivate();
-
+                this.initializeIptables.deactivateV6();
+                
             } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
                 this.initializeIptables.boot();
 

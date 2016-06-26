@@ -121,6 +121,10 @@ public class IptRules {
         return applyRule(String.format("%s %s", Constants.IPTABLES, rule));
     }
 
+    public boolean genericRuleV6(final String rule) {
+        return applyRule(String.format("%s %s", Constants.IP6TABLES, rule));
+    }
+
     public void bypass(final long appUID, final String appName, final boolean allow) {
         char action = (allow ? 'I' : 'D');
         String[] rules = {
