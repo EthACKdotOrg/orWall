@@ -641,7 +641,7 @@ public class InitializeIptables {
                     Log.e("Tethering", rule);
                 }
             }
-            this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, status);
+            this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, status).apply();
         } else {
             Log.d("Tethering", "Already enabled");
         }
