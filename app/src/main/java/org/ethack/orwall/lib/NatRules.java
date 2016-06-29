@@ -81,7 +81,7 @@ public class NatRules {
                 appRule.getPkgName(),
                 appRule.getOnionType(),
                 appRule.getOnionPort(),
-                appRule.getOnionType()
+                appRule.getPortType()
         );
     }
 
