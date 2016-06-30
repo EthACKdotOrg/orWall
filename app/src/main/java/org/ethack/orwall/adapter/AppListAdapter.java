@@ -181,7 +181,12 @@ public class AppListAdapter extends ArrayAdapter {
                     boolean checked = ((CheckBox) view).isChecked();
                     int getPosition = (Integer) view.getTag();
                     toggleApp(checked, getPosition);
-                    apps.get(getPosition).setChecked(checked);
+                    AppRule rule = apps.get(getPosition);
+                    rule.setChecked(checked);
+                    if (!checked){
+                        CheckBox checkBox = (CheckBox) view;
+                        checkBox.setText(getAppName(rule.getPkgName()));
+                    }
                 }
             });
             holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
@@ -265,7 +270,7 @@ public class AppListAdapter extends ArrayAdapter {
         } else {
             if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
-            } else if (appRule.getOnionType().equals(Constants.DB_PORT_TYPE_FENCED)) {
+            } else if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
             } else {
                 bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
@@ -498,20 +503,6 @@ public class AppListAdapter extends ArrayAdapter {
             }
             this.context.startService(bgNewRules);
 
-            ApplicationInfo applicationInfo = null;
-            PackageInfoData packageInfoData = null;
-            String appName = null;
-
-            if (updated.getPkgName().startsWith(Constants.SPECIAL_APPS_PREFIX)) {
-                packageInfoData = specialApps.get(updated.getPkgName());
-                appName = packageInfoData.getName();
-            } else {
-                try {
-                    applicationInfo = this.packageManager.getApplicationInfo(updated.getPkgName(), PackageManager.GET_PERMISSIONS);
-                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
-                } catch (PackageManager.NameNotFoundException e) {
-                }
-            }
             if (appName != null) {
                 CheckBox checkBox = (CheckBox) view;
                 String label = String.format("%s (%s via %s)", appName, updated.getPortType(), updated.getOnionType());
