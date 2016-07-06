@@ -25,7 +25,6 @@ public class Constants {
     public final static String PREF_KEY_BROWSER_GRACETIME = "browser_gracetime";
     public final static String CONFIG_IPT_SUPPORTS_COMMENTS = "ipt_comments";
     public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
-    public final static String PREF_KEY_LAN_ENABLED = "lan_enabled";
     public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
     public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
 
@@ -39,19 +38,17 @@ public class Constants {
 
     public final static String ACTION_ADD_RULE = "org.ethack.orwall.backgroundProcess.action.addRule";
     public final static String ACTION_RM_RULE = "org.ethack.orwall.backgroundProcess.action.rmRule";
-    public final static String PARAM_APPUID = "org.ethack.orwall.backgroundProcess.action.addRule.appUid";
-    public final static String PARAM_APPNAME = "org.ethack.orwall.backgroundProcess.action.addRule.appName";
+    public final static String PARAM_APPUID = "org.ethack.orwall.backgroundProcess.action.rule.appUid";
+    public final static String PARAM_APPNAME = "org.ethack.orwall.backgroundProcess.action.rule.appName";
+    public final static String PARAM_LOCALHOST = "org.ethack.orwall.backgroundProcess.action.rule.localHost";
+    public final static String PARAM_LOCALNETWORK = "org.ethack.orwall.backgroundProcess.action.rule.localNetwork";
+    public final static String PARAM_ONIONTYPE = "org.ethack.orwall.backgroundProcess.action.rule.onionType";
 
     public final static String ACTION_TETHER = "org.ethack.orwall.backgroundProcess.action.tethering";
     public final static String PARAM_TETHER_STATUS = "org.ethack.orwall.backgroundProcess.action.tethering.status";
 
     public final static String ACTION_DISABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.disable_orwall";
     public final static String ACTION_ENABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.enable_orwall";
-
-    public final static String ACTION_RM_FENCED = "org.ethack.orwall.backgroundProcess.action.rmFenced";
-    public final static String ACTION_RM_BYPASS = "org.ethack.orwall.backgroundProcess.action.rmBypass";
-    public final static String ACTION_ADD_FENCED = "org.ethack.orwall.backgroundProcess.action.addFenced";
-    public final static String ACTION_ADD_BYPASS = "org.ethack.orwall.backgroundProcess.action.addBypass";
 
     public final static long ORBOT_SOCKS_PROXY = 9050;
     public final static long ORBOT_TRANSPROXY = 9040;
@@ -65,7 +62,7 @@ public class Constants {
 
     public final static String DB_PORT_TYPE_TRANS = "TransProxy";
     public final static String DB_PORT_TYPE_SOCKS = "SOCKS";
-    public final static String DB_PORT_TYPE_FENCED = "Fenced";
+    public final static String DB_ONION_TYPE_NONE = "None";
     public final static String DB_ONION_TYPE_TOR = "Tor";
     public final static String DB_ONION_TYPE_I2P = "i2p";
     public final static String DB_ONION_TYPE_BYPASS = "Bypass";

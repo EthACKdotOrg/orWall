@@ -104,7 +104,7 @@
   <string name="advanced_connection_type">Art der Verbindung</string>
   <string name="advanced_connection_type_force">Erzwingen Verbindung (mit REDIRECT)</string>
   <string name="advanced_connection_type_native">Verwendung Anwendung native Kapazität (eingezäunt Pfad)</string>
-  <string name="advanced_connection_bypass">Lassen Sie diese Anwendung, um den Proxy zu umgehen</string>
+  <string name="advanced_connection_bypass">Umgehen den Proxy</string>
   <string name="alert_save">Registrieren</string>
   <string name="alert_cancel">Stornieren</string>
 

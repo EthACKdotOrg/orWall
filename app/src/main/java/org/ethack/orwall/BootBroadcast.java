@@ -17,6 +17,9 @@ public class BootBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
+        if (!context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).
+                getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true))
+            return;
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
 

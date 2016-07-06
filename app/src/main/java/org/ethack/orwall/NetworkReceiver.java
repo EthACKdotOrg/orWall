@@ -49,8 +49,9 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         if (action.equals("android.net.wifi.WIFI_STATE_CHANGED") || action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
             Log.d(TAG, "Will do some LAN stuff");
-            boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
-            initializeIptables.LANPolicy(lan_bypass);
+
+            //boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
+            initializeIptables.LANPolicy();
         }
     }
 }

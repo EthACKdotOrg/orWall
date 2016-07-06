@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import org.ethack.orwall.lib.AppRule;
 
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
@@ -34,14 +35,11 @@ public class UninstallBroadcast extends BroadcastReceiver {
             // is the app present in rules?
             NatRules natRules = new NatRules(context);
 
-            if (natRules.isAppInRules(uid)) {
+            AppRule rule = natRules.getAppRule(uid);
+            if (rule.isStored()) {
 
                 // First: remove rule from firewall if any
-                Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-                bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
-                bgpProcess.putExtra(Constants.PARAM_APPUID, uid);
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-                context.startService(bgpProcess);
+                rule.uninstall(context);
 
                 // Second: remove app from NatRules if present
                 natRules.removeAppFromRules(uid);

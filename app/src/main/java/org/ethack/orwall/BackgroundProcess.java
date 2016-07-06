@@ -36,12 +36,18 @@ public class BackgroundProcess extends IntentService {
             } else if (action.equals(Constants.ACTION_ADD_RULE)) {
                 long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
                 String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-                addRule(appUID, appName);
+                String onionType = workIntent.getStringExtra(Constants.PARAM_ONIONTYPE);
+                Boolean localHost = workIntent.getBooleanExtra(Constants.PARAM_LOCALHOST, false);
+                Boolean localNetwork = workIntent.getBooleanExtra(Constants.PARAM_LOCALNETWORK, false);
+                addRule(appUID, appName, onionType, localHost, localNetwork);
 
             } else if (action.equals(Constants.ACTION_RM_RULE)) {
                 long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
                 String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-                rmRule(appUID, appName);
+                String onionType = workIntent.getStringExtra(Constants.PARAM_ONIONTYPE);
+                Boolean localHost = workIntent.getBooleanExtra(Constants.PARAM_LOCALHOST, false);
+                Boolean localNetwork = workIntent.getBooleanExtra(Constants.PARAM_LOCALNETWORK, false);
+                rmRule(appUID, appName, onionType, localHost, localNetwork);
 
             } else if (action.equals(Constants.ACTION_TETHER)) {
                 boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
@@ -53,16 +59,6 @@ public class BackgroundProcess extends IntentService {
                 
             } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
                 this.initializeIptables.boot();
-
-            } else if (action.equals(Constants.ACTION_RM_BYPASS) || action.equals(Constants.ACTION_ADD_BYPASS)) {
-                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-                iptRules.bypass(appUID, appName, action.equals(Constants.ACTION_ADD_BYPASS));
-
-            } else if (action.equals(Constants.ACTION_RM_FENCED) || action.equals(Constants.ACTION_ADD_FENCED)) {
-                String appName = workIntent.getStringExtra(Constants.PARAM_APPNAME);
-                long appUID = workIntent.getLongExtra(Constants.PARAM_APPUID, 0);
-                iptRules.fenced(appUID, appName, action.equals(Constants.ACTION_ADD_FENCED));
             } else {
                 Log.e("BackgroundProcess", "Just got an unknown action!");
             }
@@ -75,12 +71,39 @@ public class BackgroundProcess extends IntentService {
         this.initializeIptables.enableCaptiveDetection(activate, this);
     }
 
-    private void addRule(Long appUID, String appName) {
-        this.iptRules.natApp(this, appUID, 'A', appName);
+    private void addRule(Long appUID, String appName, String onionType, Boolean localHost, Boolean localNetwork) {
+
+        if (onionType.equals(Constants.DB_ONION_TYPE_TOR)) {
+            this.iptRules.natApp(this, appUID, 'A', appName);
+        } else
+        if (onionType.equals(Constants.DB_ONION_TYPE_BYPASS)) {
+            iptRules.bypass(appUID, appName, true);
+        }
+
+        if (localHost) {
+            iptRules.localHost(appUID, appName, true);
+        }
+
+        if (localNetwork) {
+            iptRules.localNetwork(appUID, appName, true);
+        }
     }
 
-    private void rmRule(Long appUID, String appName) {
-        this.iptRules.natApp(this, appUID, 'D', appName);
+    private void rmRule(Long appUID, String appName, String onionType, Boolean localHost, Boolean localNetwork) {
+        if (onionType.equals(Constants.DB_ONION_TYPE_TOR)) {
+            this.iptRules.natApp(this, appUID, 'D', appName);
+        } else
+        if (onionType.equals(Constants.DB_ONION_TYPE_BYPASS)) {
+            iptRules.bypass(appUID, appName, false);
+        }
+
+        if (localHost) {
+            iptRules.localHost(appUID, appName, false);
+        }
+
+        if (localNetwork) {
+            iptRules.localNetwork(appUID, appName, false);
+        }
     }
 
     private void manageTether(boolean activate) {

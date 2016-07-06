@@ -60,14 +60,14 @@ public class NatRules {
         return (result == 1);
     }
 
-    public boolean addAppToRules(Long appUID, String appName, String onionType, Long onionPort, String portType) {
+    public boolean addAppToRules(Long appUID, String appName, String onionType, Boolean localHost, Boolean localNetwork) {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(natDBHelper.COLUMN_APPNAME, appName);
         contentValues.put(natDBHelper.COLUMN_APPUID, String.valueOf(appUID));
-        contentValues.put(natDBHelper.COLUMN_ONIONPORT, String.valueOf(onionPort));
         contentValues.put(natDBHelper.COLUMN_ONIONTYPE, onionType);
-        contentValues.put(natDBHelper.COLUMN_PORTTYPE, portType);
+        contentValues.put(natDBHelper.COLUMN_LOCALHOST, localHost);
+        contentValues.put(natDBHelper.COLUMN_LOCALNETWORK, localNetwork);
 
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         long result = db.insert(natDBHelper.NAT_TABLE_NAME, null, contentValues);
@@ -80,8 +80,8 @@ public class NatRules {
                 appRule.getAppUID(),
                 appRule.getPkgName(),
                 appRule.getOnionType(),
-                appRule.getOnionPort(),
-                appRule.getPortType()
+                appRule.getLocalHost(),
+                appRule.getLocalNetwork()
         );
     }
 
@@ -93,8 +93,8 @@ public class NatRules {
                 natDBHelper.COLUMN_APPNAME,
                 natDBHelper.COLUMN_APPUID,
                 natDBHelper.COLUMN_ONIONTYPE,
-                natDBHelper.COLUMN_ONIONPORT,
-                natDBHelper.COLUMN_PORTTYPE,
+                natDBHelper.COLUMN_LOCALHOST,
+                natDBHelper.COLUMN_LOCALNETWORK
         };
         Cursor cursor = db.query(natDBHelper.NAT_TABLE_NAME, selection, null, null, null, null, null);
 
@@ -110,8 +110,8 @@ public class NatRules {
                     cursor.getString(0),
                     cursor.getLong(1),
                     cursor.getString(2),
-                    cursor.getLong(3),
-                    cursor.getString(4)
+                    cursor.getLong(3) == 1,
+                    cursor.getLong(4) == 1
             );
             list.add(appRule);
         } while (cursor.moveToNext());
@@ -142,7 +142,7 @@ public class NatRules {
             // ensure we migrate only existing applications
             try {
                 packageManager.getApplicationInfo(name, PackageManager.GET_META_DATA);
-                addAppToRules(uid, name, Constants.DB_ONION_TYPE_TOR, Constants.ORBOT_TRANSPROXY, Constants.DB_PORT_TYPE_TRANS);
+                addAppToRules(uid, name, Constants.DB_ONION_TYPE_TOR, false, false);
             } catch (PackageManager.NameNotFoundException e) {
             }
         }
@@ -152,9 +152,9 @@ public class NatRules {
         ContentValues contentValues = new ContentValues();
         contentValues.put(natDBHelper.COLUMN_APPNAME, appRule.getPkgName());
         contentValues.put(natDBHelper.COLUMN_APPUID, String.valueOf(appRule.getAppUID()));
-        contentValues.put(natDBHelper.COLUMN_ONIONPORT, String.valueOf(appRule.getOnionPort()));
         contentValues.put(natDBHelper.COLUMN_ONIONTYPE, appRule.getOnionType());
-        contentValues.put(natDBHelper.COLUMN_PORTTYPE, appRule.getPortType());
+        contentValues.put(natDBHelper.COLUMN_LOCALHOST, appRule.getLocalHost()?1:0);
+        contentValues.put(natDBHelper.COLUMN_LOCALNETWORK, appRule.getLocalNetwork()?1:0);
 
         String filter = natDBHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appRule.getAppUID())};
@@ -182,8 +182,8 @@ public class NatRules {
                 natDBHelper.COLUMN_APPNAME,
                 natDBHelper.COLUMN_APPUID,
                 natDBHelper.COLUMN_ONIONTYPE,
-                natDBHelper.COLUMN_ONIONPORT,
-                natDBHelper.COLUMN_PORTTYPE,
+                natDBHelper.COLUMN_LOCALHOST,
+                natDBHelper.COLUMN_LOCALNETWORK
         };
 
         Cursor cursor = db.query(
@@ -202,11 +202,11 @@ public class NatRules {
                     cursor.getString(0),
                     cursor.getLong(1),
                     cursor.getString(2),
-                    cursor.getLong(3),
-                    cursor.getString(4)
+                    cursor.getLong(3) == 1,
+                    cursor.getLong(4) == 1
             );
         } else {
-            appRule = new AppRule(null, null, null, null, null);
+            appRule = new AppRule();
             Log.e(TAG, "Unable to get rules for " + String.valueOf(appUID));
         }
         cursor.close();
