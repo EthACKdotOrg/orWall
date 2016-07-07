@@ -88,6 +88,10 @@ public class AppListAdapter extends ArrayAdapter {
         this.specialApps = PackageInfoData.specialApps();
     }
 
+    private Boolean isOrWallEnabled(){
+        return sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true);
+    }
+
     /**
      * Creates the view with both lists.
      *
@@ -169,12 +173,6 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
-                    // And display a notification
-                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
-                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
-                        return;
-                    }
                     Log.d(TAG, "Click caught!");
                     boolean checked = ((CheckBox) view).isChecked();
                     int getPosition = (Integer) view.getTag();
@@ -193,13 +191,7 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
-                    // And display a notification
-                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
-                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
-                    } else {
-                        showAdvanced(view);
-                    }
+                    showAdvanced(view);
                     return true;
                 }
             });
@@ -231,7 +223,7 @@ public class AppListAdapter extends ArrayAdapter {
                         Toast.LENGTH_SHORT
                 ).show();
             }
-            appRule.install(context);
+            if (isOrWallEnabled()) appRule.install(context);
         } else {
             boolean success = this.natRules.removeAppFromRules(appRule.getAppUID());
             if (success) {
@@ -242,7 +234,7 @@ public class AppListAdapter extends ArrayAdapter {
                         Toast.LENGTH_SHORT
                 ).show();
             }
-            appRule.uninstall(context);
+            if (isOrWallEnabled()) appRule.uninstall(context);
 
             appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);
             appRule.setLocalHost(false);
@@ -445,14 +437,17 @@ public class AppListAdapter extends ArrayAdapter {
         if (db_status) {
 
             // first: clean existing rules IF app already exists
-            if (appRule.isStored()) {
-                // We want to use a background process in order to free the main thread and associated
-                appRule.uninstall(this.context);
+            if (isOrWallEnabled()){
+                if (appRule.isStored()) {
+                    // We want to use a background process in order to free the main thread and associated
+                    appRule.uninstall(this.context);
+                }
+                if (!updated.isEmpty()){
+                    // Now we can add the new rules
+                    updated.install(this.context);
+                }
             }
-            if (!updated.isEmpty()){
-                // Now we can add the new rules
-                updated.install(this.context);
-            }
+
             updated.setAppName(findAppName(updated.getPkgName()));
             if (updated.getAppName() != null) {
                 CheckBox checkBox = (CheckBox) view;
