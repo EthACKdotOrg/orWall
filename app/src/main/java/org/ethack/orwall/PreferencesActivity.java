@@ -75,22 +75,25 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+
+                if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) return;
+
                 InitializeIptables iptables = new InitializeIptables(getActivity());
 
-                if (s.equals(Constants.PREF_KEY_ADB_ENABLED)) {
-                    iptables.enableADB(sharedPreferences.getBoolean(s, false));
-                }
-
-                if (s.equals(Constants.PREF_KEY_SSH_ENABLED)) {
-                    iptables.enableSSH(sharedPreferences.getBoolean(s, false));
-                }
-
-                if (s.equals("enable_captive_portal")) {
-                    Context context = getActivity();
-                    Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-                    bgpProcess.putExtra(Constants.PARAM_ACTIVATE, sharedPreferences.getBoolean(s, false));
-                    bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_PORTAL);
-                    context.startService(bgpProcess);
+                switch (s) {
+                    case Constants.PREF_KEY_ADB_ENABLED:
+                        iptables.enableADB(sharedPreferences.getBoolean(s, false));
+                        break;
+                    case Constants.PREF_KEY_SSH_ENABLED:
+                        iptables.enableSSH(sharedPreferences.getBoolean(s, false));
+                        break;
+                    case "enable_captive_portal":
+                        Context context = getActivity();
+                        Intent bgpProcess = new Intent(context, BackgroundProcess.class);
+                        bgpProcess.putExtra(Constants.PARAM_ACTIVATE, sharedPreferences.getBoolean(s, false));
+                        bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_PORTAL);
+                        context.startService(bgpProcess);
+                        break;
                 }
             }
         };
