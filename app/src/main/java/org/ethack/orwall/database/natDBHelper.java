@@ -22,12 +22,12 @@ public class natDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LOCALNETWORK = "localnetwork";
 
     @Deprecated
-    private static final String COLUMN_PORTTYPE = "portType";
+    private static final String COLUMN_ONIONPORT = "onionPort";
     @Deprecated
     private static final String DB_PORT_TYPE_FENCED = "Fenced";
 /*
     @Deprecated
-    private static final String COLUMN_ONIONPORT = "onionPort";
+    private static final String COLUMN_PORTTYPE = "portType";
 
     private static final String NAT_TABLE_CREATE_V1 =
             String.format(
@@ -87,38 +87,11 @@ public class natDBHelper extends SQLiteOpenHelper {
                     case 1:
                         db.execSQL(String.format("ALTER TABLE %s RENAME TO %s_backup;", NAT_TABLE_NAME, NAT_TABLE_NAME));
                         db.execSQL(NAT_TABLE_CREATE_V2);
-
-                        String[] selection = {
-                                COLUMN_APPUID,
-                                COLUMN_APPNAME,
-                                COLUMN_ONIONTYPE,
-                                COLUMN_PORTTYPE
-                        };
-                        Cursor cursor = db.query(NAT_TABLE_NAME + "_backup", selection, null, null, null, null, null);
-                        if (cursor.moveToFirst()) {
-                            ContentValues data = new ContentValues();
-                            String porType;
-                            do {
-                                data.put(COLUMN_APPUID, cursor.getLong(0));
-                                data.put(COLUMN_APPNAME, cursor.getString(1));
-                                data.put(COLUMN_ONIONTYPE, cursor.getString(2));
-                                porType = cursor.getString(3);
-                                // fenced was localhost (output)
-                                if (porType != null && porType.equals(DB_PORT_TYPE_FENCED)){
-                                    data.put(COLUMN_LOCALHOST, 1);
-                                } else {
-                                    data.put(COLUMN_LOCALHOST, 0);
-                                }
-                                data.put(COLUMN_LOCALNETWORK, 0);
-
-                                db.insert(NAT_TABLE_NAME, null, data);
-
-                            } while (cursor.moveToNext());
-                        }
-                        cursor.close();
-
+                        db.execSQL(String.format(
+                                "INSERT INTO %s(%s, %s, %s, %s, %s) SELECT %s, %s, %s, 0, 0 FROM %s_backup;",
+                                NAT_TABLE_NAME, COLUMN_APPUID, COLUMN_APPNAME, COLUMN_ONIONTYPE, COLUMN_LOCALHOST, COLUMN_LOCALNETWORK,
+                                                COLUMN_APPUID, COLUMN_APPNAME, COLUMN_ONIONTYPE, NAT_TABLE_NAME));
                         db.execSQL(String.format("DROP TABLE %s_backup;", NAT_TABLE_NAME));
-                        break;
                 }
             }
 
