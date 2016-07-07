@@ -33,7 +33,7 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
     private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
     // TODO: use R content for tab names if needed.
-    private String[] tabs = {"Home", "Apps", "Logs"};
+    private String[] tabs = {"Home", "Apps"/*, "Logs"*/};
 
     @Override
     public void onTabReselected(Tab tab, FragmentTransaction ft) {
