@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import org.ethack.orwall.BackgroundProcess;
 import org.ethack.orwall.R;
-import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
@@ -65,11 +64,12 @@ public class AppListAdapter extends ArrayAdapter {
     private final PackageManager packageManager;
     private final NatRules natRules;
     private final SharedPreferences sharedPreferences;
+    private CheckBox checkboxInternet;
     private RadioButton radioTor;
-    private RadioButton radioForced;
-    private RadioButton radioFenced;
+    private CheckBox checkLocalHost;
+    private CheckBox checkLocalNetwork;
     private RadioButton radioI2p;
-    private CheckBox check_bypass;
+    private RadioButton radioBypass;
     private Map<String, PackageInfoData> specialApps;
 
     /**
@@ -106,36 +106,6 @@ public class AppListAdapter extends ArrayAdapter {
             convertView = inflater.inflate(R.layout.app_row, parent, false);
             holder = new ViewHolder();
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.id_application);
-            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                /**
-                 * This should allow the checked state to be persistent across scroll.
-                 * Thanks to http://www.lalit3686.blogspot.in/2012/06/today-i-am-going-to-show-how-to-deal.html
-                 * @param compoundButton CompoundButton transmitted by click event
-                 * @param b a boolean
-                 */
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    // Check if orWall is activated or not. Do nothing if orWall is deactivated.
-                    // And display a notification
-                    if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
-                        Toast.makeText(context, context.getString(R.string.notification_deactivated_title), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    int getPosition = (Integer) compoundButton.getTag();
-                    apps.get(getPosition).setChecked(compoundButton.isChecked());
-                    Log.d(TAG, "Toggle checkbox caught!");
-
-                    String appName = apps.get(getPosition).getAppName();
-                    if (compoundButton.isChecked()) {
-                        String type = apps.get(getPosition).getPortType();
-                        String label = String.format("%s (%s via %s)", appName, type, apps.get(getPosition).getOnionType());
-                        apps.get(getPosition).setLabel(label);
-                    } else {
-                        apps.get(getPosition).setLabel(appName);
-                    }
-                }
-            });
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -168,6 +138,34 @@ public class AppListAdapter extends ArrayAdapter {
 
             holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
             holder.checkBox.setTag(R.id.id_appTag, appRule.getPkgName());
+
+            if (appRule.getLabel() == null) {
+                String appName = null;
+
+                if (packageInfoData != null) {
+                    appName = ((PackageInfoData) specialApps.get(appRule.getPkgName())).getName();
+                } else {
+                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                }
+                appRule.setAppName(appName);
+                if (appRule.isEmpty()) {
+                    holder.checkBox.setText(appName);
+                    appRule.setLabel(appName);
+                    appRule.setChecked(false);
+                    holder.checkBox.setChecked(false);
+                } else {
+                    String label = appRule.getDisplay();
+
+                    holder.checkBox.setText(label);
+                    appRule.setLabel(label);
+                    appRule.setChecked(true);
+                    holder.checkBox.setChecked(true);
+                }
+            } else {
+                holder.checkBox.setText(appRule.getLabel());
+                holder.checkBox.setChecked(appRule.isChecked());
+            }
+
             holder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -183,9 +181,12 @@ public class AppListAdapter extends ArrayAdapter {
                     toggleApp(checked, getPosition);
                     AppRule rule = apps.get(getPosition);
                     rule.setChecked(checked);
-                    if (!checked){
-                        CheckBox checkBox = (CheckBox) view;
-                        checkBox.setText(getAppName(rule.getPkgName()));
+                    CheckBox checkBox = (CheckBox) view;
+                    rule.setAppName(findAppName(rule.getPkgName()));
+                    if (checked){
+                        checkBox.setText(rule.getDisplay());
+                    } else {
+                        checkBox.setText(rule.getAppName());
                     }
                 }
             });
@@ -203,33 +204,6 @@ public class AppListAdapter extends ArrayAdapter {
                 }
             });
 
-            if (appRule.getLabel() == null) {
-                String appName = null;
-
-                if (packageInfoData != null) {
-                    appName = ((PackageInfoData) specialApps.get(appRule.getPkgName())).getName();
-                } else {
-                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
-                }
-                appRule.setAppName(appName);
-                if (appRule.getOnionType().equals("None")) {
-                    holder.checkBox.setText(appName);
-                    appRule.setLabel(appName);
-                    appRule.setChecked(false);
-                    holder.checkBox.setChecked(false);
-                } else {
-                    String type = appRule.getPortType();
-                    String label = String.format("%s (%s via %s)", appName, type, appRule.getOnionType());
-
-                    holder.checkBox.setText(label);
-                    appRule.setLabel(label);
-                    appRule.setChecked(true);
-                    holder.checkBox.setChecked(true);
-                }
-            } else {
-                holder.checkBox.setText(appRule.getLabel());
-                holder.checkBox.setChecked(appRule.isChecked());
-            }
         }
         return convertView;
     }
@@ -243,22 +217,12 @@ public class AppListAdapter extends ArrayAdapter {
     public void toggleApp(boolean checked, int position) {
         AppRule appRule = apps.get(position);
 
-        String appName = appRule.getPkgName();
-
-        long appUID = appRule.getAppUID();
-
-        Intent bgpProcess = new Intent(context, BackgroundProcess.class);
-        bgpProcess.putExtra(Constants.PARAM_APPNAME, appName);
-        bgpProcess.putExtra(Constants.PARAM_APPUID, appUID);
-
         if (checked) {
-            bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
-            boolean success = this.natRules.addAppToRules(
-                    appUID, appName,
-                    Constants.DB_ONION_TYPE_TOR,
-                    Constants.ORBOT_TRANSPROXY,
-                    Constants.DB_PORT_TYPE_TRANS
-            );
+            appRule.setOnionType(Constants.DB_ONION_TYPE_TOR);
+            appRule.setLocalHost(false);
+            appRule.setLocalNetwork(false);
+
+            boolean success = this.natRules.addAppToRules(appRule);
             if (success) {
                 Toast.makeText(context, context.getString(R.string.toast_new_rule), Toast.LENGTH_SHORT).show();
             } else {
@@ -267,15 +231,9 @@ public class AppListAdapter extends ArrayAdapter {
                         Toast.LENGTH_SHORT
                 ).show();
             }
+            appRule.install(context);
         } else {
-            if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
-            } else if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
-            } else {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-            }
-            boolean success = this.natRules.removeAppFromRules(appUID);
+            boolean success = this.natRules.removeAppFromRules(appRule.getAppUID());
             if (success) {
                 Toast.makeText(context, context.getString(R.string.toast_remove_rule), Toast.LENGTH_SHORT).show();
             } else {
@@ -284,8 +242,12 @@ public class AppListAdapter extends ArrayAdapter {
                         Toast.LENGTH_SHORT
                 ).show();
             }
+            appRule.uninstall(context);
+
+            appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);
+            appRule.setLocalHost(false);
+            appRule.setLocalNetwork(false);
         }
-        context.startService(bgpProcess);
     }
 
     public void showAdvanced(final View view) {
@@ -327,22 +289,51 @@ public class AppListAdapter extends ArrayAdapter {
             // Is orbot installed ?
             OrbotHelper orbotHelper = new OrbotHelper(this.context);
 
-            this.radioTor = new RadioButton(this.context);
-            if (orbotHelper.isOrbotInstalled()) {
-                radioTor.setText("Tor");
+            this.checkboxInternet = (CheckBox) l_view.findViewById(R.id.id_check_internet);
+            if (appRule.getOnionType() != null && !appRule.getOnionType().equals(Constants.DB_ONION_TYPE_NONE)) {
+                this.checkboxInternet.setChecked(true);
+            }
+            this.checkboxInternet.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            radioBypass.setEnabled(checkboxInternet.isChecked());
+                            OrbotHelper orbotHelper = new OrbotHelper(context);
+                            radioTor.setEnabled(checkboxInternet.isChecked() && orbotHelper.isOrbotInstalled());
 
-                // TODO: handle this a bit better once we get a better support for i2p
-                if (appRule.getOnionType() == null || appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
+                            if (!radioBypass.isChecked() && !radioTor.isChecked()) {
+                                if (radioTor.isEnabled()) {
+                                    radioTor.setChecked(true);
+                                } else {
+                                    radioBypass.setChecked(true);
+                                }
+                            }
+                        }
+                    }
+            );
+
+            this.radioBypass = (RadioButton) l_view.findViewById(R.id.id_radio_bypass);
+            if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
+                this.radioBypass.setChecked(true);
+            }
+            this.radioBypass.setEnabled(this.checkboxInternet.isChecked());
+
+            this.radioTor = (RadioButton) l_view.findViewById(R.id.id_radio_tor);
+            if (!orbotHelper.isOrbotInstalled()) {
+                radioTor.setEnabled(false);
+            } else {
+                if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
                     radioTor.setChecked(true);
                 }
-
-                ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioTor);
+                this.radioTor.setEnabled(this.checkboxInternet.isChecked());
             }
+
             // is i2p present? No helper for that now
             PackageInfo i2p = null;
             try {
                 i2p = this.packageManager.getPackageInfo(Constants.I2P_APP_NAME, PackageManager.GET_PERMISSIONS);
             } catch (PackageManager.NameNotFoundException e) {
+
             }
 
             this.radioI2p = new RadioButton(this.context);
@@ -357,29 +348,11 @@ public class AppListAdapter extends ArrayAdapter {
                 ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioI2p);
             }
 
-            this.radioForced = (RadioButton) l_view.findViewById(R.id.id_radio_force);
-            this.radioFenced = (RadioButton) l_view.findViewById(R.id.id_radio_fenced);
-            // Is it a Fenced or a Forced app?
-            if (appRule.getPortType() != null && appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                radioFenced.setChecked(true);
-            } else {
-                radioForced.setChecked(true);
-            }
+            this.checkLocalHost = (CheckBox) l_view.findViewById(R.id.id_check_localhost);
+            this.checkLocalHost.setChecked(appRule.getLocalHost());
 
-            // Maybe it's a Bypass, if so, we will need to deactivate all other Radios…
-            this.check_bypass = (CheckBox) l_view.findViewById(R.id.id_checkbox_bypass);
-            if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                toggleAdvancedPrefs(true);
-            }
-
-            // just set an onClick action for the checkBox, as we don't have access to the dependencies
-            check_bypass.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    boolean checked = ((CheckBox) view.findViewById(R.id.id_checkbox_bypass)).isChecked();
-                    toggleAdvancedPrefs(checked);
-                }
-            });
+            this.checkLocalNetwork = (CheckBox) l_view.findViewById(R.id.id_check_localnetwork);
+            this.checkLocalNetwork.setChecked(appRule.getLocalNetwork());
 
             AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
@@ -408,15 +381,20 @@ public class AppListAdapter extends ArrayAdapter {
         }
     }
 
-    public void toggleAdvancedPrefs(boolean status) {
-        radioFenced.setEnabled(!status);
-        radioForced.setEnabled(!status);
-        radioI2p.setEnabled(!status);
-        radioTor.setEnabled(!status);
-        if (!status) {
-            radioTor.setChecked(true);
+    private String findAppName(String pkgName) {
+        PackageInfoData packageInfoData;
+        ApplicationInfo applicationInfo;
+        if (pkgName.startsWith(Constants.SPECIAL_APPS_PREFIX)) {
+            packageInfoData = specialApps.get(pkgName);
+            return packageInfoData.getName();
+        } else {
+            try {
+                applicationInfo = this.packageManager.getApplicationInfo(pkgName, PackageManager.GET_PERMISSIONS);
+                return (String) packageManager.getApplicationLabel(applicationInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+                return null;
+            }
         }
-        check_bypass.setChecked(status);
     }
 
     private void saveAdvanced(AppRule appRule, View view) {
@@ -427,90 +405,66 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setAppUID(appRule.getAppUID());
         final int position = (Integer) view.getTag();
 
-        if (check_bypass.isChecked()) {
+        // none
+        if (!checkboxInternet.isChecked()) {
+            updated.setOnionType(Constants.DB_ONION_TYPE_NONE);
+        } else
+        // Anonymity provider
+        if (radioTor.isChecked()) {
+            updated.setOnionType(Constants.DB_ONION_TYPE_TOR);
+        } else
+        if (radioBypass.isChecked()) {
             updated.setOnionType(Constants.DB_ONION_TYPE_BYPASS);
-            updated.setPortType(Constants.DB_ONION_TYPE_BYPASS);
-        } else {
-            // Anonymity provider
-            if (radioTor.isChecked()) {
-                updated.setOnionType(Constants.DB_ONION_TYPE_TOR);
-            }
-            if (radioI2p.isChecked()) {
-                updated.setOnionType(Constants.DB_ONION_TYPE_I2P);
-            }
-            // We might fallback to the default type.
-            if (updated.getOnionType() == null || updated.getOnionType().isEmpty()) {
-                updated.setOnionType(Constants.DB_ONION_TYPE_TOR);
-            }
-        }
-        // Anonymity connectivity
-        if (radioFenced.isChecked()) {
-            updated.setPortType(Constants.DB_PORT_TYPE_FENCED);
-        }
-        if (radioForced.isChecked()) {
-            updated.setPortType(Constants.DB_PORT_TYPE_TRANS);
+        } else
+        if (radioI2p.isChecked()) {
+            updated.setOnionType(Constants.DB_ONION_TYPE_I2P);
         }
 
-        // We might fallback to the default type: forced
-        if (updated.getPortType() == null || updated.getPortType().isEmpty()) {
-            updated.setPortType(Constants.DB_PORT_TYPE_TRANS);
-        }
+        updated.setLocalHost(this.checkLocalHost.isChecked());
+        updated.setLocalNetwork(this.checkLocalNetwork.isChecked());
 
         // By the way, is it a new object? If so, we're wanting to create it instead of update it!
-        boolean db_status;
-        if (appRule.getOnionType() == null) {
-            db_status = natRules.addAppToRules(updated);
-        } else {
-            db_status = natRules.update(updated);
+        boolean db_status = false;
+
+        if (updated.isEmpty()){
+            if (appRule.isStored()){
+                db_status = natRules.removeAppFromRules(updated.getAppUID());
+            }
+        };
+        if (!db_status) {
+            if (!appRule.isStored()) {
+                if (!updated.isEmpty()){
+                    db_status = natRules.addAppToRules(updated);
+                }
+            } else {
+                db_status = natRules.update(updated);
+            }
         }
 
         // If and ONLY IF the DB update/creation is OK, we will push the new rules
         if (db_status) {
 
-            // We want to use a background process in order to free the main thread and associated
-            Intent bgCleanup = new Intent(this.context, BackgroundProcess.class);
-            bgCleanup.putExtra(Constants.PARAM_APPUID, appRule.getAppUID());
-            bgCleanup.putExtra(Constants.PARAM_APPNAME, appRule.getPkgName());
-
             // first: clean existing rules IF app already exists
-            if (appRule.getOnionType() != null) {
-                IptRules iptRules = new IptRules(this.sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
-                if (appRule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_FENCED);
-
-                } else if (appRule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_BYPASS);
-
-                } else {
-                    bgCleanup.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
-                }
-                this.context.startService(bgCleanup);
+            if (appRule.isStored()) {
+                // We want to use a background process in order to free the main thread and associated
+                appRule.uninstall(this.context);
             }
-
-            // Now we can add the new rules
-            Intent bgNewRules = new Intent(this.context, BackgroundProcess.class);
-            bgNewRules.putExtra(Constants.PARAM_APPUID, appRule.getAppUID());
-            bgNewRules.putExtra(Constants.PARAM_APPNAME, appRule.getPkgName());
-
-            if (updated.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                bgNewRules.putExtra(Constants.ACTION, Constants.ACTION_ADD_FENCED);
-
-            } else if (updated.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                bgNewRules.putExtra(Constants.ACTION, Constants.ACTION_ADD_BYPASS);
-
-            } else {
-                bgNewRules.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+            if (!updated.isEmpty()){
+                // Now we can add the new rules
+                updated.install(this.context);
             }
-            this.context.startService(bgNewRules);
-
-            if (appName != null) {
+            updated.setAppName(findAppName(updated.getPkgName()));
+            if (updated.getAppName() != null) {
                 CheckBox checkBox = (CheckBox) view;
-                String label = String.format("%s (%s via %s)", appName, updated.getPortType(), updated.getOnionType());
-                checkBox.setText(label);
-                checkBox.setChecked(true);
+                if (updated.isEmpty()){
+                    checkBox.setText(updated.getAppName());
+                    checkBox.setChecked(false);
+                } else {
+                    checkBox.setText(updated.getDisplay());
+                    checkBox.setChecked(true);
+                }
             }
-        } else {
-            Log.e(TAG, "ERROR while updating object in DB!");
+
         }
         apps.set(position, updated);
     }

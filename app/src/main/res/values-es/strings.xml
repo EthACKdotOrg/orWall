@@ -97,7 +97,7 @@
     <string name="advanced_connection_type">Tipo de conexión</string>
     <string name="advanced_connection_type_force">Forzar la conexión (usando REDIRECCIONAMIENTO)</string>
     <string name="advanced_connection_type_native">Usar la capacidad nativa de la aplicación (Camino cerrado)</string>
-    <string name="advanced_connection_bypass">Permitir a la aplicación evitar el Proxy</string>
+    <string name="advanced_connection_bypass">Evitar el Proxy</string>
     <string name="alert_save">Guardar</string>
     <string name="alert_cancel">Cancelar</string>
 

@@ -10,5 +10,5 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="Logs"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 </RelativeLayout>

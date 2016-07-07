@@ -64,7 +64,6 @@ public class HomeFragment extends Fragment {
         Switch orwallStatus = (Switch) view.findViewById(R.id.orwall_status);
         Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);
         Switch sipStatus = (Switch) view.findViewById(R.id.sip_status);
-        Switch lanStatus = (Switch) view.findViewById(R.id.lan_status);
         Switch tetherStatus = (Switch) view.findViewById(R.id.tethering_status);
 
         // Status switches — most of them are read-only, as they just displays devices capabilities.
@@ -129,16 +128,6 @@ public class HomeFragment extends Fragment {
             sipStatus.setClickable(false);
             sipStatus.setTextColor(Color.GRAY);
         }
-
-        lanStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_LAN_ENABLED, false));
-        lanStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean checked = ((Switch) view).isChecked();
-                initializeIptables.LANPolicy(checked);
-                sharedPreferences.edit().putBoolean(Constants.PREF_KEY_LAN_ENABLED, checked).apply();
-            }
-        });
 
         tetherStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false));
         tetherStatus.setOnClickListener(new View.OnClickListener() {

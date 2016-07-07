@@ -127,7 +127,7 @@ public class AppFragment extends Fragment {
         for (PackageInfo pkgInfo : pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
                 if (!natRules.isAppInRules((long) pkgInfo.applicationInfo.uid)) {
-                    pkgList.add(new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, "None", (long) 0, "None"));
+                    pkgList.add(new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, Constants.DB_ONION_TYPE_NONE, false, false));
                 }
             }
         }
@@ -141,7 +141,7 @@ public class AppFragment extends Fragment {
 
         for (PackageInfoData pkgInfo: specialApps.values()) {
             if (!natRules.isAppInRules(pkgInfo.getUid())) {
-                pkgList.add(new AppRule(pkgInfo.getPkgName(), pkgInfo.getUid(), "None", (long) 0, "None"));
+                pkgList.add(new AppRule(pkgInfo.getPkgName(), pkgInfo.getUid(), Constants.DB_ONION_TYPE_NONE, false, false));
             }
         }
 

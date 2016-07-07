@@ -75,7 +75,7 @@ public class InitializeIptables {
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
             app_uid = (long) 0; // prevents stupid compiler error… never used.
-            android.os.Process.killProcess(android.os.Process.myPid());
+            //android.os.Process.killProcess(android.os.Process.myPid());
         }
 
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
@@ -87,11 +87,8 @@ public class InitializeIptables {
         initOutputs(app_uid);
         initInput(app_uid);
 
-        // add some rules in order to get user's setup up
-        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
-        if (authorized) {
-            LANPolicy(true);
-        }
+        // get lan subnet
+        LANPolicy();
 
         authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
         if (authorized) {
@@ -124,24 +121,8 @@ public class InitializeIptables {
         final Intent bgpProcess = new Intent(this.context, BackgroundProcess.class);
 
         for (AppRule rule : rules) {
-            bgpProcess.putExtra(Constants.PARAM_APPUID, rule.getAppUID());
-            bgpProcess.putExtra(Constants.PARAM_APPNAME, rule.getPkgName());
-
-            if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_BYPASS)) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_BYPASS);
-
-            } else if (rule.getPortType().equals(Constants.DB_PORT_TYPE_FENCED)) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_FENCED);
-
-            } else if (rule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
-
-            } else {
-                Log.e("Boot: ", "Don't know what to do for " + rule.getPkgName());
-                bgpProcess.putExtra(Constants.ACTION, "UNKNOWN");
-            }
+            rule.install(this.context, bgpProcess);
             Log.d("Boot: ", "pushed new app in queue: " + rule.getPkgName());
-            this.context.startService(bgpProcess);
         }
         Log.d("Boot: ", "Finished NAT stuff");
     }
@@ -177,6 +158,13 @@ public class InitializeIptables {
                 "-A INPUT -j bw_INPUT",
                 // flush nat OUTPUT
                 "-t nat -F OUTPUT",
+                // flush nat OUTPUT
+                "-t nat -F INPUT",
+                // flush LAN
+                "-F orwall_lan",
+                "-X orwall_lan",
+                "-F orwall_internet",
+                "-X orwall_internet"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -184,6 +172,10 @@ public class InitializeIptables {
                 Log.e("deactivate", rule);
             }
         }
+
+        // subnet is no more in iptables
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
     }
 
     public void deactivateV6() {
@@ -247,55 +239,30 @@ public class InitializeIptables {
     }
 
     /**
-     * Apply or remove rules for LAN access.
-     * @param allow boolean, true if we want to add rules, false otherwise.
+     * update rules for LAN access.
      */
-    public void LANPolicy(final boolean allow) {
+    public void LANPolicy() {
         NetworkHelper nwHelper = new NetworkHelper();
         String subnet = nwHelper.getSubnet(this.context);
-        if (subnet != null) {
 
-            // Get subnet from SharedPreferences
-            SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-            String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, "none");
+        // Get subnet from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, null);
 
-            // If both subnets match, that means we already have applied the rule
-            if (allow && subnet.equals(old_subnet)) {
-                Log.d("LANPolicy", "Already applied");
-                return;
-            }
-
-            if (!allow && old_subnet.equals("none")) {
-                Log.d("LANPolicy", "Nothing to do");
-                return;
-            }
-
-            if (allow) {
-                if (iptRules.genericRule("-N LAN")) {
-                    iptRules.genericRule("-A LAN -j LOG --log-prefix \"LAN connect\"");
-                    iptRules.genericRule("-A LAN -j ACCEPT");
-                }
-            } else {
-                // remove sharedPreference key as we want to cut LAN.
-                sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
-            }
-
-            if (allow && !old_subnet.equals("none")) {
-                // Remove rules if we got another subnet in sharedPref
-                iptRules.LanNoNat(old_subnet, false);
-            }
-            // Do what's needed with current subnet
-            iptRules.LanNoNat(subnet, allow);
-
-            // Flush LAN chain and remove it
-            if (!allow) {
-                iptRules.genericRule("-F LAN");
-                iptRules.genericRule("-X LAN");
-            } else {
-                // Or save new subnet
-                sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
-            }
+        if (old_subnet != null && !old_subnet.equals(subnet)) {
+            // Remove rules if we got another subnet in sharedPref
+            iptRules.LanNoNat(old_subnet, false);
+            sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
         }
+
+        if (subnet != null && !subnet.equals(old_subnet)) {
+            // Do what's needed with current subnet
+            iptRules.LanNoNat(subnet, true);
+
+            // Or save new subnet
+            sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
+        }
+
     }
 
     /**
@@ -401,6 +368,10 @@ public class InitializeIptables {
                         "-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
+                // LAN
+                "-N orwall_lan",
+                "-N orwall_internet",
+                "-A orwall_internet -d 127.0.0.1/32 -j RETURN"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {

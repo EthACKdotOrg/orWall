@@ -1,15 +1,25 @@
 package org.ethack.orwall.lib;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.provider.SyncStateContract;
+
+import org.ethack.orwall.BackgroundProcess;
+import org.ethack.orwall.lib.PackageInfoData;
+import java.util.ArrayList;
+
 /**
  * Data structure: application NAT rule.
  */
 public class AppRule {
-
+    private Boolean stored;
     private String pkgName;
     private Long appUID;
     private String onionType;
-    private Long onionPort;
-    private String portType;
+    private Boolean localHost;
+    private Boolean localNetwork;
 
     // Variables dedicated for ListView
     // We need them for persistence across scroll
@@ -17,12 +27,13 @@ public class AppRule {
     private String label;
     private String appName;
 
-    public AppRule(String pkgName, Long appUID, String onionType, Long onionPort, String portType) {
+    public AppRule(String pkgName, Long appUID, String onionType, Boolean localHost, Boolean localNetwork) {
+        this.stored = true;
         this.pkgName = pkgName;
         this.appUID = appUID;
         this.onionType = onionType;
-        this.onionPort = onionPort;
-        this.portType = portType;
+        this.localHost = localHost;
+        this.localNetwork = localNetwork;
         // set to a null value - used in AppListAdapter
         this.label = null;
         this.appName = null;
@@ -30,8 +41,24 @@ public class AppRule {
 
     public AppRule() {
         // Empty constructor in order to use setters.
+        this.stored = false;
+        this.pkgName = null;
+        this.appUID = null;
+        this.onionType = Constants.DB_ONION_TYPE_NONE;
+        this.localHost = false;
+        this.localNetwork = false;
+        // set to a null value - used in AppListAdapter
+        this.label = null;
+        this.appName = null;
     }
 
+    public Boolean isStored(){
+        return this.stored;
+    }
+
+    public Boolean isEmpty(){
+        return !this.localHost && !this.localNetwork && this.onionType.equals(Constants.DB_ONION_TYPE_NONE);
+    }
 
     public String getPkgName() {
         return this.pkgName;
@@ -45,16 +72,54 @@ public class AppRule {
         return this.onionType;
     }
 
+    public String getDisplay(){
+        String ret = this.appName;
+        ArrayList<String> flags = new ArrayList<>();
+        switch (this.onionType) {
+            case Constants.DB_ONION_TYPE_NONE:
+                break;
+            case Constants.DB_ONION_TYPE_BYPASS:
+                flags.add("Bypass");
+                break;
+            case Constants.DB_ONION_TYPE_TOR:
+                flags.add("Tor");
+                break;
+        }
+        if (this.localHost) {
+            flags.add("Localhost");
+        }
+        if (this.localNetwork) {
+            flags.add("LocalNetwork");
+        }
+
+        if (!flags.isEmpty()){
+            ret += " (" + flags.get(0);
+            for(int i = 1; i < flags.size(); i++){
+                ret += " - " + flags.get(i);
+            }
+            ret += ")";
+        }
+        return ret;
+    }
+
     public void setOnionType(String onionType) {
         this.onionType = onionType;
     }
 
-    public String getPortType() {
-        return this.portType;
+    public Boolean getLocalHost() {
+        return this.localHost;
     }
 
-    public void setPortType(String portType) {
-        this.portType = portType;
+    public void setLocalHost(Boolean localHost) {
+        this.localHost = localHost;
+    }
+
+    public Boolean getLocalNetwork() {
+        return this.localNetwork;
+    }
+
+    public void setLocalNetwork(Boolean localNetwork) {
+        this.localNetwork = localNetwork;
     }
 
     public Long getAppUID() {
@@ -63,14 +128,6 @@ public class AppRule {
 
     public void setAppUID(Long appUID) {
         this.appUID = appUID;
-    }
-
-    public Long getOnionPort() {
-        return this.onionPort;
-    }
-
-    public void setOnionPort(Long onionPort) {
-        this.onionPort = onionPort;
     }
 
     /**
@@ -99,6 +156,36 @@ public class AppRule {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    private Intent newBackground(Context context, Intent intent){
+        Intent bg = (intent == null? new Intent(context, BackgroundProcess.class): intent);
+        bg.putExtra(Constants.PARAM_APPUID, getAppUID());
+        bg.putExtra(Constants.PARAM_APPNAME, getPkgName());
+        bg.putExtra(Constants.PARAM_ONIONTYPE, getOnionType());
+        bg.putExtra(Constants.PARAM_LOCALHOST, getLocalHost());
+        bg.putExtra(Constants.PARAM_LOCALNETWORK, getLocalNetwork());
+        return bg;
+    }
+
+    public void install(Context context, Intent intent){
+        Intent bg = newBackground(context, intent);
+        bg.putExtra(Constants.ACTION, Constants.ACTION_ADD_RULE);
+        context.startService(bg);
+    }
+
+    public void uninstall(Context context, Intent intent){
+        Intent bg = newBackground(context, intent);
+        bg.putExtra(Constants.ACTION, Constants.ACTION_RM_RULE);
+        context.startService(bg);
+    }
+
+    public void install(Context context){
+        install(context, null);
+    }
+
+    public void uninstall(Context context){
+        uninstall(context, null);
     }
 
 }
