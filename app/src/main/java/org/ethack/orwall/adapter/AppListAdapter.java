@@ -182,10 +182,11 @@ public class AppListAdapter extends ArrayAdapter {
                     CheckBox checkBox = (CheckBox) view;
                     rule.setAppName(findAppName(rule.getPkgName()));
                     if (checked){
-                        checkBox.setText(rule.getDisplay());
+                        rule.setLabel(rule.getDisplay());
                     } else {
-                        checkBox.setText(rule.getAppName());
+                        rule.setLabel(rule.getAppName());
                     }
+                    checkBox.setText(rule.getLabel());
                 }
             });
             holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
