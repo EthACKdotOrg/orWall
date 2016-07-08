@@ -144,17 +144,20 @@ public class AppListAdapter extends ArrayAdapter {
             holder.checkBox.setTag(R.id.id_appTag, appRule.getPkgName());
 
             if (appRule.getLabel() == null) {
-                String appName = null;
 
-                if (packageInfoData != null) {
-                    appName = ((PackageInfoData) specialApps.get(appRule.getPkgName())).getName();
-                } else {
-                    appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                if (appRule.getAppName()==null){
+                    String appName = null;
+
+                    if (packageInfoData != null) {
+                        appName = (specialApps.get(appRule.getPkgName())).getName();
+                    } else {
+                        appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                    }
+                    appRule.setAppName(appName);
                 }
-                appRule.setAppName(appName);
                 if (appRule.isEmpty()) {
-                    holder.checkBox.setText(appName);
-                    appRule.setLabel(appName);
+                    holder.checkBox.setText(appRule.getAppName());
+                    appRule.setLabel(appRule.getAppName());
                     appRule.setChecked(false);
                     holder.checkBox.setChecked(false);
                 } else {
@@ -180,7 +183,8 @@ public class AppListAdapter extends ArrayAdapter {
                     AppRule rule = apps.get(getPosition);
                     rule.setChecked(checked);
                     CheckBox checkBox = (CheckBox) view;
-                    rule.setAppName(findAppName(rule.getPkgName()));
+                    if (rule.getAppName() == null)
+                        rule.setAppName(findAppName(rule.getPkgName()));
                     if (checked){
                         rule.setLabel(rule.getDisplay());
                     } else {
@@ -448,8 +452,8 @@ public class AppListAdapter extends ArrayAdapter {
                     updated.install(this.context);
                 }
             }
-
-            updated.setAppName(findAppName(updated.getPkgName()));
+            if (updated.getAppName() == null)
+                updated.setAppName(findAppName(updated.getPkgName()));
             if (updated.getAppName() != null) {
                 CheckBox checkBox = (CheckBox) view;
                 if (updated.isEmpty()){

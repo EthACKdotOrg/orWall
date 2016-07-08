@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,9 @@ import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -84,11 +87,13 @@ public class AppFragment extends Fragment {
         // get enabled apps
         NatRules natRules = new NatRules(this.getActivity());
         List<AppRule> enabledApps = natRules.getAllRules();
+        LongSparseArray<AppRule> rulesIndex = new LongSparseArray<>();
+        for (AppRule app: enabledApps) rulesIndex.put(app.getAppUID(), app);
 
         // get disabled apps (filtered with enabled)
-        List<AppRule> disabledApps = listDisabledApps();
+        List<AppRule> disabledApps = listDisabledApps(rulesIndex);
         // Get special, disabled apps
-        List<AppRule> specialDisabled = listSpecialApps();
+        List<AppRule> specialDisabled = listSpecialApps(rulesIndex);
 
         // Merge both disabled apps
         disabledApps.addAll(specialDisabled);
@@ -111,9 +116,7 @@ public class AppFragment extends Fragment {
      *
      * @return List of AppRule
      */
-    private List<AppRule> listDisabledApps() {
-        NatRules natRules = new NatRules(this.getActivity());
-
+    private List<AppRule> listDisabledApps(LongSparseArray<AppRule> index) {
         PackageManager packageManager = this.getActivity().getPackageManager();
         List<AppRule> pkgList = new ArrayList<AppRule>();
 
@@ -121,7 +124,7 @@ public class AppFragment extends Fragment {
 
         for (PackageInfo pkgInfo : pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
-                if (!natRules.isAppInRules((long) pkgInfo.applicationInfo.uid)) {
+                if (index.indexOfKey((long) pkgInfo.applicationInfo.uid) < 0) {
                     pkgList.add(new AppRule(pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, Constants.DB_ONION_TYPE_NONE, false, false));
                 }
             }
@@ -129,13 +132,12 @@ public class AppFragment extends Fragment {
         return pkgList;
     }
 
-    private List<AppRule> listSpecialApps() {
-        NatRules natRules = new NatRules(this.getActivity());
+    private List<AppRule> listSpecialApps(LongSparseArray<AppRule> index) {
         List<AppRule> pkgList = new ArrayList<AppRule>();
         Map<String,PackageInfoData> specialApps = PackageInfoData.specialApps();
 
         for (PackageInfoData pkgInfo: specialApps.values()) {
-            if (!natRules.isAppInRules(pkgInfo.getUid())) {
+            if (index.indexOfKey(pkgInfo.getUid()) < 0) {
                 pkgList.add(new AppRule(pkgInfo.getPkgName(), pkgInfo.getUid(), Constants.DB_ONION_TYPE_NONE, false, false));
             }
         }

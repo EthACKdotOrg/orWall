@@ -26,8 +26,6 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return new HomeFragment();
             case 1:
                 return new AppFragment();
-            case 2:
-                return new LogFragment();
         }
         return null;
     }
