@@ -1,12 +1,9 @@
 package org.ethack.orwall.database;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import org.ethack.orwall.lib.Constants;
 
 /**
  * Simple DB helper in order to manage SQLite for NAT rules.
@@ -21,11 +18,11 @@ public class natDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LOCALHOST = "localhost";
     public static final String COLUMN_LOCALNETWORK = "localnetwork";
 
+/*
     @Deprecated
     private static final String COLUMN_ONIONPORT = "onionPort";
     @Deprecated
     private static final String DB_PORT_TYPE_FENCED = "Fenced";
-/*
     @Deprecated
     private static final String COLUMN_PORTTYPE = "portType";
 

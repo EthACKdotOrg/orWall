@@ -2,12 +2,9 @@ package org.ethack.orwall.lib;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.provider.SyncStateContract;
 
 import org.ethack.orwall.BackgroundProcess;
-import org.ethack.orwall.lib.PackageInfoData;
+
 import java.util.ArrayList;
 
 /**

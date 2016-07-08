@@ -55,7 +55,7 @@ public class AppPreferenceList extends ListPreference {
         List<PackageInfo> pkgList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
         Collections.sort(pkgList, new PackageComparator(packageManager));
 
-        Collection<CharSequence> list = new ArrayList<CharSequence>();
+        Collection<CharSequence> list = new ArrayList<>();
 
         for (PackageInfo pkg : pkgList) {
             if (isInternet(pkg))
@@ -69,17 +69,13 @@ public class AppPreferenceList extends ListPreference {
         List<PackageInfo> pkgList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
         Collections.sort(pkgList, new PackageComparator(packageManager));
 
-        Collection<CharSequence> list = new ArrayList<CharSequence>();
+        Collection<CharSequence> list = new ArrayList<>();
 
         for (PackageInfo pkg : pkgList) {
             if (isInternet(pkg))
                 list.add(Long.toString(pkg.applicationInfo.uid));
         }
         return list.toArray(new CharSequence[list.size()]);
-    }
-
-    private int initializeIndex() {
-        return 0;
     }
 
     private boolean isInternet(PackageInfo pkg) {

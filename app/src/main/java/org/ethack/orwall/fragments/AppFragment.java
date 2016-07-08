@@ -1,8 +1,6 @@
 package org.ethack.orwall.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -25,9 +23,6 @@ import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -38,13 +33,10 @@ import java.util.Map;
  */
 public class AppFragment extends Fragment {
 
-    private final static String TAG = "AppFragment";
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view;
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
 
         view  = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
         InitializeIptables initializeIptables = new InitializeIptables(getActivity());
@@ -118,7 +110,7 @@ public class AppFragment extends Fragment {
      */
     private List<AppRule> listDisabledApps(LongSparseArray<AppRule> index) {
         PackageManager packageManager = this.getActivity().getPackageManager();
-        List<AppRule> pkgList = new ArrayList<AppRule>();
+        List<AppRule> pkgList = new ArrayList<>();
 
         List<PackageInfo> pkgInstalled = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
 
@@ -133,7 +125,7 @@ public class AppFragment extends Fragment {
     }
 
     private List<AppRule> listSpecialApps(LongSparseArray<AppRule> index) {
-        List<AppRule> pkgList = new ArrayList<AppRule>();
+        List<AppRule> pkgList = new ArrayList<>();
         Map<String,PackageInfoData> specialApps = PackageInfoData.specialApps();
 
         for (PackageInfoData pkgInfo: specialApps.values()) {
@@ -143,16 +135,6 @@ public class AppFragment extends Fragment {
         }
 
         return pkgList;
-    }
-
-    /**
-     * Checks if package is System or not.
-     *
-     * @param pkgInfo PackageInfo object
-     * @return true if package is a system app
-     */
-    private boolean isSystemPackage(PackageInfo pkgInfo) {
-        return ((pkgInfo.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0);
     }
 
     /**

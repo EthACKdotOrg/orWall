@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import org.ethack.orwall.lib.AppRule;
-
-import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 
 public class UninstallBroadcast extends BroadcastReceiver {

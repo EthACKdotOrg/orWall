@@ -27,29 +27,6 @@ public class NatRules {
         this.context = context;
     }
 
-    public boolean isAppInRules(Long appUID) {
-        SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-
-        String[] filterArgs = {
-                String.valueOf(appUID)
-        };
-
-        Cursor cursor = db.query(
-                natDBHelper.NAT_TABLE_NAME,
-                null,
-                natDBHelper.COLUMN_APPUID + "=?",
-                filterArgs,
-                null,
-                null,
-                null
-        );
-        cursor.moveToFirst();
-        boolean appExists = (cursor.getCount() == 1);
-        cursor.close();
-        db.close();
-        return appExists;
-    }
-
     public boolean removeAppFromRules(Long appUID) {
         String filter = natDBHelper.COLUMN_APPUID + "=?";
         String[] filterArgs = {String.valueOf(appUID)};
@@ -86,7 +63,7 @@ public class NatRules {
     }
 
     public ArrayList<AppRule> getAllRules() {
-        ArrayList<AppRule> list = new ArrayList<AppRule>();
+        ArrayList<AppRule> list = new ArrayList<>();
 
         SQLiteDatabase db = this.dbHelper.getReadableDatabase();
         String[] selection = {

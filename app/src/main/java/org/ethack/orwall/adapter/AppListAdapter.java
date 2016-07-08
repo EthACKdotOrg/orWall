@@ -146,7 +146,7 @@ public class AppListAdapter extends ArrayAdapter {
             if (appRule.getLabel() == null) {
 
                 if (appRule.getAppName()==null){
-                    String appName = null;
+                    String appName;
 
                     if (packageInfoData != null) {
                         appName = (specialApps.get(appRule.getPkgName())).getName();
@@ -250,7 +250,6 @@ public class AppListAdapter extends ArrayAdapter {
     public void showAdvanced(final View view) {
         LayoutInflater li = LayoutInflater.from(this.context);
         View l_view = li.inflate(R.layout.advanced_connection, null);
-        final int position = (Integer) view.getTag();
 
         // Get application information
         final String pkgName = view.getTag(R.id.id_appTag).toString();
@@ -427,7 +426,8 @@ public class AppListAdapter extends ArrayAdapter {
             if (appRule.isStored()){
                 db_status = natRules.removeAppFromRules(updated.getAppUID());
             }
-        };
+        }
+
         if (!db_status) {
             if (!appRule.isStored()) {
                 if (!updated.isEmpty()){

@@ -48,8 +48,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -75,7 +73,7 @@
 
         <activity
             android:name="org.ethack.orwall.WizardActivity"
-            android:label="@string/title_activity_wizard"></activity>
+            android:label="@string/title_activity_wizard" />
     </application>
 
 </manifest>

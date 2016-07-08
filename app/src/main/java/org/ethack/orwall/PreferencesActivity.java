@@ -47,14 +47,13 @@ public class PreferencesActivity extends PreferenceActivity {
         private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                return;
+
             }
         };
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            //PreferenceManager.setDefaultValues(getActivity(), R.xml.fragment_apps_prefs, true);
             addPreferencesFromResource(R.xml.fragment_apps_prefs);
         }
 

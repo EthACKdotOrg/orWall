@@ -39,8 +39,6 @@ public class InitializeIptables {
     public final static String dir_dst1 = "/data/local/userinit.d/";
     public final static String dst_file1 = String.format("%s/91firewall", dir_dst1);
     private final IptRules iptRules;
-    private long trans_proxy;
-    private long polipo_port;
     private long dns_proxy;
     private Context context;
     private boolean supportComment;
@@ -53,8 +51,6 @@ public class InitializeIptables {
     public InitializeIptables(Context context) {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.trans_proxy = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, Long.toString(Constants.ORBOT_TRANSPROXY)));
-        this.polipo_port = Long.valueOf(preferences.getString(Constants.PREF_POLIPO_PORT, Long.toString(Constants.ORBOT_POLIPO_PROXY)));
         this.dns_proxy = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
         this.context = context;
         this.supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
@@ -580,12 +576,10 @@ public class InitializeIptables {
     public void enableTethering(boolean status) {
 
         char action = (status ? 'A' : 'D');
-        char nat_action = (status ? 'I' : 'D');
 
         if (!isTetherEnabled() || !status) {
-            //String subnet = nwHelper.getSubnet();
 
-            ArrayList<String> rules = new ArrayList<String>();
+            ArrayList<String> rules = new ArrayList<>();
 
             rules.add(
                     String.format(
