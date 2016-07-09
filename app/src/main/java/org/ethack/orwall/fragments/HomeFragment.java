@@ -227,7 +227,7 @@ public class HomeFragment extends Fragment {
 
         if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)){
             tetherStatus.setClickable(false);
-            tetherStatus.setTextColor(Color.GRAY);
+            tetherStatus.setTextColor(Color.BLACK);
 
             tetherStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false));
             tetherStatus.setOnClickListener(new View.OnClickListener() {
