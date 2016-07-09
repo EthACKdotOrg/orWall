@@ -89,6 +89,7 @@ In questo caso non possiamo farci niente :(.
 <string name="alert_accept">Accettare</string>
 <string name="toast_new_rule">Le nuove regole sono state aggiunte</string>
 <string name="toast_remove_rule">Le regole sono state rimosse</string>
+<string name="toast_update_rule">Rules are being updated</string>
 <string name="toast_error" formatted="false">Si è verificato un errore, si prega di contattare lo sviluppatore! #%d</string>
 <string name="hint_long_press">Premere a lungo su un app vi mostrerà le impostazioni avanzate</string>
 <string name="hint_close">Chiudere</string>
