@@ -20,12 +20,11 @@ public class AppRule {
 
     // Variables dedicated for ListView
     // We need them for persistence across scroll
-    private boolean isChecked;
     private String label;
     private String appName;
 
-    public AppRule(String pkgName, Long appUID, String onionType, Boolean localHost, Boolean localNetwork) {
-        this.stored = true;
+    public AppRule(Boolean stored, String pkgName, Long appUID, String onionType, Boolean localHost, Boolean localNetwork) {
+        this.stored = stored;
         this.pkgName = pkgName;
         this.appUID = appUID;
         this.onionType = onionType;
@@ -51,6 +50,10 @@ public class AppRule {
 
     public Boolean isStored(){
         return this.stored;
+    }
+
+    public void setStored(Boolean stored) {
+        this.stored = stored;
     }
 
     public Boolean isEmpty(){
@@ -127,18 +130,6 @@ public class AppRule {
         this.appUID = appUID;
     }
 
-    /**
-     * Setters and getters dedicated for View — mainly used in AppListAdapter
-     * They don't have any incidence on DB content.
-     */
-    public boolean isChecked() {
-        return this.isChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.isChecked = checked;
-    }
-
     public String getLabel() {
         return this.label;
     }
@@ -184,5 +175,6 @@ public class AppRule {
     public void uninstall(Context context){
         uninstall(context, null);
     }
+
 
 }

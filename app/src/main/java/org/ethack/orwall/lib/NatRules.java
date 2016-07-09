@@ -84,6 +84,7 @@ public class NatRules {
 
         do {
             appRule = new AppRule(
+                    true,
                     cursor.getString(0),
                     cursor.getLong(1),
                     cursor.getString(2),
@@ -176,6 +177,7 @@ public class NatRules {
         AppRule appRule;
         if (cursor.moveToFirst()) {
             appRule = new AppRule(
+                    true,
                     cursor.getString(0),
                     cursor.getLong(1),
                     cursor.getString(2),
