@@ -68,7 +68,7 @@ public class AppListAdapter extends ArrayAdapter {
     private RadioButton radioTor;
     private CheckBox checkLocalHost;
     private CheckBox checkLocalNetwork;
-    private RadioButton radioI2p;
+    //private RadioButton radioI2p;
     private RadioButton radioBypass;
     private Map<String, PackageInfoData> specialApps;
 
@@ -297,7 +297,7 @@ public class AppListAdapter extends ArrayAdapter {
             }
             this.radioTor.setEnabled(this.checkboxInternet.isChecked());
         }
-
+/*
         // is i2p present? No helper for that now
         PackageInfo i2p = null;
         try {
@@ -305,7 +305,6 @@ public class AppListAdapter extends ArrayAdapter {
         } catch (PackageManager.NameNotFoundException e) {
 
         }
-
         this.radioI2p = new RadioButton(this.context);
         if (i2p != null) {
             radioI2p.setText("i2p");
@@ -317,7 +316,7 @@ public class AppListAdapter extends ArrayAdapter {
             }
             ((ViewGroup) l_view.findViewById(R.id.radio_connection_providers)).addView(radioI2p);
         }
-
+*/
         this.checkLocalHost = (CheckBox) l_view.findViewById(R.id.id_check_localhost);
         this.checkLocalHost.setChecked(appRule.getLocalHost());
 
@@ -370,11 +369,13 @@ public class AppListAdapter extends ArrayAdapter {
         } else
         if (radioBypass.isChecked()) {
             updated.setOnionType(Constants.DB_ONION_TYPE_BYPASS);
-        } else
+        }
+/*
+        else
         if (radioI2p.isChecked()) {
             updated.setOnionType(Constants.DB_ONION_TYPE_I2P);
         }
-
+*/
         updated.setLocalHost(this.checkLocalHost.isChecked());
         updated.setLocalNetwork(this.checkLocalNetwork.isChecked());
 

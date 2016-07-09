@@ -163,8 +163,8 @@ public class AppFragment extends Fragment {
      */
     private boolean isReservedApp(PackageInfo pkg) {
         return (
-                pkg.packageName.equals(Constants.ORBOT_APP_NAME) ||
-                        pkg.packageName.equals(Constants.I2P_APP_NAME)
+                pkg.packageName.equals(Constants.ORBOT_APP_NAME)
+                        //|| pkg.packageName.equals(Constants.I2P_APP_NAME)
         );
     }
 

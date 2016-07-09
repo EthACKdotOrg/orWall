@@ -56,9 +56,9 @@ public class Constants {
 
     public final static String DB_ONION_TYPE_NONE = "None";
     public final static String DB_ONION_TYPE_TOR = "Tor";
-    public final static String DB_ONION_TYPE_I2P = "i2p";
+    //public final static String DB_ONION_TYPE_I2P = "i2p";
     public final static String DB_ONION_TYPE_BYPASS = "Bypass";
 
-    public final static String I2P_APP_NAME = "net.i2p.android.router";
+    //public final static String I2P_APP_NAME = "net.i2p.android.router";
     public final static String ORBOT_APP_NAME = "org.torproject.android";
 }
