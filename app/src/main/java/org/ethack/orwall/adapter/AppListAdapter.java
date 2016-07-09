@@ -380,12 +380,14 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setLocalNetwork(this.checkLocalNetwork.isChecked());
 
         boolean done = false;
+        boolean error = false;
 
         // CREATE
         if (!appRule.isStored() && !updated.isEmpty()){
             done = natRules.addAppToRules(updated);
             if (done){
                 updated.install(this.context);
+                Toast.makeText(context, context.getString(R.string.toast_new_rule), Toast.LENGTH_SHORT).show();
             }
         } else
         // UPDATE
@@ -394,6 +396,7 @@ public class AppListAdapter extends ArrayAdapter {
             if (done){
                 appRule.uninstall(this.context);
                 updated.install(this.context);
+                Toast.makeText(context, context.getString(R.string.toast_update_rule), Toast.LENGTH_SHORT).show();
             }
         } else
         //DELETE
@@ -401,7 +404,11 @@ public class AppListAdapter extends ArrayAdapter {
             done = natRules.removeAppFromRules(updated.getAppUID());
             if (done) {
                 appRule.uninstall(this.context);
+                Toast.makeText(context, context.getString(R.string.toast_remove_rule), Toast.LENGTH_SHORT).show();
             }
+        } else {
+            // nothing to do
+            return;
         }
 
         if (done){
@@ -419,6 +426,13 @@ public class AppListAdapter extends ArrayAdapter {
             CheckBox checkBox = (CheckBox) view;
             checkBox.setText(appRule.getLabel());
             checkBox.setChecked(appRule.isStored());
+        } else {
+            // error updating database
+            appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);
+            Toast.makeText(context,
+                    String.format(context.getString(R.string.toast_error), 3),
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 

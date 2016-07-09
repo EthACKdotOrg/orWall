@@ -88,6 +88,7 @@
 
     <string name="toast_new_rule">New rules are being added</string>
     <string name="toast_remove_rule">Rules are being removed</string>
+    <string name="toast_update_rule">Rules are being updated</string>
     <string name="toast_error" formatted="false">An error occurred, please contact the dev! #%d</string>
 
     <string name="hint_long_press">Long press on an app will show you advanced settings</string>

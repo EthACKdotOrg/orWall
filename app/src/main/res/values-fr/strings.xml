@@ -95,6 +95,7 @@
 
     <string name="toast_new_rule">Les nouvelles règles sont ajoutées</string>
     <string name="toast_remove_rule">Les règles sont enlevées</string>
+    <string name="toast_update_rule">Les règles sont mises à jour</string>
     <string name="toast_error" formatted="false">Une erreur est survenue, merci de contacter le développeur ! #%d</string>
 
     <string name="hint_long_press">Un appui long sur une application vous montrera les paramètres avancés</string>
