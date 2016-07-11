@@ -88,6 +88,7 @@
 
     <string name="toast_new_rule">New rules are being added</string>
     <string name="toast_remove_rule">Rules are being removed</string>
+    <string name="toast_update_rule">Rules are being updated</string>
     <string name="toast_error" formatted="false">An error occurred, please contact the dev! #%d</string>
 
     <string name="hint_long_press">Long press on an app will show you advanced settings</string>
@@ -97,7 +98,7 @@
     <string name="advanced_connection_type">Connection type</string>
     <string name="advanced_connection_type_force">Force connection (using REDIRECT)</string>
     <string name="advanced_connection_type_native">Use application native capacity (Fenced path)</string>
-    <string name="advanced_connection_bypass">Allow this application to bypass Proxy</string>
+    <string name="advanced_connection_bypass">Bypass Proxy</string>
     <string name="alert_save">Save</string>
     <string name="alert_cancel">Cancel</string>
 

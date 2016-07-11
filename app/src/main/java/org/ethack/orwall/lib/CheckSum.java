@@ -18,17 +18,6 @@ public class CheckSum {
     private String file;
 
     /**
-     * Class builder
-     *
-     * @param file   String, path to the file
-     * @param method String, method for checksum
-     */
-    public CheckSum(String file, String method) {
-        this.file = file;
-        this.method = method;
-    }
-
-    /**
      * Class builder — default method is MD5
      *
      * @param file String, path to the file
@@ -60,7 +49,7 @@ public class CheckSum {
         }
 
         byte[] dataBytes = new byte[1024];
-        int nread = 0;
+        int nread;
 
         try {
             while ((nread = fis.read(dataBytes)) != -1) {

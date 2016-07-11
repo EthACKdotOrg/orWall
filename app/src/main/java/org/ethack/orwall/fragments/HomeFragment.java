@@ -51,39 +51,36 @@ public class HomeFragment extends Fragment {
     private Long browser_uid;
     private Long sip_uid;
     private InitializeIptables initializeIptables;
+    private View home;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
+        this.home = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
 
         this.sharedPreferences = this.getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         this.initializeIptables = new InitializeIptables(getActivity());
         boolean initSupported = initializeIptables.initSupported();
 
-        Switch orwallStatus = (Switch) view.findViewById(R.id.orwall_status);
-        Switch browserStatus = (Switch) view.findViewById(R.id.browser_status);
-        Switch sipStatus = (Switch) view.findViewById(R.id.sip_status);
-        Switch lanStatus = (Switch) view.findViewById(R.id.lan_status);
-        Switch tetherStatus = (Switch) view.findViewById(R.id.tethering_status);
+        Switch orwallStatus = (Switch) home.findViewById(R.id.orwall_status);
 
         // Status switches — most of them are read-only, as they just displays devices capabilities.
-        Switch status_initscript = (Switch) view.findViewById(R.id.status_initscript);
-        Switch status_root = (Switch) view.findViewById(R.id.status_root);
-        Switch status_iptables = (Switch) view.findViewById(R.id.status_iptables);
-        Switch status_ipt_comments = (Switch) view.findViewById(R.id.status_ipt_comments);
-        Switch status_orbot = (Switch) view.findViewById(R.id.status_orbot);
+        Switch status_initscript = (Switch) home.findViewById(R.id.status_initscript);
+        Switch status_root = (Switch) home.findViewById(R.id.status_root);
+        Switch status_iptables = (Switch) home.findViewById(R.id.status_iptables);
+        Switch status_ipt_comments = (Switch) home.findViewById(R.id.status_ipt_comments);
+        Switch status_orbot = (Switch) home.findViewById(R.id.status_orbot);
 
         // Buttons
-        Button settings = (Button) view.findViewById(R.id.id_settings);
-        Button about = (Button) view.findViewById(R.id.id_about);
-        Button wizard = (Button) view.findViewById(R.id.id_wizard);
+        Button settings = (Button) home.findViewById(R.id.id_settings);
+        Button about = (Button) home.findViewById(R.id.id_about);
+        Button wizard = (Button) home.findViewById(R.id.id_wizard);
 
         // Display a big fat warning if IPTables wasn't initialized properly
         // This warning should be shown only if we aren't expected this situation
         // If we know there is no init-script support, then don't show it.
         if (initSupported && !initializeIptables.isInitialized()) {
-            view.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
+            home.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
         }
 
 
@@ -93,63 +90,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 toggleOrwall(view);
-            }
-        });
-
-        // We want to ensure we can access this setting if and only if there's a selected browser.
-        this.browser_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SPEC_BROWSER, "0"));
-        if (this.browser_uid != 0) {
-            browserStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false));
-            browserStatus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    toggleBrowser(view);
-                }
-            });
-        } else {
-            // No selected browser, meaning we want to deactivate this option.
-            browserStatus.setClickable(false);
-            browserStatus.setTextColor(Color.GRAY);
-        }
-
-        // We want to ensure we can access this setting if and only if there's a selected SIP app
-        this.sip_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SIP_APP, "0"));
-        if (this.sip_uid != 0) {
-            sipStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_SIP_ENABLED, false));
-            sipStatus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    boolean checked = ((Switch) view).isChecked();
-                    initializeIptables.manageSip(checked, sip_uid);
-                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_SIP_ENABLED, checked).apply();
-                }
-            });
-        } else {
-            // No selected SIP app, meaning we want to deactivate this option.
-            sipStatus.setClickable(false);
-            sipStatus.setTextColor(Color.GRAY);
-        }
-
-        lanStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_LAN_ENABLED, false));
-        lanStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean checked = ((Switch) view).isChecked();
-                initializeIptables.LANPolicy(checked);
-                sharedPreferences.edit().putBoolean(Constants.PREF_KEY_LAN_ENABLED, checked).apply();
-            }
-        });
-
-        tetherStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false));
-        tetherStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean checked = ((Switch) view).isChecked();
-                Intent bgpProcess = new Intent(getActivity(), BackgroundProcess.class);
-                bgpProcess.putExtra(Constants.PARAM_TETHER_STATUS, checked);
-                bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_TETHER);
-                getActivity().startService(bgpProcess);
-                sharedPreferences.edit().putBoolean(Constants.PREF_KEY_TETHER_ENABLED, checked).apply();
             }
         });
 
@@ -163,7 +103,7 @@ public class HomeFragment extends Fragment {
         status_initscript.setEnabled(initSupported);
         // If init script cannot be enabled, display why
         if (!initSupported) {
-            TextView explain = (TextView) view.findViewById(R.id.status_initscript_description);
+            TextView explain = (TextView) home.findViewById(R.id.status_initscript_description);
             explain.setText(
                     String.format(
                             getString(R.string.explain_no_initscript),
@@ -187,20 +127,20 @@ public class HomeFragment extends Fragment {
         // Do we have root access ?
         if (RootCommands.rootAccessGiven()) {
             status_root.setChecked(true);
-            view.findViewById(R.id.warn_root).setVisibility(View.GONE);
+            home.findViewById(R.id.warn_root).setVisibility(View.GONE);
         } else {
             status_root.setChecked(false);
-            view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
+            home.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
         if (initializeIptables.iptablesExists()) {
             status_iptables.setChecked(true);
-            view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
-            view.findViewById(R.id.status_iptables_description).setVisibility(View.GONE);
+            home.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
+            home.findViewById(R.id.status_iptables_description).setVisibility(View.GONE);
         } else {
             status_iptables.setChecked(false);
-            view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
+            home.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
+            home.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
         }
 
         // Does current kernel supports comments in iptables?
@@ -237,7 +177,74 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        return view;
+        return home;
+    }
+
+    private void updateOptions() {
+        Switch browserStatus = (Switch) home.findViewById(R.id.browser_status);
+        Switch sipStatus = (Switch) home.findViewById(R.id.sip_status);
+        Switch tetherStatus = (Switch) home.findViewById(R.id.tethering_status);
+
+        // We want to ensure we can access this setting if and only if there's a selected browser.
+        this.browser_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SPEC_BROWSER, "0"));
+        if (this.browser_uid != 0  && sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+            browserStatus.setClickable(true);
+            browserStatus.setTextColor(Color.BLACK);
+
+            browserStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false));
+            browserStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toggleBrowser(view);
+                }
+            });
+        } else {
+            // No selected browser, meaning we want to deactivate this option.
+            browserStatus.setClickable(false);
+            browserStatus.setTextColor(Color.GRAY);
+        }
+
+        // We want to ensure we can access this setting if and only if there's a selected SIP app
+        this.sip_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SIP_APP, "0"));
+        if (this.sip_uid != 0  && sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+            sipStatus.setClickable(false);
+            sipStatus.setTextColor(Color.BLACK);
+
+            sipStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_SIP_ENABLED, false));
+            sipStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((Switch) view).isChecked();
+                    initializeIptables.manageSip(checked, sip_uid);
+                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_SIP_ENABLED, checked).apply();
+                }
+            });
+        } else {
+            // No selected SIP app, meaning we want to deactivate this option.
+            sipStatus.setClickable(false);
+            sipStatus.setTextColor(Color.GRAY);
+        }
+
+        if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)){
+            tetherStatus.setClickable(false);
+            tetherStatus.setTextColor(Color.BLACK);
+
+            tetherStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false));
+            tetherStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean checked = ((Switch) view).isChecked();
+                    Intent bgpProcess = new Intent(getActivity(), BackgroundProcess.class);
+                    bgpProcess.putExtra(Constants.PARAM_TETHER_STATUS, checked);
+                    bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_TETHER);
+                    getActivity().startService(bgpProcess);
+                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_TETHER_ENABLED, checked).apply();
+                }
+            });
+        } else {
+            tetherStatus.setClickable(false);
+            tetherStatus.setTextColor(Color.GRAY);
+        }
     }
 
     /**
@@ -303,6 +310,7 @@ public class HomeFragment extends Fragment {
             bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ENABLE_ORWALL);
             getActivity().startService(bgpProcess);
             sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
+            updateOptions();
             Toast.makeText(this.getActivity(), getString(R.string.enabling_orwall), Toast.LENGTH_LONG).show();
             notificationManager.cancel(1);
 
@@ -317,6 +325,7 @@ public class HomeFragment extends Fragment {
                     bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_DISABLE_ORWALL);
                     getActivity().startService(bgpProcess);
                     sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, false).apply();
+                    updateOptions();
                     notificationManager.notify(1, notification.build());
                 }
             });
@@ -349,5 +358,11 @@ public class HomeFragment extends Fragment {
                 .setTitle(getString(R.string.button_about))
                 .setView(v_about)
                 .show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateOptions();
     }
 }

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.ethack.orwall"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 24
         versionCode 37
         versionName "1.0.7"

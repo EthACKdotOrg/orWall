@@ -1,15 +1,13 @@
 package org.ethack.orwall.lib;
 
 import android.content.Context;
+import android.net.DhcpInfo;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 
 /**
@@ -50,48 +48,76 @@ public class NetworkHelper {
         return (tethered.length != 0);
     }
 
-    /**
-     * Get device IP, using WifiManager
-     * Using this object let us access the IP without requiring INTERNET right.
-     *
-     * @param context Context in order to get WifiManager
-     * @return the IP as a String
-     */
-    public String getIp(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+    private int netmaskToCIDR(int netmask){
+        switch (netmask){
+            case 0x80000000: return 1;
+            case 0xC0000000: return 2;
+            case 0xE0000000: return 3;
+            case 0xF0000000: return 4;
+            case 0xF8000000: return 5;
+            case 0xFC000000: return 6;
+            case 0xFE000000: return 7;
+            case 0xFF000000: return 8;
+            case 0xFF800000: return 9;
+            case 0xFFC00000: return 10;
+            case 0xFFE00000: return 11;
+            case 0xFFF00000: return 12;
+            case 0xFFF80000: return 13;
+            case 0xFFFC0000: return 14;
+            case 0xFFFE0000: return 15;
+            case 0xFFFF0000: return 16;
+            case 0xFFFF8000: return 17;
+            case 0xFFFFC000: return 18;
+            case 0xFFFFE000: return 19;
+            case 0xFFFFF000: return 20;
+            case 0xFFFFF800: return 21;
+            case 0xFFFFFC00: return 22;
+            case 0xFFFFFE00: return 23;
+            case 0xFFFFFF00: return 24;
+            case 0xFFFFFF80: return 25;
+            case 0xFFFFFFC0: return 26;
+            case 0xFFFFFFE0: return 27;
+            case 0xFFFFFFF0: return 28;
+            case 0xFFFFFFF8: return 29;
+            case 0xFFFFFFFC: return 30;
+            case 0xFFFFFFFE: return 31;
+            case 0xFFFFFFFF: return 32;
+            default:
+                return 0;
+        }
+    }
+
+    private String getNetwork(DhcpInfo dhcp){
+        int ip = dhcp.ipAddress;
+        int mask = dhcp.netmask;
+        if (ip == 0 || mask == 0) return null;
 
         if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-            ipAddress = Integer.reverseBytes(ipAddress);
+            ip = Integer.reverseBytes(ip);
+            mask = Integer.reverseBytes(mask);
         }
 
-        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+        ip &= mask;
+        mask = netmaskToCIDR(mask);
+        if (mask == 0) return null;
 
-        String ipAddressString;
-        try {
-            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-        } catch (UnknownHostException ex) {
-            Log.e(TAG, "Unable to get host address.");
-            ipAddressString = null;
-        }
-        Log.d(TAG, "IPaddress: " + ipAddressString);
-        return ipAddressString;
+        int a = (ip >> 24) & 0xFF;
+        int b = (ip >> 16) & 0xFF;
+        int c = (ip >>  8) & 0xFF;
+        int d = ip & 0xFF;
+
+        return String.format("%d.%d.%d.%d/%d", a, b, c, d, mask);
     }
 
     /**
      * Provide a simple way to get subnet
-     * Though it might be a bit stronger, as it fixes /24.
      *
-     * @param context Context in order to call getIp()
+     * @param context  Context in order to get WifiManager
      * @return subnet as a String
      */
+
     public String getSubnet(Context context) {
-        String ipAddress = getIp(context);
-        if (ipAddress != null) {
-            String[] st = ipAddress.split("\\.");
-            return st[0] + "." + st[1] + "." + st[2] + ".1/24";
-        } else {
-            return null;
-        }
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        return getNetwork(wifiManager.getDhcpInfo());
     }
 }

@@ -1,8 +1,6 @@
 package org.ethack.orwall.lib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,8 +14,6 @@ public class PackageInfoData {
     // Application name related to UID
     private String name;
     private String pkgName;
-
-    public PackageInfoData() {}
 
     public PackageInfoData(long uid, String name, String pkgName) {
         this.uid = uid;

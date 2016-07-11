@@ -88,6 +88,7 @@
 
     <string name="toast_new_rule">Nuevas normas han sido añadidas</string>
     <string name="toast_remove_rule">Las normas han sido eliminadas</string>
+    <string name="toast_update_rule">Rules are being updated</string>
     <string name="toast_error" formatted="false">¡Ha ocurrido un error, por favor, contacta con el desarrollador! #%d</string>
 
     <string name="hint_long_press">Mantener pulsada la aplicación para que muestre las opciones avanzadas</string>
@@ -97,7 +98,7 @@
     <string name="advanced_connection_type">Tipo de conexión</string>
     <string name="advanced_connection_type_force">Forzar la conexión (usando REDIRECCIONAMIENTO)</string>
     <string name="advanced_connection_type_native">Usar la capacidad nativa de la aplicación (Camino cerrado)</string>
-    <string name="advanced_connection_bypass">Permitir a la aplicación evitar el Proxy</string>
+    <string name="advanced_connection_bypass">Evitar el Proxy</string>
     <string name="alert_save">Guardar</string>
     <string name="alert_cancel">Cancelar</string>
 

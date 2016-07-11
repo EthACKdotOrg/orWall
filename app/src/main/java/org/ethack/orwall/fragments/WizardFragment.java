@@ -167,11 +167,4 @@ public class WizardFragment extends Fragment {
         return rootView;
     }
 
-    /**
-     * Returns the page number represented by this fragment object.
-     */
-    public int getPageNumber() {
-        return mPageNumber;
-    }
-
 }

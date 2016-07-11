@@ -3,13 +3,13 @@
     <string name="app_name" translatable="false">orWall</string>
 
     <string name="about_links" translatable="false">
-        https://orwall.org \nhttps://twitter.com/orWallApp \nhttps://github.com/hgourvest/orWall
+        https://orwall.org \nhttps://twitter.com/orWallApp \nhttps://github.com/EthACKdotOrg/orWall
     </string>
         <string name="about_author_list" translatable="false">
         EthACK (https://www.ethack.org) \nSwissTengu (https://www.swisstengu.ch) \nHenri Gourvest(hgourvest@progdigy.com)
     </string>
     <string name="about_external_libs_content" translatable="false">
-        super-command (Apache2) \nNetCipher (3-clauses BSD license) \ni2p (Apache2)
+        super-command (Apache2) \nNetCipher (3-clauses BSD license)<!-- \ni2p (Apache2)-->
     </string>
     <string name="license" translatable="false">GPLv3</string>
 </resources>

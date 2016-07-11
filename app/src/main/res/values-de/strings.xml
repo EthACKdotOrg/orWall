@@ -95,6 +95,7 @@
 
   <string name="toast_new_rule">Die neuen Regeln werden hinzugefügt</string>
   <string name="toast_remove_rule">Die Regeln werden entfernt</string>
+  <string name="toast_update_rule">Rules are being updated</string>
   <string name="toast_error" formatted="false">Ein Fehler ist aufgetreten, danke an den Entwickler wenden! #%d</string>
 
   <string name="hint_long_press">Langes Drücken auf eine App wird Dich auf Erweiterte Einstellungen anzeigen</string>
@@ -104,7 +105,7 @@
   <string name="advanced_connection_type">Art der Verbindung</string>
   <string name="advanced_connection_type_force">Erzwingen Verbindung (mit REDIRECT)</string>
   <string name="advanced_connection_type_native">Verwendung Anwendung native Kapazität (eingezäunt Pfad)</string>
-  <string name="advanced_connection_bypass">Lassen Sie diese Anwendung, um den Proxy zu umgehen</string>
+  <string name="advanced_connection_bypass">Umgehen den Proxy</string>
   <string name="alert_save">Registrieren</string>
   <string name="alert_cancel">Stornieren</string>
 
