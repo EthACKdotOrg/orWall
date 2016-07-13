@@ -224,13 +224,13 @@ public class AppListAdapter extends ArrayAdapter {
             Boolean oldLocalNetwork = appRule.getLocalNetwork();
             boolean success = this.natRules.removeAppFromRules(appRule.getAppUID());
             if (success) {
+                if (isOrWallEnabled())
+                    appRule.uninstall(context);
                 appRule.setStored(false);
                 appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);
                 appRule.setLocalHost(false);
                 appRule.setLocalNetwork(false);
                 appRule.setLabel(appRule.getAppName());
-                if (isOrWallEnabled())
-                    appRule.uninstall(context);
                 Toast.makeText(context, context.getString(R.string.toast_remove_rule), Toast.LENGTH_SHORT).show();
             } else {
                 appRule.setOnionType(oldType);
