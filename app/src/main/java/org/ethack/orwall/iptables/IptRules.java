@@ -102,7 +102,6 @@ public class IptRules {
         String[] rules = {
                 "%s -%c OUTPUT -d %s -j orwall_lan",
                 "%s -%c INPUT -d %s -j orwall_lan",
-                "%s -%c OUTPUT ! -d %s -j orwall_internet",
                 "%s -t nat -%c OUTPUT -d %s -j RETURN",
         };
 
@@ -130,7 +129,7 @@ public class IptRules {
         char action = (allow ? 'A' : 'D');
         String[] rules = {
                 String.format(
-                        "%s -%c orwall_internet -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        "%s -%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
