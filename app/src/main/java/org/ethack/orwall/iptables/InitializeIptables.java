@@ -158,9 +158,7 @@ public class InitializeIptables {
                 "-t nat -F INPUT",
                 // flush LAN
                 "-F orwall_lan",
-                "-X orwall_lan",
-                "-F orwall_internet",
-                "-X orwall_internet"
+                "-X orwall_lan"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -365,9 +363,7 @@ public class InitializeIptables {
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // LAN
-                "-N orwall_lan",
-                "-N orwall_internet",
-                "-A orwall_internet -d 127.0.0.1/32 -j RETURN"
+                "-N orwall_lan"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
