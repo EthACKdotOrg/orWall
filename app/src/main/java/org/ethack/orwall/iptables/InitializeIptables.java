@@ -137,7 +137,9 @@ public class InitializeIptables {
                 // set OUTPUT policy back to ACCEPT
                 "-P OUTPUT ACCEPT",
                 // flush all OUTPUT rules
-                "-F OUTPUT",
+                "-D OUTPUT -j ow_OUTPUT",
+                "-F ow_OUTPUT",
+                "-X ow_OUTPUT",
                 // remove accounting_OUT chain
                 "-F accounting_OUT",
                 "-X accounting_OUT",
@@ -146,19 +148,21 @@ public class InitializeIptables {
                 // set INPUT policy back to ACCEPT
                 "-P INPUT ACCEPT",
                 // flush all INPUT rules
-                "-F INPUT",
+                "-D INPUT -j ow_INPUT",
+                "-F ow_INPUT",
+                "-X ow_INPUT",
                 // remove accounting_IN chain
                 "-F accounting_IN",
                 "-X accounting_IN",
                 // add back default system accounting
                 "-A INPUT -j bw_INPUT",
                 // flush nat OUTPUT
-                "-t nat -F OUTPUT",
-                // flush nat OUTPUT
-                "-t nat -F INPUT",
+                "-t nat -D OUTPUT -j ow_OUTPUT",
+                "-t nat -F ow_OUTPUT",
+                "-t nat -X ow_OUTPUT",
                 // flush LAN
-                "-F orwall_lan",
-                "-X orwall_lan"
+                "-F ow_LAN",
+                "-X ow_LAN"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -268,9 +272,9 @@ public class InitializeIptables {
 
         // TODO: lock in order to authorize only LAN
         String[] rules = {
-                "-%c INPUT -p tcp --dport 5555 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
-                "-%c OUTPUT -p tcp --sport 5555 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -p tcp --sport 5555 -j RETURN",
+                "-%c ow_INPUT -p tcp --dport 5555 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c ow_OUTPUT -p tcp --sport 5555 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -p tcp --sport 5555 -j RETURN",
         };
 
         for (String rule : rules) {
@@ -292,9 +296,9 @@ public class InitializeIptables {
         // TODO: better way to implement this kind of opening (copy-paste isn't a great way)
         // Have to think a bit more about that.
         String[] rules = {
-                "-%c INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
-                "-%c OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -p tcp --sport 22 -j RETURN",
+                "-%c ow_INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c ow_OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -p tcp --sport 22 -j RETURN",
         };
 
         for (String rule : rules) {
@@ -335,35 +339,38 @@ public class InitializeIptables {
      */
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
-                // flush all OUTPUT rules
-                "-F OUTPUT",
+                "-P OUTPUT DROP",
+                "-D OUTPUT -j bw_OUTPUT",
+                "-N ow_OUTPUT",
+                "-A OUTPUT -j ow_OUTPUT",
                 "-N accounting_OUT",
                 "-A accounting_OUT -j bw_OUTPUT",
                 "-A accounting_OUT -j ACCEPT",
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Forward Directory traffic to accounting\"" : "")
                 ),
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
                 ),
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
                         this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
+                "-t nat -N ow_OUTPUT",
+                "-t nat -A OUTPUT -j ow_OUTPUT",
                 String.format(
-                        "-t nat -A OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
+                        "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
                         this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
-                "-P OUTPUT DROP",
                 // NAT
                 String.format(
-                        "-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
+                        "-t nat -I ow_OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // LAN
-                "-N orwall_lan"
+                "-N ow_LAN"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -379,19 +386,22 @@ public class InitializeIptables {
      */
     public void initInput(final long orbot_uid) {
         String[] rules = {
-                "-F INPUT",
+                "-P INPUT DROP",
+                "-D INPUT -j bw_INPUT",
+                "-N ow_INPUT",
+                "-A INPUT -j ow_INPUT",
                 "-N accounting_IN",
                 "-A accounting_IN -j bw_INPUT",
                 "-A accounting_IN -j ACCEPT",
                 String.format(
-                        "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot inputs\"" : "")
                 ),
                 String.format(
-                        "-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
                         (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
-                ),
-                "-P INPUT DROP",
+                )
+
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -521,9 +531,9 @@ public class InitializeIptables {
      */
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
-                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
-                "-%c OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
-                "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
+                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
+                "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
         char action = (status ? 'A' : 'D');
 
@@ -539,11 +549,11 @@ public class InitializeIptables {
      */
     public void manageCaptiveBrowser(boolean status, Long uid) {
         String[] rules = {
-                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
-                "-%c INPUT -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT",
-                "-%c OUTPUT -m owner --uid-owner %d -j ACCEPT",
-                "-%c OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN",
+                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
+                "-%c ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -j ACCEPT",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN",
         };
         char action = (status ? 'I' : 'D');
 
@@ -579,19 +589,19 @@ public class InitializeIptables {
 
             rules.add(
                     String.format(
-                            "-%c INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
+                            "-%c ow_INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
                             action, (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
                     )
             );
             rules.add(
                     String.format(
-                            "-%c OUTPUT -o wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j accounting_OUT%s",
+                            "-%c ow_OUTPUT -o wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j accounting_OUT%s",
                             action, (this.supportComment ? " -m comment --comment \"Allow outgoing to wlan0\"" : "")
                     )
             );
 
             rules.add(
-                    String.format("-%c OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
+                    String.format("-%c ow_OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
                             action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"" : "")
                     )
             );

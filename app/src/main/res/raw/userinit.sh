@@ -24,19 +24,19 @@ log "Starting orwall init as $(id)"
 # FIXME: Running iptables first time seems to initalize it.
 sleep 1
 
-run "$IPTABLES -w --flush"
+#run "$IPTABLES -w --flush"
 
 run "$IPTABLES -w --list"
 
 run "$IPTABLES -w -P OUTPUT DROP"
-run "$IPTABLES -w -I OUTPUT -j REJECT"
-run "$IPTABLES -w -I OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
+#run "$IPTABLES -w -I OUTPUT -j REJECT"
+#run "$IPTABLES -w -I OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
 
 run "$IPTABLES -w -P INPUT DROP"
-run "$IPTABLES -w -I INPUT -j REJECT"
-run "$IPTABLES -w -I INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
+#run "$IPTABLES -w -I INPUT -j REJECT"
+#run "$IPTABLES -w -I INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
 
-run "$IPTABLES -w -P FORWARD ACCEPT"
+#run "$IPTABLES -w -P FORWARD ACCEPT"
 
 run "$IPTABLES -w -N witness"
 run "$IPTABLES -w -A witness -j RETURN"
@@ -50,6 +50,6 @@ run "$IP6TABLES -w -A OUTPUT -j LOG --log-prefix 'Denied bootup IPv6 output: '"
 run "$IP6TABLES -w -A OUTPUT -j DROP"
 
 # output iptables status: filter
-run "$IPTABLES -nL -t filter"
+#run "$IPTABLES -nL -t filter"
 # output iptables status: nat
-run "$IPTABLES -nL -t nat"
+#run "$IPTABLES -nL -t nat"
