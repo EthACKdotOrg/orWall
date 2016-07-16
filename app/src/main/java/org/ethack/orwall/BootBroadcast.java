@@ -17,10 +17,6 @@ public class BootBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        if (!context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).
-                getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true))
-            return;
-
         InitializeIptables initializeIptables = new InitializeIptables(context);
 
         // We want to ensure we support comments — reboot may be due to
@@ -36,6 +32,10 @@ public class BootBroadcast extends BroadcastReceiver {
             initializeIptables.installInitScript();
         }
         // Apply boot-up rules in order to enable traffic for orbot and other things.
-        initializeIptables.boot();
+
+        if (context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).
+                getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)){
+            initializeIptables.boot();
+        }
     }
 }
