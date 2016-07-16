@@ -363,6 +363,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        Switch orwallSwitch = (Switch) home.findViewById(R.id.orwall_status);
+        // checking true orwall status
+        if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true) &&
+                !initializeIptables.isOrwallReallyEnabled()){
+            sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, false).apply();
+            orwallSwitch.setChecked(false);
+        }
+
         updateOptions();
     }
 }
