@@ -121,6 +121,7 @@ public class InitializeIptables {
             Log.d("Boot: ", "pushed new app in queue: " + rule.getPkgName());
         }
         Log.d("Boot: ", "Finished NAT stuff");
+
     }
 
     /**
@@ -178,14 +179,12 @@ public class InitializeIptables {
 
     public void deactivateV6() {
         String[] rules = {
-                // set OUTPUT policy back to ACCEPT
-                "-P OUTPUT ACCEPT",
-                // flush all OUTPUT rules
-                "-F OUTPUT",
-                // set INPUT policy back to ACCEPT
                 "-P INPUT ACCEPT",
-                // flush all INPUT rules
-                "-F INPUT"
+                "-P OUTPUT ACCEPT",
+                "-P FORWARD ACCEPT",
+                "-D INPUT -j REJECT",
+                "-D OUTPUT -j REJECT",
+                "-D FORWARD -j REJECT"
         };
         for (String rule : rules) {
             if (!iptRules.genericRuleV6(rule)) {
@@ -232,7 +231,12 @@ public class InitializeIptables {
      * @return true if it finds the witness chain.
      */
     public boolean isInitialized() {
-        String rule = "-C witness -j RETURN";
+        String rule = "-C ow_OUTPUT_LOCK -j REJECT";
+        return iptRules.genericRule(rule);
+    }
+
+    public boolean isOrwallReallyEnabled() {
+        String rule = "-C OUTPUT -j ow_OUTPUT";
         return iptRules.genericRule(rule);
     }
 
@@ -314,23 +318,24 @@ public class InitializeIptables {
      */
 
     public void initIPv6(){
-      if (!ip6tablesExists()) return;
+        if (!ip6tablesExists()) return;
+        if (iptRules.genericRuleV6("-C INPUT -j REJECT")) return;
 
-      String[] rules = {
+        String[] rules = {
               // flush all OUTPUT rules
-              "-F OUTPUT",
-              "-P OUTPUT DROP",
-              "-A OUTPUT -j REJECT --reject-with icmp6-adm-prohibited",
-              "-F INPUT",
               "-P INPUT DROP",
-              "-A INPUT -j REJECT --reject-with icmp6-adm-prohibited"
-      };
-      for (String rule : rules) {
-          if (!iptRules.genericRuleV6(rule)) {
-              Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
-              Log.e(InitializeIptables.class.getName(), rule);
-          }
-      }
+              "-P OUTPUT DROP",
+              "-P FORWARD DROP",
+              "-I INPUT -j REJECT",
+              "-I OUTPUT -j REJECT",
+              "-I FORWARD -j REJECT"
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRuleV6(rule)) {
+                Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
+                Log.e(InitializeIptables.class.getName(), rule);
+            }
+        }
     }
 
     /**
@@ -370,7 +375,8 @@ public class InitializeIptables {
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // LAN
-                "-N ow_LAN"
+                "-N ow_LAN",
+                "-D OUTPUT -g ow_OUTPUT_LOCK"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -400,7 +406,8 @@ public class InitializeIptables {
                 String.format(
                         "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
                         (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
-                )
+                ),
+                "-D INPUT -g ow_INPUT_LOCK"
 
         };
         for (String rule : rules) {
