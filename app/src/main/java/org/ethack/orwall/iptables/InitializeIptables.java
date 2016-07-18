@@ -1,18 +1,16 @@
 package org.ethack.orwall.iptables;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.BackgroundProcess;
-import org.ethack.orwall.R;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
@@ -23,7 +21,16 @@ import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.NetworkInterface;
+import java.net.InterfaceAddress;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -172,9 +179,11 @@ public class InitializeIptables {
             }
         }
 
-        // subnet is no more in iptables
+        // subnet & tethering is no more in iptables
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
+        sharedPreferences.edit().remove(Constants.PREF_KEY_IS_TETHER_ENABLED).apply();
+        sharedPreferences.edit().remove(Constants.PREF_KEY_TETHER_INTFS).apply();
     }
 
     public void deactivateV6() {
@@ -581,56 +590,110 @@ public class InitializeIptables {
         iptRules.genericRule(rule);
     }
 
-    /**
-     * Apply or remove rules in order to allow tethering.
-     * This doesn't work for now…
-     * @param status boolean, true if we want to enable this feature.
-     */
-    public void enableTethering(boolean status) {
-
-        char action = (status ? 'A' : 'D');
-
-        if (!isTetherEnabled() || !status) {
-
-            ArrayList<String> rules = new ArrayList<>();
-
-            rules.add(
-                    String.format(
-                            "-%c ow_INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
-                    )
-            );
-            rules.add(
-                    String.format(
-                            "-%c ow_OUTPUT -o wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j accounting_OUT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow outgoing to wlan0\"" : "")
-                    )
-            );
-
-            rules.add(
-                    String.format("-%c ow_OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"" : "")
-                    )
-            );
-
-            for (String rule : rules) {
-                if (!iptRules.genericRule(rule)) {
-                    Log.e("Tethering", "Unable to apply rule");
-                    Log.e("Tethering", rule);
+    public void getTetheredInterfaces(Context context, Set<String> set){
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        for(Method method: cm.getClass().getDeclaredMethods()){
+            if(method.getName().equals("getTetheredIfaces")){
+                try {
+                    String[] intfs = (String[]) method.invoke(cm);
+                    if (intfs != null)
+                        Collections.addAll(set, intfs);
+                    break;
+                } catch (Exception e) {
+                   return;
                 }
             }
-            this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, status).apply();
-        } else {
-            Log.d("Tethering", "Already enabled");
         }
     }
 
+    public void tetherUpdate(Context context, Set<String> before, Set<String> after){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+
+        if (before != null) {
+            for (String item: before){
+                if (!after.contains(item))
+                    enableDHCP(false, item);
+            }
+        }
+
+        for (String item: after){
+            if (before == null || !before.contains(item))
+                enableDHCP(true, item);
+        }
+
+        prefs.edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, !after.isEmpty()).apply();
+        prefs.edit().putStringSet(Constants.PREF_KEY_TETHER_INTFS, after).apply();
+    }
+
+    public void enableDHCP(boolean status, String intf){
+
+        char action = (status ? 'A' : 'D');
+        ArrayList<String> rules = new ArrayList<>();
+
+        rules.add(
+                String.format(
+                        "-%c ow_INPUT -i %s -p udp -m udp --dport 67 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+        ));
+
+        rules.add(
+                String.format(
+                        "-%c ow_OUTPUT -o %s -p udp -m udp --sport 67 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+
+        ));
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("Tethering", "Unable to apply rule");
+                Log.e("Tethering", rule);
+            }
+        }
+    }
+
+/* could be usefull later
+    public String getMask(String intf){
+        try {
+            NetworkInterface ntwrk = NetworkInterface.getByName(intf);
+            Iterator<InterfaceAddress> addrList = ntwrk.getInterfaceAddresses().iterator();
+            while (addrList.hasNext()) {
+                InterfaceAddress addr = addrList.next();
+                InetAddress ip = addr.getAddress();
+                if (ip instanceof Inet4Address) {
+                    String mask = ip.getHostAddress() + "/" +
+                            addr.getNetworkPrefixLength();
+                    return mask;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+/*
+    /* still not work
+    public void tether_tor(Context context, boolean status, String intf){
+        char action = (status ? 'I' : 'D');
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        long trans_port = Long.valueOf(prefs.getString(Constants.PREF_TRANS_PORT, String.valueOf(Constants.ORBOT_TRANSPROXY)));
+        long dns_port = Long.valueOf(prefs.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
+        ArrayList<String> rules = new ArrayList<>();
+        rules.add(String.format("-t nat -%c PREROUTING -i %s -p udp --dport 53 -j REDIRECT --to-ports %s", action, intf, dns_port));
+        rules.add(String.format(" -t nat -%c PREROUTING -i %s -p tcp -j REDIRECT --to-ports %s", action, intf, trans_port));
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("Tor tethering", "Unable to apply rule");
+                Log.e("Tor tethering", rule);
+            }
+        }
+    }
+*/
     /**
      * Just detect if tethering is enabled or not.
      * @return boolean, true if enabled.
      */
     public boolean isTetherEnabled() {
-        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
+        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+                .getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
     }
 
     /**

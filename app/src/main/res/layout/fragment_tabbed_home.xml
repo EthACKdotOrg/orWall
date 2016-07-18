@@ -58,15 +58,6 @@
                 android:textOn="@string/enabled" />
 
             <Switch
-                android:id="@+id/tethering_status"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/switch_tethering"
-                android:textOff="@string/disabled"
-                android:textOn="@string/enabled" />
-
-            <Switch
                 android:id="@+id/browser_status"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

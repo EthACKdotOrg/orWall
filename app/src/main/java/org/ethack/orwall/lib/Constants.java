@@ -10,8 +10,8 @@ public class Constants {
     public final static String PREF_KEY_SIP_ENABLED = "sip_enabled";
     public final static String PREF_KEY_SPEC_BROWSER = "browser_app";
     public final static String PREF_KEY_BROWSER_ENABLED = "browser_enabled";
-    public final static String PREF_KEY_TETHER_ENABLED = "enable_tethering";
     public final static String PREF_KEY_IS_TETHER_ENABLED = "is_tether_enabled";
+    public final static String PREF_KEY_TETHER_INTFS = "tether_interfaces";
     public final static String PREF_TRANS_PORT = "proxy_transport";
     public final static String PREF_DNS_PORT = "proxy_dns";
     public final static String PREF_KEY_ADB_ENABLED = "enable_adb";
@@ -23,6 +23,8 @@ public class Constants {
     public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
     public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
     public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
+
+
 
     public final static String SPECIAL_APPS_PREFIX = "orwall.special.";
     public final static String IPTABLES = "/system/bin/iptables";
@@ -39,9 +41,6 @@ public class Constants {
     public final static String PARAM_LOCALHOST = "org.ethack.orwall.backgroundProcess.action.rule.localHost";
     public final static String PARAM_LOCALNETWORK = "org.ethack.orwall.backgroundProcess.action.rule.localNetwork";
     public final static String PARAM_ONIONTYPE = "org.ethack.orwall.backgroundProcess.action.rule.onionType";
-
-    public final static String ACTION_TETHER = "org.ethack.orwall.backgroundProcess.action.tethering";
-    public final static String PARAM_TETHER_STATUS = "org.ethack.orwall.backgroundProcess.action.tethering.status";
 
     public final static String ACTION_DISABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.disable_orwall";
     public final static String ACTION_ENABLE_ORWALL = "org.ethack.orwall.backgroundProcess.action.enable_orwall";
