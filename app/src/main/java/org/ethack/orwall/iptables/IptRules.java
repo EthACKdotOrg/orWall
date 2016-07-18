@@ -101,7 +101,7 @@ public class IptRules {
 
         String[] rules = {
                 "%s -%c ow_OUTPUT -d %s -j ow_LAN",
-                "%s -%c ow_INPUT -d %s -j ow_LAN",
+                "%s -%c ow_INPUT -s %s -j ow_LAN",
                 "%s -t nat -%c ow_OUTPUT -d %s -j RETURN",
         };
 
