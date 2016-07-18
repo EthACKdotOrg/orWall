@@ -49,10 +49,6 @@ public class BackgroundProcess extends IntentService {
                 Boolean localNetwork = workIntent.getBooleanExtra(Constants.PARAM_LOCALNETWORK, false);
                 rmRule(appUID, appName, onionType, localHost, localNetwork);
 
-            } else if (action.equals(Constants.ACTION_TETHER)) {
-                boolean activate = workIntent.getBooleanExtra(Constants.PARAM_TETHER_STATUS, false);
-                manageTether(activate);
-
             } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
                 this.initializeIptables.deactivate();
                 this.initializeIptables.deactivateV6();
@@ -104,9 +100,5 @@ public class BackgroundProcess extends IntentService {
         if (localNetwork) {
             iptRules.localNetwork(appUID, appName, false);
         }
-    }
-
-    private void manageTether(boolean activate) {
-        this.initializeIptables.enableTethering(activate);
     }
 }

@@ -1,18 +1,16 @@
 package org.ethack.orwall.iptables;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.BackgroundProcess;
-import org.ethack.orwall.R;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
@@ -23,7 +21,16 @@ import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.NetworkInterface;
+import java.net.InterfaceAddress;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -121,6 +128,7 @@ public class InitializeIptables {
             Log.d("Boot: ", "pushed new app in queue: " + rule.getPkgName());
         }
         Log.d("Boot: ", "Finished NAT stuff");
+
     }
 
     /**
@@ -137,7 +145,9 @@ public class InitializeIptables {
                 // set OUTPUT policy back to ACCEPT
                 "-P OUTPUT ACCEPT",
                 // flush all OUTPUT rules
-                "-F OUTPUT",
+                "-D OUTPUT -j ow_OUTPUT",
+                "-F ow_OUTPUT",
+                "-X ow_OUTPUT",
                 // remove accounting_OUT chain
                 "-F accounting_OUT",
                 "-X accounting_OUT",
@@ -146,19 +156,21 @@ public class InitializeIptables {
                 // set INPUT policy back to ACCEPT
                 "-P INPUT ACCEPT",
                 // flush all INPUT rules
-                "-F INPUT",
+                "-D INPUT -j ow_INPUT",
+                "-F ow_INPUT",
+                "-X ow_INPUT",
                 // remove accounting_IN chain
                 "-F accounting_IN",
                 "-X accounting_IN",
                 // add back default system accounting
                 "-A INPUT -j bw_INPUT",
                 // flush nat OUTPUT
-                "-t nat -F OUTPUT",
-                // flush nat OUTPUT
-                "-t nat -F INPUT",
+                "-t nat -D OUTPUT -j ow_OUTPUT",
+                "-t nat -F ow_OUTPUT",
+                "-t nat -X ow_OUTPUT",
                 // flush LAN
-                "-F orwall_lan",
-                "-X orwall_lan"
+                "-F ow_LAN",
+                "-X ow_LAN"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -167,21 +179,21 @@ public class InitializeIptables {
             }
         }
 
-        // subnet is no more in iptables
+        // subnet & tethering is no more in iptables
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
+        sharedPreferences.edit().remove(Constants.PREF_KEY_IS_TETHER_ENABLED).apply();
+        sharedPreferences.edit().remove(Constants.PREF_KEY_TETHER_INTFS).apply();
     }
 
     public void deactivateV6() {
         String[] rules = {
-                // set OUTPUT policy back to ACCEPT
-                "-P OUTPUT ACCEPT",
-                // flush all OUTPUT rules
-                "-F OUTPUT",
-                // set INPUT policy back to ACCEPT
                 "-P INPUT ACCEPT",
-                // flush all INPUT rules
-                "-F INPUT"
+                "-P OUTPUT ACCEPT",
+                "-P FORWARD ACCEPT",
+                "-D INPUT -j REJECT",
+                "-D OUTPUT -j REJECT",
+                "-D FORWARD -j REJECT"
         };
         for (String rule : rules) {
             if (!iptRules.genericRuleV6(rule)) {
@@ -228,7 +240,12 @@ public class InitializeIptables {
      * @return true if it finds the witness chain.
      */
     public boolean isInitialized() {
-        String rule = "-C witness -j RETURN";
+        String rule = "-C ow_OUTPUT_LOCK -j REJECT";
+        return iptRules.genericRule(rule);
+    }
+
+    public boolean isOrwallReallyEnabled() {
+        String rule = "-C OUTPUT -j ow_OUTPUT";
         return iptRules.genericRule(rule);
     }
 
@@ -268,9 +285,9 @@ public class InitializeIptables {
 
         // TODO: lock in order to authorize only LAN
         String[] rules = {
-                "-%c INPUT -p tcp --dport 5555 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
-                "-%c OUTPUT -p tcp --sport 5555 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -p tcp --sport 5555 -j RETURN",
+                "-%c ow_INPUT -p tcp --dport 5555 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c ow_OUTPUT -p tcp --sport 5555 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -p tcp --sport 5555 -j RETURN",
         };
 
         for (String rule : rules) {
@@ -292,9 +309,9 @@ public class InitializeIptables {
         // TODO: better way to implement this kind of opening (copy-paste isn't a great way)
         // Have to think a bit more about that.
         String[] rules = {
-                "-%c INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
-                "-%c OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -p tcp --sport 22 -j RETURN",
+                "-%c ow_INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
+                "-%c ow_OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -p tcp --sport 22 -j RETURN",
         };
 
         for (String rule : rules) {
@@ -310,23 +327,24 @@ public class InitializeIptables {
      */
 
     public void initIPv6(){
-      if (!ip6tablesExists()) return;
+        if (!ip6tablesExists()) return;
+        if (iptRules.genericRuleV6("-C INPUT -j REJECT")) return;
 
-      String[] rules = {
+        String[] rules = {
               // flush all OUTPUT rules
-              "-F OUTPUT",
-              "-P OUTPUT DROP",
-              "-A OUTPUT -j REJECT --reject-with icmp6-adm-prohibited",
-              "-F INPUT",
               "-P INPUT DROP",
-              "-A INPUT -j REJECT --reject-with icmp6-adm-prohibited"
-      };
-      for (String rule : rules) {
-          if (!iptRules.genericRuleV6(rule)) {
-              Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
-              Log.e(InitializeIptables.class.getName(), rule);
-          }
-      }
+              "-P OUTPUT DROP",
+              "-P FORWARD DROP",
+              "-I INPUT -j REJECT",
+              "-I OUTPUT -j REJECT",
+              "-I FORWARD -j REJECT"
+        };
+        for (String rule : rules) {
+            if (!iptRules.genericRuleV6(rule)) {
+                Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
+                Log.e(InitializeIptables.class.getName(), rule);
+            }
+        }
     }
 
     /**
@@ -335,35 +353,39 @@ public class InitializeIptables {
      */
     public void initOutputs(final long orbot_uid) {
         String[] rules = {
-                // flush all OUTPUT rules
-                "-F OUTPUT",
+                "-P OUTPUT DROP",
+                "-D OUTPUT -j bw_OUTPUT",
+                "-N ow_OUTPUT",
+                "-A OUTPUT -j ow_OUTPUT",
                 "-N accounting_OUT",
                 "-A accounting_OUT -j bw_OUTPUT",
                 "-A accounting_OUT -j ACCEPT",
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Forward Directory traffic to accounting\"" : "")
                 ),
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
                 ),
                 String.format(
-                        "-A OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
+                        "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
                         this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
+                "-t nat -N ow_OUTPUT",
+                "-t nat -A OUTPUT -j ow_OUTPUT",
                 String.format(
-                        "-t nat -A OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
+                        "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
                         this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
-                "-P OUTPUT DROP",
                 // NAT
                 String.format(
-                        "-t nat -I OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
+                        "-t nat -I ow_OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // LAN
-                "-N orwall_lan"
+                "-N ow_LAN",
+                "-D OUTPUT -g ow_OUTPUT_LOCK"
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -379,19 +401,23 @@ public class InitializeIptables {
      */
     public void initInput(final long orbot_uid) {
         String[] rules = {
-                "-F INPUT",
+                "-P INPUT DROP",
+                "-D INPUT -j bw_INPUT",
+                "-N ow_INPUT",
+                "-A INPUT -j ow_INPUT",
                 "-N accounting_IN",
                 "-A accounting_IN -j bw_INPUT",
                 "-A accounting_IN -j ACCEPT",
                 String.format(
-                        "-A INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot inputs\"" : "")
                 ),
                 String.format(
-                        "-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
+                        "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
                         (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
                 ),
-                "-P INPUT DROP",
+                "-D INPUT -g ow_INPUT_LOCK"
+
         };
         for (String rule : rules) {
             if (!iptRules.genericRule(rule)) {
@@ -521,9 +547,9 @@ public class InitializeIptables {
      */
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
-                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
-                "-%c OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
-                "-t nat -%c OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
+                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
+                "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
         char action = (status ? 'A' : 'D');
 
@@ -539,11 +565,11 @@ public class InitializeIptables {
      */
     public void manageCaptiveBrowser(boolean status, Long uid) {
         String[] rules = {
-                "-%c INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
-                "-%c INPUT -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT",
-                "-%c OUTPUT -m owner --uid-owner %d -j ACCEPT",
-                "-%c OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
-                "-t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN",
+                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp --sport 53 -j ACCEPT",
+                "-%c ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -m owner --uid-owner %d -j ACCEPT",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -j ACCEPT",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
+                "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN",
         };
         char action = (status ? 'I' : 'D');
 
@@ -564,56 +590,110 @@ public class InitializeIptables {
         iptRules.genericRule(rule);
     }
 
-    /**
-     * Apply or remove rules in order to allow tethering.
-     * This doesn't work for now…
-     * @param status boolean, true if we want to enable this feature.
-     */
-    public void enableTethering(boolean status) {
-
-        char action = (status ? 'A' : 'D');
-
-        if (!isTetherEnabled() || !status) {
-
-            ArrayList<String> rules = new ArrayList<>();
-
-            rules.add(
-                    String.format(
-                            "-%c INPUT -i wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow incoming from wlan0\"" : "")
-                    )
-            );
-            rules.add(
-                    String.format(
-                            "-%c OUTPUT -o wlan0 -m conntrack --ctstate NEW,ESTABLISHED -j accounting_OUT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow outgoing to wlan0\"" : "")
-                    )
-            );
-
-            rules.add(
-                    String.format("-%c OUTPUT -o rmnet_usb0 -p udp ! -d 127.0.0.1/8 -j ACCEPT%s",
-                            action, (this.supportComment ? " -m comment --comment \"Allow Tethering to connect local resolver\"" : "")
-                    )
-            );
-
-            for (String rule : rules) {
-                if (!iptRules.genericRule(rule)) {
-                    Log.e("Tethering", "Unable to apply rule");
-                    Log.e("Tethering", rule);
+    public void getTetheredInterfaces(Context context, Set<String> set){
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        for(Method method: cm.getClass().getDeclaredMethods()){
+            if(method.getName().equals("getTetheredIfaces")){
+                try {
+                    String[] intfs = (String[]) method.invoke(cm);
+                    if (intfs != null)
+                        Collections.addAll(set, intfs);
+                    break;
+                } catch (Exception e) {
+                   return;
                 }
             }
-            this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, status).apply();
-        } else {
-            Log.d("Tethering", "Already enabled");
         }
     }
 
+    public void tetherUpdate(Context context, Set<String> before, Set<String> after){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+
+        if (before != null) {
+            for (String item: before){
+                if (!after.contains(item))
+                    enableDHCP(false, item);
+            }
+        }
+
+        for (String item: after){
+            if (before == null || !before.contains(item))
+                enableDHCP(true, item);
+        }
+
+        prefs.edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, !after.isEmpty()).apply();
+        prefs.edit().putStringSet(Constants.PREF_KEY_TETHER_INTFS, after).apply();
+    }
+
+    public void enableDHCP(boolean status, String intf){
+
+        char action = (status ? 'A' : 'D');
+        ArrayList<String> rules = new ArrayList<>();
+
+        rules.add(
+                String.format(
+                        "-%c ow_INPUT -i %s -p udp -m udp --dport 67 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+        ));
+
+        rules.add(
+                String.format(
+                        "-%c ow_OUTPUT -o %s -p udp -m udp --sport 67 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+
+        ));
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("Tethering", "Unable to apply rule");
+                Log.e("Tethering", rule);
+            }
+        }
+    }
+
+/* could be usefull later
+    public String getMask(String intf){
+        try {
+            NetworkInterface ntwrk = NetworkInterface.getByName(intf);
+            Iterator<InterfaceAddress> addrList = ntwrk.getInterfaceAddresses().iterator();
+            while (addrList.hasNext()) {
+                InterfaceAddress addr = addrList.next();
+                InetAddress ip = addr.getAddress();
+                if (ip instanceof Inet4Address) {
+                    String mask = ip.getHostAddress() + "/" +
+                            addr.getNetworkPrefixLength();
+                    return mask;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+/*
+    /* still not work
+    public void tether_tor(Context context, boolean status, String intf){
+        char action = (status ? 'I' : 'D');
+        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        long trans_port = Long.valueOf(prefs.getString(Constants.PREF_TRANS_PORT, String.valueOf(Constants.ORBOT_TRANSPROXY)));
+        long dns_port = Long.valueOf(prefs.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
+        ArrayList<String> rules = new ArrayList<>();
+        rules.add(String.format("-t nat -%c PREROUTING -i %s -p udp --dport 53 -j REDIRECT --to-ports %s", action, intf, dns_port));
+        rules.add(String.format(" -t nat -%c PREROUTING -i %s -p tcp -j REDIRECT --to-ports %s", action, intf, trans_port));
+        for (String rule : rules) {
+            if (!iptRules.genericRule(rule)) {
+                Log.e("Tor tethering", "Unable to apply rule");
+                Log.e("Tor tethering", rule);
+            }
+        }
+    }
+*/
     /**
      * Just detect if tethering is enabled or not.
      * @return boolean, true if enabled.
      */
     public boolean isTetherEnabled() {
-        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
+        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+                .getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
     }
 
     /**

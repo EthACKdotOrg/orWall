@@ -68,22 +68,22 @@ public class IptRules {
         long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
         String[] RULES = {
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        "%s -t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         Constants.IPTABLES, action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "%s -t nat -%c OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        "%s -t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         Constants.IPTABLES, action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
+                        "%s -%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
                         Constants.IPTABLES, action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
+                        "%s -%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
                         Constants.IPTABLES, action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
                 ),
@@ -100,9 +100,9 @@ public class IptRules {
         char action = (allow ? 'I' : 'D');
 
         String[] rules = {
-                "%s -%c OUTPUT -d %s -j orwall_lan",
-                "%s -%c INPUT -d %s -j orwall_lan",
-                "%s -t nat -%c OUTPUT -d %s -j RETURN",
+                "%s -%c ow_OUTPUT -d %s -j ow_LAN",
+                "%s -%c ow_INPUT -s %s -j ow_LAN",
+                "%s -t nat -%c ow_OUTPUT -d %s -j RETURN",
         };
 
         String formatted;
@@ -129,7 +129,7 @@ public class IptRules {
         char action = (allow ? 'A' : 'D');
         String[] rules = {
                 String.format(
-                        "%s -%c OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        "%s -%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
@@ -150,22 +150,22 @@ public class IptRules {
 
         String[] rules = {
                 String.format(
-                        "%s -t nat -%c OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        "%s -t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        "%s -%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
                 String.format(
-                        "%s -t nat -%c INPUT -m owner --uid-owner %d -j RETURN%s",
+                        "%s -t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        "%s -%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
@@ -186,7 +186,7 @@ public class IptRules {
 
         String[] rules = {
                 String.format(
-                        "%s -%c orwall_lan -m owner --uid-owner %d -j ACCEPT%s",
+                        "%s -%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
                         Constants.IPTABLES, action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
                 )

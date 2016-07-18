@@ -1,23 +1,32 @@
 package org.ethack.orwall;
 
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
-import org.ethack.orwall.lib.NetworkHelper;
 
 public class NetworkReceiver extends BroadcastReceiver {
     private static String TAG = "NetworkReceiver";
+
+    public static final String ACTION_TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED";
+    public static final String EXTRA_ACTIVE_TETHER = "activeArray";
 
     public NetworkReceiver() {
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).
+                getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)){
+            return;
+        }
 
         String action = intent.getAction();
 
@@ -25,32 +34,27 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         InitializeIptables initializeIptables = new InitializeIptables(context);
 
-        boolean support_tethering = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_TETHER_ENABLED, false);
-        if (support_tethering) {
-            Log.d(TAG, "Tethering support is enabled");
-
-
-            if (NetworkHelper.isTether(context)) {
-                Log.d(TAG, "Enable Tethering");
-                Toast.makeText(context, R.string.tether_activated_in_orwall, Toast.LENGTH_LONG).show();
-                initializeIptables.enableTethering(true);
+        if (action.equals(ACTION_TETHER_STATE_CHANGED)){
+            // try the faster way
+            Set<String> set = new HashSet<>(0);
+            ArrayList<String> active = intent.getStringArrayListExtra(EXTRA_ACTIVE_TETHER);
+            if (active != null){
+                for(String intf: active) set.add(intf);
             } else {
-                if (initializeIptables.isTetherEnabled()) {
-                    Log.d(TAG, "Disable Tethering");
-                    Toast.makeText(context, R.string.tether_deactivated_in_orwall, Toast.LENGTH_LONG).show();
-                    initializeIptables.enableTethering(false);
-                } else {
-                    Log.d(TAG, "Nothing to do");
-                }
+                // hum, try the old fashioned way
+                initializeIptables.getTetheredInterfaces(context, set);
             }
-        } else {
-            Log.d(TAG, "Tethering support is disabled");
-        }
 
+            Set<String> oldIntfs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+                    .getStringSet(Constants.PREF_KEY_TETHER_INTFS, null);
+
+            if (!set.equals(oldIntfs))
+                initializeIptables.tetherUpdate(context, oldIntfs, set);
+        }
+        else
         if (action.equals("android.net.wifi.WIFI_STATE_CHANGED") || action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
             Log.d(TAG, "Will do some LAN stuff");
 
-            //boolean lan_bypass = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_LAN_ENABLED, false);
             initializeIptables.LANPolicy();
         }
     }
