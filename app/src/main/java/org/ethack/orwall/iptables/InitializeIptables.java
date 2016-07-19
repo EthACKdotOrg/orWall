@@ -74,7 +74,7 @@ public class InitializeIptables {
         PackageManager packageManager = context.getPackageManager();
 
         try {
-            app_uid = (long) packageManager.getApplicationInfo("org.torproject.android", 0).uid;
+            app_uid = (long) packageManager.getApplicationInfo(Constants.ORBOT_APP_NAME, 0).uid;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
             app_uid = (long) 0; // prevents stupid compiler error… never used.

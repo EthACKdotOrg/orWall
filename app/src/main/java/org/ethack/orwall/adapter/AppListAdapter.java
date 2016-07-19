@@ -23,13 +23,11 @@ import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
+import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.List;
 import java.util.Map;
-
-import info.guardianproject.onionkit.ui.OrbotHelper;
-
 
 /**
  * New adapter class
@@ -253,8 +251,6 @@ public class AppListAdapter extends ArrayAdapter {
 
         // Add Proxy providers if available
         // Is orbot installed ?
-        OrbotHelper orbotHelper = new OrbotHelper(this.context);
-
         this.checkboxInternet = (CheckBox) l_view.findViewById(R.id.id_check_internet);
         if (appRule.getOnionType() != null && !appRule.getOnionType().equals(Constants.DB_ONION_TYPE_NONE)) {
             this.checkboxInternet.setChecked(true);
@@ -264,8 +260,7 @@ public class AppListAdapter extends ArrayAdapter {
                     @Override
                     public void onClick(View v) {
                         radioBypass.setEnabled(checkboxInternet.isChecked());
-                        OrbotHelper orbotHelper = new OrbotHelper(context);
-                        radioTor.setEnabled(checkboxInternet.isChecked() && orbotHelper.isOrbotInstalled());
+                        radioTor.setEnabled(checkboxInternet.isChecked() && Util.isOrbotInstalled(context));
 
                         if (!radioBypass.isChecked() && !radioTor.isChecked()) {
                             if (radioTor.isEnabled()) {
@@ -285,7 +280,7 @@ public class AppListAdapter extends ArrayAdapter {
         this.radioBypass.setEnabled(this.checkboxInternet.isChecked());
 
         this.radioTor = (RadioButton) l_view.findViewById(R.id.id_radio_tor);
-        if (!orbotHelper.isOrbotInstalled()) {
+        if (!Util.isOrbotInstalled(this.context)) {
             radioTor.setEnabled(false);
         } else {
             if (appRule.getOnionType() != null && appRule.getOnionType().equals(Constants.DB_ONION_TYPE_TOR)) {
