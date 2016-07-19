@@ -16,9 +16,8 @@ import org.ethack.orwall.R;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
-
-import info.guardianproject.onionkit.ui.OrbotHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -155,9 +154,8 @@ public class WizardFragment extends Fragment {
             main_content.addView(iptablesComments);
 
             // Is orbot installed?
-            OrbotHelper orbotHelper = new OrbotHelper(getActivity());
             Switch orbotStatus = new Switch(getActivity());
-            orbotStatus.setChecked(orbotHelper.isOrbotInstalled());
+            orbotStatus.setChecked(Util.isOrbotInstalled(getActivity()));
             orbotStatus.setEnabled(false);
             orbotStatus.setText(getString(R.string.wizard_orbot_status_text));
             main_content.addView(orbotStatus);

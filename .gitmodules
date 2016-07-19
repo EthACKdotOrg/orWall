@@ -1,9 +1,3 @@
 [submodule "external/super-commands"]
 	path = external/super-commands
 	url = https://github.com/ethackdotorg/superuser-commands.git
-[submodule "external/NetCipher"]
-	path = external/NetCipher
-	url = https://github.com/EthACKdotOrg/NetCipher.git
-[submodule "external/i2p"]
-	path = external/i2p
-	url = https://github.com/i2p/i2p.android.base.git

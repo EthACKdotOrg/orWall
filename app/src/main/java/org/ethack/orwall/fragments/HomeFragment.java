@@ -31,11 +31,10 @@ import org.ethack.orwall.WizardActivity;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.concurrent.TimeUnit;
-
-import info.guardianproject.onionkit.ui.OrbotHelper;
 
 /**
  * Manage "home" tab fragment.
@@ -145,8 +144,7 @@ public class HomeFragment extends Fragment {
         initializeIptables.supportComments();
         status_ipt_comments.setChecked(sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
         // Is orbot installed?
-        OrbotHelper orbotHelper = new OrbotHelper(getActivity());
-        status_orbot.setChecked(orbotHelper.isOrbotInstalled());
+        status_orbot.setChecked(Util.isOrbotInstalled(getActivity()));
 
         // Shows settings
         settings.setOnClickListener(new View.OnClickListener() {
