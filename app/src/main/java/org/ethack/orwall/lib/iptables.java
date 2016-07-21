@@ -24,6 +24,7 @@ public class Iptables {
 
     private Context context;
     public boolean supportComment;
+    public boolean supportWait;
     private Shell shell = null;
 
     /**
@@ -50,7 +51,9 @@ public class Iptables {
         } else {
             Log.d("IPTables: ", "Comments are NOT supported");
         }
-        this.supportComment = support;
+
+        supportComment = support;
+        supportWait = genericRule("--help | grep -q -e \"--wait\"");
     }
 
     /**
@@ -658,29 +661,29 @@ public class Iptables {
         long dns_port = Long.valueOf(Preferences.getDNSPort(context));
         String[] RULES = {
                 String.format(
-                        "%s -t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
-                        Constants.IPTABLES, action, appUID, trans_port,
+                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "%s -t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
-                        Constants.IPTABLES, action, appUID, dns_port,
+                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
-                        Constants.IPTABLES, action, appUID, trans_port,
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
+                        action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
-                        Constants.IPTABLES, action, appUID, dns_port,
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
+                        action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
                 ),
         };
 
         for (String rule : RULES) {
-            if (!runCommand(rule)) {
+            if (!genericRule(rule)) {
                 Log.e(Iptables.class.getName(), rule);
             }
         }
@@ -690,15 +693,15 @@ public class Iptables {
         char action = (allow ? 'I' : 'D');
 
         String[] rules = {
-                "%s -%c ow_OUTPUT -d %s -j ow_LAN",
-                "%s -%c ow_INPUT -s %s -j ow_LAN",
-                "%s -t nat -%c ow_OUTPUT -d %s -j RETURN",
+                "-%c ow_OUTPUT -d %s -j ow_LAN",
+                "-%c ow_INPUT -s %s -j ow_LAN",
+                "-t nat -%c ow_OUTPUT -d %s -j RETURN",
         };
 
         String formatted;
         for (String rule : rules) {
-            formatted = String.format(rule, Constants.IPTABLES, action, lan);
-            if (!runCommand(formatted)) {
+            formatted = String.format(rule, action, lan);
+            if (!genericRule(formatted)) {
                 Log.e(
                         "LanNoNat",
                         "Unable to add rule: " + formatted
@@ -708,25 +711,25 @@ public class Iptables {
     }
 
     public boolean genericRule(final String rule) {
-        return runCommand(String.format("%s %s", Constants.IPTABLES, rule));
+        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IPTABLES, rule));
     }
 
     public boolean genericRuleV6(final String rule) {
-        return runCommand(String.format("%s %s", Constants.IP6TABLES, rule));
+        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IP6TABLES, rule));
     }
 
     public void bypass(final long appUID, final String appName, final boolean allow) {
         char action = (allow ? 'A' : 'D');
         String[] rules = {
                 String.format(
-                        "%s -%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
         };
 
         for (String rule : rules) {
-            if (!runCommand(rule)) {
+            if (!genericRule(rule)) {
                 Log.e(
                         "bypass",
                         "Unable to add rule: " + rule
@@ -740,29 +743,29 @@ public class Iptables {
 
         String[] rules = {
                 String.format(
-                        "%s -t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
                 String.format(
-                        "%s -t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
                 String.format(
-                        "%s -%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
         };
 
         for (String rule : rules) {
-            if (!runCommand(rule)) {
+            if (!genericRule(rule)) {
                 Log.e(
                         "localhost",
                         "Unable to add rule: " + rule
@@ -776,14 +779,14 @@ public class Iptables {
 
         String[] rules = {
                 String.format(
-                        "%s -%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
-                        Constants.IPTABLES, action, appUID,
+                        "-%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
                 )
         };
 
         for (String rule : rules) {
-            if (!runCommand(rule)) {
+            if (!genericRule(rule)) {
                 Log.e(
                         "localhost",
                         "Unable to add rule: " + rule
