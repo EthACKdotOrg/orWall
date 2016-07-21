@@ -1,6 +1,5 @@
 package org.ethack.orwall;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,7 +9,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import org.ethack.orwall.fragments.WizardFragment;
-import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.Preferences;
 
 /**

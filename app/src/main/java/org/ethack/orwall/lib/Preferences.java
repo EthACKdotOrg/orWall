@@ -22,7 +22,7 @@ public final class Preferences {
     public final static String PREF_KEY_ENFORCE_INIT = "enforce_init_script";
     //public final static String PREF_KEY_DISABLE_INIT = "deactivate_init_script";
     public final static String PREF_KEY_BROWSER_GRACETIME = "browser_gracetime";
-    public final static String PREF_KEY_IPT_SUPPORTS_COMMENTS = "ipt_comments";
+    //public final static String PREF_KEY_IPT_SUPPORTS_COMMENTS = "ipt_comments";
     public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
     public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
     public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
@@ -128,14 +128,6 @@ public final class Preferences {
 
     public static String getBrowserGraceTime(Context context){
         return getString(context, PREF_KEY_BROWSER_GRACETIME, String.valueOf(BROWSER_GRACETIME));
-    }
-
-    public static boolean isSupportComments(Context context){
-        return getBoolean(context, PREF_KEY_IPT_SUPPORTS_COMMENTS, false);
-    }
-
-    public static void setSupportComments(Context context, boolean value){
-        putBoolean(context, PREF_KEY_IPT_SUPPORTS_COMMENTS, value);
     }
 
     public static boolean isOrwallEnabled(Context context){

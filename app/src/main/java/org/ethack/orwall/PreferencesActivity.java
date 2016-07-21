@@ -8,8 +8,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.Preferences;
 
 import java.util.Arrays;
@@ -78,7 +78,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
                 if (!sharedPreferences.getBoolean(Preferences.PREF_KEY_ORWALL_ENABLED, true)) return;
 
-                InitializeIptables iptables = new InitializeIptables(getActivity());
+                Iptables iptables = new Iptables(getActivity());
 
                 switch (s) {
                     case Preferences.PREF_KEY_ADB_ENABLED:

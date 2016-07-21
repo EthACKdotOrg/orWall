@@ -1,6 +1,5 @@
 package org.ethack.orwall.fragments;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -13,10 +12,10 @@ import android.widget.ListView;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.adapter.AppListAdapter;
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
 import org.ethack.orwall.lib.Preferences;
@@ -40,7 +39,7 @@ public class AppFragment extends Fragment {
         View view;
 
         view  = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
-        InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+        Iptables iptables = new Iptables(getActivity());
         // Do we have root access ?
         if (RootCommands.rootAccessGiven()) {
             view.findViewById(R.id.warn_root).setVisibility(View.GONE);
@@ -48,12 +47,12 @@ public class AppFragment extends Fragment {
             view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
-        if (initializeIptables.iptablesExists()) {
+        if (iptables.iptablesExists()) {
             view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
         } else {
             view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
         }
-        if (initializeIptables.initSupported() && !initializeIptables.isInitialized()) {
+        if (Iptables.initSupported() && !iptables.isInitialized()) {
             view.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
         }
 
@@ -162,7 +161,6 @@ public class AppFragment extends Fragment {
     private boolean isReservedApp(PackageInfo pkg) {
         return (
                 pkg.packageName.equals(Constants.ORBOT_APP_NAME)
-                        //|| pkg.packageName.equals(Constants.I2P_APP_NAME)
         );
     }
 

@@ -9,8 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
+import org.ethack.orwall.lib.NetworkHelper;
 import org.ethack.orwall.lib.Preferences;
 
 public class NetworkReceiver extends BroadcastReceiver {
@@ -32,7 +32,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         Log.d(TAG, "Got a Network Change event: " + action);
 
-        InitializeIptables initializeIptables = new InitializeIptables(context);
+        Iptables iptables = new Iptables(context);
 
         if (action.equals(ACTION_TETHER_STATE_CHANGED)){
             // try the faster way
@@ -42,19 +42,19 @@ public class NetworkReceiver extends BroadcastReceiver {
                 for(String intf: active) set.add(intf);
             } else {
                 // hum, try the old fashioned way
-                initializeIptables.getTetheredInterfaces(context, set);
+                NetworkHelper.getTetheredInterfaces(context, set);
             }
 
             Set<String> oldIntfs = Preferences.getTetherInterfaces(context);
 
             if (!set.equals(oldIntfs))
-                initializeIptables.tetherUpdate(context, oldIntfs, set);
+                iptables.tetherUpdate(context, oldIntfs, set);
         }
         else
         if (action.equals("android.net.wifi.WIFI_STATE_CHANGED") || action.equals("android.net.conn.CONNECTIVITY_CHANGE")) {
             Log.d(TAG, "Will do some LAN stuff");
 
-            initializeIptables.LANPolicy();
+            iptables.LANPolicy();
         }
     }
 }

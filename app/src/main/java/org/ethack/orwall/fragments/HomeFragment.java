@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,9 +27,9 @@ import org.ethack.orwall.PreferencesActivity;
 import org.ethack.orwall.R;
 import org.ethack.orwall.TabbedMain;
 import org.ethack.orwall.WizardActivity;
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
@@ -44,20 +43,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class HomeFragment extends Fragment {
 
-    private SharedPreferences sharedPreferences;
     private CountDownTimer timer;
     private Long browser_uid;
     private Long sip_uid;
-    private InitializeIptables initializeIptables;
+    private Iptables iptables;
     private View home;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        this.home = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
+        home = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
 
-        this.initializeIptables = new InitializeIptables(getActivity());
-        boolean initSupported = initializeIptables.initSupported();
+        iptables = new Iptables(getActivity());
+        boolean initSupported = Iptables.initSupported();
 
         Switch orwallStatus = (Switch) home.findViewById(R.id.orwall_status);
 
@@ -76,7 +74,7 @@ public class HomeFragment extends Fragment {
         // Display a big fat warning if IPTables wasn't initialized properly
         // This warning should be shown only if we aren't expected this situation
         // If we know there is no init-script support, then don't show it.
-        if (initSupported && !initializeIptables.isInitialized()) {
+        if (initSupported && !iptables.isInitialized()) {
             home.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
         }
 
@@ -104,7 +102,7 @@ public class HomeFragment extends Fragment {
             explain.setText(
                     String.format(
                             getString(R.string.explain_no_initscript),
-                            InitializeIptables.dst_file
+                            Iptables.DST_FILE
                     )
             );
             explain.setVisibility(View.VISIBLE);
@@ -115,9 +113,9 @@ public class HomeFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 boolean checked = compoundButton.isChecked();
                 if (checked) {
-                    initializeIptables.installInitScript();
+                    Iptables.installInitScript(getActivity());
                 } else {
-                    initializeIptables.removeIniScript();
+                    Iptables.removeIniScript(getActivity());
                 }
             }
         });
@@ -130,7 +128,7 @@ public class HomeFragment extends Fragment {
             home.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
-        if (initializeIptables.iptablesExists()) {
+        if (Iptables.iptablesExists()) {
             status_iptables.setChecked(true);
             home.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
             home.findViewById(R.id.status_iptables_description).setVisibility(View.GONE);
@@ -140,9 +138,7 @@ public class HomeFragment extends Fragment {
             home.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
         }
 
-        // Does current kernel supports comments in iptables?
-        initializeIptables.supportComments();
-        status_ipt_comments.setChecked(Preferences.isSupportComments(getActivity()));
+        status_ipt_comments.setChecked(iptables.supportComment);
         // Is orbot installed?
         status_orbot.setChecked(Util.isOrbotInstalled(getActivity()));
 
@@ -210,7 +206,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     boolean checked = ((Switch) view).isChecked();
-                    initializeIptables.manageSip(checked, sip_uid);
+                    iptables.manageSip(checked, sip_uid);
                     Preferences.setSIPEnabled(getActivity(), checked);
                 }
             });
@@ -229,7 +225,7 @@ public class HomeFragment extends Fragment {
     public void toggleBrowser(final View view) {
         boolean checked = ((Switch) view).isChecked();
 
-        initializeIptables.manageCaptiveBrowser(checked, this.browser_uid);
+        iptables.manageCaptiveBrowser(checked, this.browser_uid);
 
         if (checked) {
 
@@ -247,7 +243,7 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onFinish() {
-                    initializeIptables.manageCaptiveBrowser(false, browser_uid);
+                    iptables.manageCaptiveBrowser(false, browser_uid);
                     Preferences.setBrowserEnabled(getActivity(), false);
                     CharSequence text = getResources().getString(R.string.main_end_of_browser);
                     Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
@@ -342,7 +338,7 @@ public class HomeFragment extends Fragment {
         Switch orwallSwitch = (Switch) home.findViewById(R.id.orwall_status);
         // checking true orwall status
         if (Preferences.isOrwallEnabled(getActivity()) &&
-                !initializeIptables.isOrwallReallyEnabled()){
+                !iptables.haveBooted()){
             Preferences.setOrwallEnabled(getActivity(), false);
             orwallSwitch.setChecked(false);
         }

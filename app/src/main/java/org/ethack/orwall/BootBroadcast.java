@@ -4,8 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.Preferences;
 
 /**
@@ -18,24 +17,20 @@ public class BootBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        InitializeIptables initializeIptables = new InitializeIptables(context);
-
-        // We want to ensure we support comments — reboot may be due to
-        // some ROM change, hence kernel may have changed as well.
-        initializeIptables.supportComments();
+        Iptables iptables = new Iptables(context);
 
         // Enforce init-script if sharedpreference says it
         // We want to do it the earlier.
         // Also, we want to get a fresh status regarding the init-script support: this can be
         // a reboot after a ROM upgrade or change.
         boolean enforceInit = Preferences.isEnforceInitScript(context);
-        if (initializeIptables.initSupported() && enforceInit) {
-            initializeIptables.installInitScript();
+        if (Iptables.initSupported() && enforceInit) {
+            Iptables.installInitScript(context);
         }
         // Apply boot-up rules in order to enable traffic for orbot and other things.
 
         if (Preferences.isOrwallEnabled(context)){
-            initializeIptables.boot();
+            iptables.boot();
         }
     }
 }

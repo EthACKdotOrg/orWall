@@ -3,7 +3,6 @@ package org.ethack.orwall;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -12,8 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.ethack.orwall.adapter.TabsPagerAdapter;
-import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.util.Log;
@@ -68,8 +66,8 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
         // Is it the first application run?
         if (Preferences.isFirstRun(this)) {
             // Initialize orWall iptables rules - #72 should be better after that
-            InitializeIptables initializeIptables = new InitializeIptables(this);
-            initializeIptables.boot();
+            Iptables iptables = new Iptables(this);
+            iptables.boot();
             // Start Wizard
             Intent wizard = new Intent(this, WizardActivity.class);
             startActivity(wizard);
