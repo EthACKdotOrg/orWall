@@ -15,6 +15,7 @@ import org.ethack.orwall.adapter.TabsPagerAdapter;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 import java.util.Set;
@@ -58,15 +59,14 @@ public class TabbedMain extends FragmentActivity implements ActionBar.TabListene
 
         // Import old settings to SQLite, and remove them from SharedPreferences
         NatRules natRules = new NatRules(this);
-        Set oldRules = getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
+        Set oldRules = getSharedPreferences(Preferences.PREFERENCES, MODE_PRIVATE).getStringSet("nat_rules", null);
         if (natRules.getRuleCount() == 0 && oldRules != null) {
             natRules.importFromSharedPrefs(oldRules);
-            getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
+            getSharedPreferences(Preferences.PREFERENCES, MODE_PRIVATE).edit().remove("nat_rules").apply();
         }
 
         // Is it the first application run?
-        boolean first_run = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_FIRST_RUN, true);
-        if (first_run) {
+        if (Preferences.isFirstRun(this)) {
             // Initialize orWall iptables rules - #72 should be better after that
             InitializeIptables initializeIptables = new InitializeIptables(this);
             initializeIptables.boot();

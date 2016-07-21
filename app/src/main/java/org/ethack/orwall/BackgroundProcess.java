@@ -6,6 +6,7 @@ import android.content.Intent;
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 /**
@@ -22,7 +23,7 @@ public class BackgroundProcess extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        boolean supportComment = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
+        boolean supportComment = Preferences.isSupportComments(this);
         this.initializeIptables = new InitializeIptables(this);
         this.iptRules = new IptRules(supportComment);
 

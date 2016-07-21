@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 
 import org.ethack.orwall.fragments.WizardFragment;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Preferences;
 
 /**
  * Simple wizard activity.
@@ -54,7 +55,7 @@ public class WizardActivity extends FragmentActivity {
         if (viewPager.getCurrentItem() == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
-            this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_FIRST_RUN, false).apply();
+            Preferences.setFirstRun(this, false);
             super.onBackPressed();
         } else {
             // Otherwise, select the previous step.

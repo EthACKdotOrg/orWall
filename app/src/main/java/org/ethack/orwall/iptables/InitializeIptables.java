@@ -16,6 +16,7 @@ import org.ethack.orwall.lib.CheckSum;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.NetworkHelper;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
@@ -56,11 +57,9 @@ public class InitializeIptables {
      * @param context
      */
     public InitializeIptables(Context context) {
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.dns_proxy = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
+        this.dns_proxy = Long.valueOf(Preferences.getDNSPort(context));
         this.context = context;
-        this.supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
+        this.supportComment = Preferences.isSupportComments(context);
         this.iptRules = new IptRules(this.supportComment);
     }
 
@@ -82,8 +81,8 @@ public class InitializeIptables {
         }
 
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
-        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
-        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
+        Preferences.setBrowserEnabled(context, false);
+        Preferences.setOrwallEnabled(context, true);
 
         // initialize main chains
         initIPv6();
@@ -93,23 +92,21 @@ public class InitializeIptables {
         // get lan subnet
         LANPolicy();
 
-        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
-        if (authorized) {
-            app_uid = Long.valueOf(this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, "0"));
+
+        if (Preferences.isSIPEnabled(this.context)) {
+            app_uid = Long.valueOf(Preferences.getSIPApp(this.context));
             if (app_uid != 0) {
                 Log.d("Boot", "Authorizing SIP");
                 manageSip(true, app_uid);
             }
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
-        if (authorized) {
-            enableADB(authorized);
+        if (Preferences.isADBEnabled(context)) {
+            enableADB(true);
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SSH_ENABLED, false);
-        if (authorized) {
-            enableSSH(authorized);
+        if (Preferences.isSSHEnabled(context)) {
+            enableSSH(true);
         }
 
         Log.d("Boot: ", "Finished initialization");
@@ -180,10 +177,7 @@ public class InitializeIptables {
         }
 
         // subnet & tethering is no more in iptables
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
-        sharedPreferences.edit().remove(Constants.PREF_KEY_IS_TETHER_ENABLED).apply();
-        sharedPreferences.edit().remove(Constants.PREF_KEY_TETHER_INTFS).apply();
+        Preferences.cleanIptablesPreferences(context);
     }
 
     public void deactivateV6() {
@@ -231,7 +225,8 @@ public class InitializeIptables {
         } else {
             Log.d("IPTables: ", "Comments are NOT supported");
         }
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, support).apply();
+
+        Preferences.setSupportComments(context, support);
         this.supportComment = support;
     }
 
@@ -257,13 +252,12 @@ public class InitializeIptables {
         String subnet = nwHelper.getSubnet(this.context);
 
         // Get subnet from SharedPreferences
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, null);
+        String old_subnet = Preferences.getCurrentSubnet(context);
 
         if (old_subnet != null && !old_subnet.equals(subnet)) {
             // Remove rules if we got another subnet in sharedPref
             iptRules.LanNoNat(old_subnet, false);
-            sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
+            Preferences.setCurrentSubnet(context, null);
         }
 
         if (subnet != null && !subnet.equals(old_subnet)) {
@@ -271,7 +265,7 @@ public class InitializeIptables {
             iptRules.LanNoNat(subnet, true);
 
             // Or save new subnet
-            sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
+            Preferences.setCurrentSubnet(context, subnet);
         }
 
     }
@@ -434,9 +428,7 @@ public class InitializeIptables {
      */
     public boolean initSupported() {
         File dstDir = new File(dir_dst);
-        boolean support = dstDir.exists();
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, !support).apply();
-        return support;
+        return dstDir.exists();
     }
 
     /**
@@ -461,9 +453,9 @@ public class InitializeIptables {
                     doInstallScripts(src_file, dst_file1);
                 }
             }
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
+            Preferences.setEnforceInitScript(context, true);
         } else {
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+            Preferences.setEnforceInitScript(context, false);
         }
     }
 
@@ -531,7 +523,7 @@ public class InitializeIptables {
             } catch (TimeoutException e) {
                 Log.e("Shell", "Error while closing the Shell");
             } finally {
-                context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+                Preferences.setEnforceInitScript(context, false);
                 try {
                     shell.close();
                 } catch (IOException e) {
@@ -607,7 +599,6 @@ public class InitializeIptables {
     }
 
     public void tetherUpdate(Context context, Set<String> before, Set<String> after){
-        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
 
         if (before != null) {
             for (String item: before){
@@ -621,8 +612,7 @@ public class InitializeIptables {
                 enableDHCP(true, item);
         }
 
-        prefs.edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, !after.isEmpty()).apply();
-        prefs.edit().putStringSet(Constants.PREF_KEY_TETHER_INTFS, after).apply();
+        Preferences.setTetherInterfaces(context, after);
     }
 
     public void enableDHCP(boolean status, String intf){
@@ -687,14 +677,6 @@ public class InitializeIptables {
         }
     }
 */
-    /**
-     * Just detect if tethering is enabled or not.
-     * @return boolean, true if enabled.
-     */
-    public boolean isTetherEnabled() {
-        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
-    }
 
     /**
      * Apply or remove rules for captive portal detection.

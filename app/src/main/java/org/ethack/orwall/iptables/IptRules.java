@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
@@ -63,9 +64,8 @@ public class IptRules {
      * @param appName
      */
     public void natApp(Context context, final long appUID, final char action, final String appName) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        long trans_port = Long.valueOf(preferences.getString(Constants.PREF_TRANS_PORT, String.valueOf(Constants.ORBOT_TRANSPROXY)));
-        long dns_port = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, String.valueOf(Constants.ORBOT_DNS_PROXY)));
+        long trans_port = Long.valueOf(Preferences.getTransPort(context));
+        long dns_port = Long.valueOf(Preferences.getDNSPort(context));
         String[] RULES = {
                 String.format(
                         "%s -t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",

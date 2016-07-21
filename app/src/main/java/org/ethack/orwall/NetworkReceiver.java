@@ -11,6 +11,7 @@ import android.util.Log;
 
 import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Preferences;
 
 public class NetworkReceiver extends BroadcastReceiver {
     private static String TAG = "NetworkReceiver";
@@ -23,8 +24,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).
-                getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)){
+        if (!Preferences.isOrwallEnabled(context)){
             return;
         }
 
@@ -45,8 +45,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 initializeIptables.getTetheredInterfaces(context, set);
             }
 
-            Set<String> oldIntfs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                    .getStringSet(Constants.PREF_KEY_TETHER_INTFS, null);
+            Set<String> oldIntfs = Preferences.getTetherInterfaces(context);
 
             if (!set.equals(oldIntfs))
                 initializeIptables.tetherUpdate(context, oldIntfs, set);

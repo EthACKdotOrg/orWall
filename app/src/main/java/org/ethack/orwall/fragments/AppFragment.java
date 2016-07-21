@@ -19,6 +19,7 @@ import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
@@ -59,8 +60,7 @@ public class AppFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
 
         // Toggle hint layer
-        boolean hide_hint = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, false);
+        boolean hide_hint = Preferences.isHidePressHint(getActivity());
 
         if (hide_hint) {
             view.findViewById(R.id.hint_press).setVisibility(View.GONE);
@@ -69,9 +69,7 @@ public class AppFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     ((View) view.getParent()).setVisibility(View.GONE);
-                    getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, true).apply();
+                    Preferences.setHidePressHint(getActivity(), true);
                 }
             });
         }
