@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import android.util.Log;
 
 import org.ethack.orwall.BackgroundProcess;
@@ -568,35 +569,55 @@ public class Iptables {
         if (before != null) {
             for (String item: before){
                 if (!after.contains(item))
-                    enableDHCP(false, item);
+                    tether(false, item);
             }
         }
 
         for (String item: after){
             if (before == null || !before.contains(item))
-                enableDHCP(true, item);
+                tether(true, item);
         }
 
         Preferences.setTetherInterfaces(context, after);
     }
 
-    public void enableDHCP(boolean status, String intf){
+    public void tether(boolean status, String intf){
 
         char action = (status ? 'A' : 'D');
         ArrayList<String> rules = new ArrayList<>();
 
+        // tether DHCP
         rules.add(
                 String.format(
                         "-%c ow_INPUT -i %s -p udp -m udp --dport 67 -j ACCEPT%s",
                         action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
                 ));
-
         rules.add(
                 String.format(
                         "-%c ow_OUTPUT -o %s -p udp -m udp --sport 67 -j ACCEPT%s",
                         action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
 
                 ));
+
+        // tether DNS
+        rules.add(
+                String.format(
+                        "-%c ow_INPUT -i %s -p udp --dport 53 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DNS tethering\"" : "")
+                ));
+        rules.add(
+                String.format(
+                        "-%c ow_OUTPUT -o %s -p udp --sport 53 -j ACCEPT%s",
+                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DNS tethering\"" : "")
+                ));
+
+        // relay dns query to isp
+        rules.add(
+                String.format(
+                        "-%c ow_OUTPUT -m owner --gid-owner %s -p udp --dport 53 -j ACCEPT%s",
+                        action, "nobody", (this.supportComment ? " -m comment --comment \"Allow DNS/ISP tethering\"" : "")
+                ));
+
         for (String rule : rules) {
             if (!genericRule(rule)) {
                 Log.e("Tethering", "Unable to apply rule");
