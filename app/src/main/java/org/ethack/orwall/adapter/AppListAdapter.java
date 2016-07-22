@@ -3,7 +3,6 @@ package org.ethack.orwall.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,6 +22,7 @@ import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
+import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.util.Log;
 
@@ -57,7 +57,6 @@ public class AppListAdapter extends ArrayAdapter {
     private final List<AppRule> apps;
     private final PackageManager packageManager;
     private final NatRules natRules;
-    private final SharedPreferences sharedPreferences;
     private CheckBox checkboxInternet;
     private RadioButton radioTor;
     private CheckBox checkLocalHost;
@@ -78,12 +77,7 @@ public class AppListAdapter extends ArrayAdapter {
         this.apps = pkgs;
         this.packageManager = context.getPackageManager();
         this.natRules = new NatRules(context);
-        this.sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         this.specialApps = PackageInfoData.specialApps();
-    }
-
-    private Boolean isOrWallEnabled(){
-        return sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true);
     }
 
     /**
@@ -207,7 +201,7 @@ public class AppListAdapter extends ArrayAdapter {
                 Toast.makeText(context, context.getString(R.string.toast_new_rule), Toast.LENGTH_SHORT).show();
                 appRule.setStored(true);
                 appRule.setLabel(appRule.getDisplay());
-                if (isOrWallEnabled())
+                if (Preferences.isOrwallEnabled(context))
                     appRule.install(context);
             } else {
                 appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);
@@ -222,7 +216,7 @@ public class AppListAdapter extends ArrayAdapter {
             Boolean oldLocalNetwork = appRule.getLocalNetwork();
             boolean success = this.natRules.removeAppFromRules(appRule.getAppUID());
             if (success) {
-                if (isOrWallEnabled())
+                if (Preferences.isOrwallEnabled(context))
                     appRule.uninstall(context);
                 appRule.setStored(false);
                 appRule.setOnionType(Constants.DB_ONION_TYPE_NONE);

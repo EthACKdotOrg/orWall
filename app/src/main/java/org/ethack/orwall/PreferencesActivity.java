@@ -8,8 +8,9 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
+import org.ethack.orwall.lib.Preferences;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,15 +76,15 @@ public class PreferencesActivity extends PreferenceActivity {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
 
-                if (!sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) return;
+                if (!sharedPreferences.getBoolean(Preferences.PREF_KEY_ORWALL_ENABLED, true)) return;
 
-                InitializeIptables iptables = new InitializeIptables(getActivity());
+                Iptables iptables = new Iptables(getActivity());
 
                 switch (s) {
-                    case Constants.PREF_KEY_ADB_ENABLED:
+                    case Preferences.PREF_KEY_ADB_ENABLED:
                         iptables.enableADB(sharedPreferences.getBoolean(s, false));
                         break;
-                    case Constants.PREF_KEY_SSH_ENABLED:
+                    case Preferences.PREF_KEY_SSH_ENABLED:
                         iptables.enableSSH(sharedPreferences.getBoolean(s, false));
                         break;
                     case "enable_captive_portal":

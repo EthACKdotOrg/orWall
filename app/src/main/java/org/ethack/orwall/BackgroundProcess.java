@@ -3,9 +3,10 @@ package org.ethack.orwall;
 import android.app.IntentService;
 import android.content.Intent;
 
-import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.iptables.IptRules;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
+import org.ethack.orwall.lib.Preferences;
+import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.util.Log;
 
 /**
@@ -13,8 +14,7 @@ import org.sufficientlysecure.rootcommands.util.Log;
  */
 public class BackgroundProcess extends IntentService {
 
-    private InitializeIptables initializeIptables;
-    private IptRules iptRules;
+    private Iptables iptables;
 
     public BackgroundProcess() {
         super("BackgroundProcess");
@@ -22,9 +22,7 @@ public class BackgroundProcess extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
-        boolean supportComment = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
-        this.initializeIptables = new InitializeIptables(this);
-        this.iptRules = new IptRules(supportComment);
+        this.iptables = new Iptables(this);
 
         String action = workIntent.getStringExtra(Constants.ACTION);
 
@@ -50,11 +48,11 @@ public class BackgroundProcess extends IntentService {
                 rmRule(appUID, appName, onionType, localHost, localNetwork);
 
             } else if (action.equals(Constants.ACTION_DISABLE_ORWALL)) {
-                this.initializeIptables.deactivate();
-                this.initializeIptables.deactivateV6();
+                iptables.deactivate();
+                iptables.deactivateV6();
                 
             } else if (action.equals(Constants.ACTION_ENABLE_ORWALL)) {
-                this.initializeIptables.boot();
+                iptables.boot();
             } else {
                 Log.e("BackgroundProcess", "Just got an unknown action!");
             }
@@ -64,41 +62,41 @@ public class BackgroundProcess extends IntentService {
     }
 
     private void managePortal(boolean activate) {
-        this.initializeIptables.enableCaptiveDetection(activate, this);
+        Util.enableCaptiveDetection(activate, this);
     }
 
     private void addRule(Long appUID, String appName, String onionType, Boolean localHost, Boolean localNetwork) {
 
         if (onionType.equals(Constants.DB_ONION_TYPE_TOR)) {
-            this.iptRules.natApp(this, appUID, 'A', appName);
+            iptables.natApp(this, appUID, 'A', appName);
         } else
         if (onionType.equals(Constants.DB_ONION_TYPE_BYPASS)) {
-            iptRules.bypass(appUID, appName, true);
+            iptables.bypass(appUID, appName, true);
         }
 
         if (localHost) {
-            iptRules.localHost(appUID, appName, true);
+            iptables.localHost(appUID, appName, true);
         }
 
         if (localNetwork) {
-            iptRules.localNetwork(appUID, appName, true);
+            iptables.localNetwork(appUID, appName, true);
         }
     }
 
     private void rmRule(Long appUID, String appName, String onionType, Boolean localHost, Boolean localNetwork) {
         if (onionType.equals(Constants.DB_ONION_TYPE_TOR)) {
-            this.iptRules.natApp(this, appUID, 'D', appName);
+            iptables.natApp(this, appUID, 'D', appName);
         } else
         if (onionType.equals(Constants.DB_ONION_TYPE_BYPASS)) {
-            iptRules.bypass(appUID, appName, false);
+            iptables.bypass(appUID, appName, false);
         }
 
         if (localHost) {
-            iptRules.localHost(appUID, appName, false);
+            iptables.localHost(appUID, appName, false);
         }
 
         if (localNetwork) {
-            iptRules.localNetwork(appUID, appName, false);
+            iptables.localNetwork(appUID, appName, false);
         }
     }
 }

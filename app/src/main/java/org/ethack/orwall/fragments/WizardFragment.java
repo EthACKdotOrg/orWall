@@ -1,8 +1,5 @@
 package org.ethack.orwall.fragments;
 
-
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,9 +10,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.ethack.orwall.R;
-import org.ethack.orwall.iptables.InitializeIptables;
-import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.Iptables;
+import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
@@ -92,7 +89,7 @@ public class WizardFragment extends Fragment {
         rootView.findViewById(R.id.wizard_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_FIRST_RUN, false).apply();
+                Preferences.setFirstRun(getActivity(), false);
                 getActivity().finish();
             }
         });
@@ -100,17 +97,16 @@ public class WizardFragment extends Fragment {
         // Add some stuff on the very first Wizard page
         if (mPageNumber == 0) {
             ViewGroup main_content = (ViewGroup) rootView.findViewById(R.id.id_main_content);
-            SharedPreferences preferenceManager = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-            final InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+            final Iptables iptables = new Iptables(getActivity());
             // Extract scripts
             InstallScripts installScripts = new InstallScripts(getActivity());
             installScripts.run();
 
             // init-script installation
             // install init as default behavior
-            initializeIptables.installInitScript();
-            boolean enforceInit = preferenceManager.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
-            boolean initSupported = initializeIptables.initSupported();
+            Iptables.installInitScript(getActivity());
+            boolean enforceInit = Preferences.isEnforceInitScript(getActivity());
+            boolean initSupported = iptables.initSupported();
 
             Switch initScript = new Switch(getActivity());
             initScript.setChecked( (enforceInit && initSupported) );
@@ -122,9 +118,9 @@ public class WizardFragment extends Fragment {
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     boolean checked = compoundButton.isChecked();
                     if (checked) {
-                        initializeIptables.installInitScript();
+                        Iptables.installInitScript(getActivity());
                     } else {
-                        initializeIptables.removeIniScript();
+                        Iptables.removeIniScript(getActivity());
                     }
                 }
             });
@@ -140,15 +136,14 @@ public class WizardFragment extends Fragment {
 
             // Does iptables exist?
             Switch iptablesStatus = new Switch(getActivity());
-            iptablesStatus.setChecked(initializeIptables.iptablesExists());
+            iptablesStatus.setChecked(iptables.iptablesExists());
             iptablesStatus.setEnabled(false);
             iptablesStatus.setText(getString(R.string.wizard_init_iptables_text));
             main_content.addView(iptablesStatus);
 
             // Does current kernel support IPTables comments?
-            initializeIptables.supportComments();
             Switch iptablesComments = new Switch(getActivity());
-            iptablesComments.setChecked(preferenceManager.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
+            iptablesComments.setChecked(iptables.supportComment);
             iptablesComments.setEnabled(false);
             iptablesComments.setText(getString(R.string.wizard_init_ipt_comments_text));
             main_content.addView(iptablesComments);

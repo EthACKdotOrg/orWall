@@ -1,67 +1,91 @@
-package org.ethack.orwall.iptables;
+package org.ethack.orwall.lib;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.ethack.orwall.BackgroundProcess;
-import org.ethack.orwall.lib.AppRule;
-import org.ethack.orwall.lib.CheckSum;
-import org.ethack.orwall.lib.Constants;
-import org.ethack.orwall.lib.NatRules;
-import org.ethack.orwall.lib.NetworkHelper;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.NetworkInterface;
-import java.net.InterfaceAddress;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.Inet4Address;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
-import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Initialize IPTables. The application has
- * to run at least once before this can be called.
- * This initialization is the second steps needed in order to get
- * Orbot working.
- */
-public class InitializeIptables {
+public class Iptables {
+    public final static String DIR_DST = "/system/etc/init.d";
+    public final static String DST_FILE = String.format("%s/91firewall", DIR_DST);
+    public final static String DIR_DST_1 = "/data/local/userinit.d/";
+    public final static String DST_FILE_1 = String.format("%s/91firewall", DIR_DST_1);
 
-    public final static String dir_dst = "/system/etc/init.d";
-    public final static String dst_file = String.format("%s/91firewall", dir_dst);
-    public final static String dir_dst1 = "/data/local/userinit.d/";
-    public final static String dst_file1 = String.format("%s/91firewall", dir_dst1);
-    private final IptRules iptRules;
-    private long dns_proxy;
     private Context context;
-    private boolean supportComment;
+    public boolean supportComment;
+    public boolean supportWait;
+    private Shell shell = null;
 
     /**
      * Construtor
      *
      * @param context
      */
-    public InitializeIptables(Context context) {
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.dns_proxy = Long.valueOf(preferences.getString(Constants.PREF_DNS_PORT, Long.toString(Constants.ORBOT_DNS_PROXY)));
+    public Iptables(Context context) {
         this.context = context;
-        this.supportComment = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false);
-        this.iptRules = new IptRules(this.supportComment);
+        iptablesCapabilities();
+    }
+
+    /**
+     * Checks if current kernel supports comments for iptables.
+     * Saves state in a sharedPreference.
+     */
+    private void iptablesCapabilities() {
+        String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
+        String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
+        boolean support = (genericRule(check) || genericRule(rule));
+
+        if (support) {
+            Log.d("IPTables: ", "Comments are supported");
+        } else {
+            Log.d("IPTables: ", "Comments are NOT supported");
+        }
+
+        supportComment = support;
+        supportWait = genericRule("--help | grep -q -e \"--wait\"");
+    }
+
+    /**
+     * run a simple command
+     *
+     * @param command
+     * @return true if success
+     */
+    private boolean runCommand(final String command) {
+        if (shell == null){
+            try {
+                shell = Shell.startRootShell();
+            } catch (IOException e) {
+                Log.e("Shell", "NO shell !");
+            }
+        }
+
+        if (this.shell != null) {
+            SimpleCommand cmd = new SimpleCommand(command);
+            try {
+                this.shell.add(cmd).waitForFinish();
+                return (cmd.getExitCode() == 0);
+            } catch (IOException e) {
+                Log.e("Shell", "Unable to run simple command");
+                Log.e("Shell", command);
+                Log.e("Trace", e.getMessage());
+            } catch (TimeoutException e) {
+                Log.e("Shell", "A timeout was reached");
+                Log.e("Shell", e.getMessage());
+            }
+        }
+        return false;
     }
 
     /**
@@ -82,8 +106,8 @@ public class InitializeIptables {
         }
 
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
-        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
-        this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
+        Preferences.setBrowserEnabled(context, false);
+        Preferences.setOrwallEnabled(context, true);
 
         // initialize main chains
         initIPv6();
@@ -93,23 +117,21 @@ public class InitializeIptables {
         // get lan subnet
         LANPolicy();
 
-        authorized = this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SIP_ENABLED, false);
-        if (authorized) {
-            app_uid = Long.valueOf(this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getString(Constants.PREF_KEY_SIP_APP, "0"));
+
+        if (Preferences.isSIPEnabled(this.context)) {
+            app_uid = Long.valueOf(Preferences.getSIPApp(this.context));
             if (app_uid != 0) {
                 Log.d("Boot", "Authorizing SIP");
                 manageSip(true, app_uid);
             }
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_ADB_ENABLED, false);
-        if (authorized) {
-            enableADB(authorized);
+        if (Preferences.isADBEnabled(context)) {
+            enableADB(true);
         }
 
-        authorized = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).getBoolean(Constants.PREF_KEY_SSH_ENABLED, false);
-        if (authorized) {
-            enableSSH(authorized);
+        if (Preferences.isSSHEnabled(context)) {
+            enableSSH(true);
         }
 
         Log.d("Boot: ", "Finished initialization");
@@ -128,7 +150,6 @@ public class InitializeIptables {
             Log.d("Boot: ", "pushed new app in queue: " + rule.getPkgName());
         }
         Log.d("Boot: ", "Finished NAT stuff");
-
     }
 
     /**
@@ -173,17 +194,14 @@ public class InitializeIptables {
                 "-X ow_LAN"
         };
         for (String rule : rules) {
-            if (!iptRules.genericRule(rule)) {
+            if (!genericRule(rule)) {
                 Log.e("deactivate", "Unable to remove rule");
                 Log.e("deactivate", rule);
             }
         }
 
         // subnet & tethering is no more in iptables
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
-        sharedPreferences.edit().remove(Constants.PREF_KEY_IS_TETHER_ENABLED).apply();
-        sharedPreferences.edit().remove(Constants.PREF_KEY_TETHER_INTFS).apply();
+        Preferences.cleanIptablesPreferences(context);
     }
 
     public void deactivateV6() {
@@ -196,7 +214,7 @@ public class InitializeIptables {
                 "-D FORWARD -j REJECT"
         };
         for (String rule : rules) {
-            if (!iptRules.genericRuleV6(rule)) {
+            if (!genericRuleV6(rule)) {
                 Log.e("deactivate", "Unable to remove IPv6 rule");
                 Log.e("deactivate", rule);
             }
@@ -207,32 +225,14 @@ public class InitializeIptables {
      * Checks if iptables binary is on the device.
      * @return true if it finds iptables
      */
-    public boolean iptablesExists() {
+    public static boolean iptablesExists() {
         File iptables = new File(Constants.IPTABLES);
         return iptables.exists();
     }
 
-    public boolean ip6tablesExists() {
+    public static boolean ip6tablesExists() {
         File iptables = new File(Constants.IP6TABLES);
         return iptables.exists();
-    }
-
-    /**
-     * Checks if current kernel supports comments for iptables.
-     * Saves state in a sharedPreference.
-     */
-    public void supportComments() {
-        String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
-        String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
-        boolean support = (iptRules.genericRule(check) || iptRules.genericRule(rule));
-
-        if (support) {
-            Log.d("IPTables: ", "Comments are supported");
-        } else {
-            Log.d("IPTables: ", "Comments are NOT supported");
-        }
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, support).apply();
-        this.supportComment = support;
     }
 
     /**
@@ -241,39 +241,36 @@ public class InitializeIptables {
      */
     public boolean isInitialized() {
         String rule = "-C ow_OUTPUT_LOCK -j REJECT";
-        return iptRules.genericRule(rule);
+        return genericRule(rule);
     }
 
-    public boolean isOrwallReallyEnabled() {
+    public boolean haveBooted() {
         String rule = "-C OUTPUT -j ow_OUTPUT";
-        return iptRules.genericRule(rule);
+        return genericRule(rule);
     }
 
     /**
      * update rules for LAN access.
      */
     public void LANPolicy() {
-        NetworkHelper nwHelper = new NetworkHelper();
-        String subnet = nwHelper.getSubnet(this.context);
+        String subnet = NetworkHelper.getSubnet(this.context);
 
         // Get subnet from SharedPreferences
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        String old_subnet = sharedPreferences.getString(Constants.PREF_KEY_CURRENT_SUBNET, null);
+        String old_subnet = Preferences.getCurrentSubnet(context);
 
         if (old_subnet != null && !old_subnet.equals(subnet)) {
             // Remove rules if we got another subnet in sharedPref
-            iptRules.LanNoNat(old_subnet, false);
-            sharedPreferences.edit().remove(Constants.PREF_KEY_CURRENT_SUBNET).apply();
+            LanNoNat(old_subnet, false);
+            Preferences.setCurrentSubnet(context, null);
         }
 
         if (subnet != null && !subnet.equals(old_subnet)) {
             // Do what's needed with current subnet
-            iptRules.LanNoNat(subnet, true);
+            LanNoNat(subnet, true);
 
             // Or save new subnet
-            sharedPreferences.edit().putString(Constants.PREF_KEY_CURRENT_SUBNET, subnet).apply();
+            Preferences.setCurrentSubnet(context, subnet);
         }
-
     }
 
     /**
@@ -291,7 +288,7 @@ public class InitializeIptables {
         };
 
         for (String rule : rules) {
-            if (!iptRules.genericRule(String.format(rule, action))) {
+            if (!genericRule(String.format(rule, action))) {
                 Log.e("enableADB", "Unable to add rule");
                 Log.e("enableADB", String.format(rule, action));
             }
@@ -315,7 +312,7 @@ public class InitializeIptables {
         };
 
         for (String rule : rules) {
-            if (!iptRules.genericRule(String.format(rule, action))) {
+            if (!genericRule(String.format(rule, action))) {
                 Log.e("enableSSH", "Unable to add rule");
                 Log.e("enableSSH", String.format(rule, action));
             }
@@ -328,21 +325,21 @@ public class InitializeIptables {
 
     public void initIPv6(){
         if (!ip6tablesExists()) return;
-        if (iptRules.genericRuleV6("-C INPUT -j REJECT")) return;
+        if (genericRuleV6("-C INPUT -j REJECT")) return;
 
         String[] rules = {
-              // flush all OUTPUT rules
-              "-P INPUT DROP",
-              "-P OUTPUT DROP",
-              "-P FORWARD DROP",
-              "-I INPUT -j REJECT",
-              "-I OUTPUT -j REJECT",
-              "-I FORWARD -j REJECT"
+                // flush all OUTPUT rules
+                "-P INPUT DROP",
+                "-P OUTPUT DROP",
+                "-P FORWARD DROP",
+                "-I INPUT -j REJECT",
+                "-I OUTPUT -j REJECT",
+                "-I FORWARD -j REJECT"
         };
         for (String rule : rules) {
-            if (!iptRules.genericRuleV6(rule)) {
-                Log.e(InitializeIptables.class.getName(), "Unable to initialize IPv6");
-                Log.e(InitializeIptables.class.getName(), rule);
+            if (!genericRuleV6(rule)) {
+                Log.e(Iptables.class.getName(), "Unable to initialize IPv6");
+                Log.e(Iptables.class.getName(), rule);
             }
         }
     }
@@ -352,6 +349,7 @@ public class InitializeIptables {
      * @param orbot_uid long UID for orbot application
      */
     public void initOutputs(final long orbot_uid) {
+        Long dns_proxy = Long.valueOf(Preferences.getDNSPort(context));
         String[] rules = {
                 "-P OUTPUT DROP",
                 "-D OUTPUT -j bw_OUTPUT",
@@ -370,13 +368,13 @@ public class InitializeIptables {
                 ),
                 String.format(
                         "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
-                        this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
+                        dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
                 "-t nat -N ow_OUTPUT",
                 "-t nat -A OUTPUT -j ow_OUTPUT",
                 String.format(
                         "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
-                        this.dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
+                        dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
                 // NAT
                 String.format(
@@ -388,9 +386,9 @@ public class InitializeIptables {
                 "-D OUTPUT -g ow_OUTPUT_LOCK"
         };
         for (String rule : rules) {
-            if (!iptRules.genericRule(rule)) {
-                Log.e(InitializeIptables.class.getName(), "Unable to initialize");
-                Log.e(InitializeIptables.class.getName(), rule);
+            if (!genericRule(rule)) {
+                Log.e(Iptables.class.getName(), "Unable to initialize");
+                Log.e(Iptables.class.getName(), rule);
             }
         }
     }
@@ -420,9 +418,9 @@ public class InitializeIptables {
 
         };
         for (String rule : rules) {
-            if (!iptRules.genericRule(rule)) {
-                Log.e(InitializeIptables.class.getName(), "Unable to initialize");
-                Log.e(InitializeIptables.class.getName(), rule);
+            if (!genericRule(rule)) {
+                Log.e(Iptables.class.getName(), "Unable to initialize");
+                Log.e(Iptables.class.getName(), rule);
             }
         }
     }
@@ -432,38 +430,36 @@ public class InitializeIptables {
      * It also save this state for later reference if needed
      * @return true if init is supported.
      */
-    public boolean initSupported() {
-        File dstDir = new File(dir_dst);
-        boolean support = dstDir.exists();
-        context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_DISABLE_INIT, !support).apply();
-        return support;
+    public static boolean initSupported() {
+        File dstDir = new File(DIR_DST);
+        return dstDir.exists();
     }
 
     /**
      * Checks some system settings before calling the method installing for good the init-script
      */
-    public void installInitScript() {
+    public static void installInitScript(Context context) {
 
         final String src_file = new File(context.getDir("bin", 0), "userinit.sh").getAbsolutePath();
 
         CheckSum check_src = new CheckSum(src_file);
-        CheckSum check_dst = new CheckSum(dst_file);
+        CheckSum check_dst = new CheckSum(DST_FILE);
 
         if (initSupported()) {
 
             if (!check_dst.hash().equals(check_src.hash())) {
-                doInstallScripts(src_file, dst_file);
+                doInstallScripts(src_file, DST_FILE);
             }
-            File local_dst = new File(dir_dst1);
+            File local_dst = new File(DIR_DST_1);
             if (local_dst.exists()) {
-                CheckSum check_dst1 = new CheckSum(dst_file1);
+                CheckSum check_dst1 = new CheckSum(DST_FILE_1);
                 if (!check_dst1.hash().equals(check_src.hash())) {
-                    doInstallScripts(src_file, dst_file1);
+                    doInstallScripts(src_file, DST_FILE_1);
                 }
             }
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, true).apply();
+            Preferences.setEnforceInitScript(context, true);
         } else {
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+            Preferences.setEnforceInitScript(context, false);
         }
     }
 
@@ -472,7 +468,7 @@ public class InitializeIptables {
      * @param src_file String matching source init-script
      * @param dst_file String matching destination init-script
      */
-    private void doInstallScripts(String src_file, String dst_file) {
+    private static void doInstallScripts(String src_file, String dst_file) {
         Shell shell = null;
         try {
             shell = Shell.startRootShell();
@@ -510,7 +506,7 @@ public class InitializeIptables {
     /**
      * Removes init-script.
      */
-    public void removeIniScript() {
+    public static void removeIniScript(Context context) {
         Shell shell = null;
         try {
             shell = Shell.startRootShell();
@@ -520,7 +516,7 @@ public class InitializeIptables {
         }
         if (shell != null) {
             SimpleCommand command1 = new SimpleCommand("mount -o remount,rw /system");
-            SimpleCommand command2 = new SimpleCommand("rm -f " + dst_file);
+            SimpleCommand command2 = new SimpleCommand("rm -f " + DST_FILE);
             SimpleCommand command3 = new SimpleCommand("mount -o remount,ro /system");
             try {
                 shell.add(command1).waitForFinish();
@@ -531,7 +527,7 @@ public class InitializeIptables {
             } catch (TimeoutException e) {
                 Log.e("Shell", "Error while closing the Shell");
             } finally {
-                context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_KEY_ENFOCE_INIT, false).apply();
+                Preferences.setEnforceInitScript(context, false);
                 try {
                     shell.close();
                 } catch (IOException e) {
@@ -554,7 +550,7 @@ public class InitializeIptables {
         char action = (status ? 'A' : 'D');
 
         for (String rule : rules) {
-            iptRules.genericRule(String.format(rule, action, uid));
+            genericRule(String.format(rule, action, uid));
         }
     }
 
@@ -575,7 +571,7 @@ public class InitializeIptables {
 
         for (String rule : rules) {
             Log.d("ManageCaptiveBrowser", String.format(rule, action, uid));
-            iptRules.genericRule(String.format(rule, action, uid));
+            genericRule(String.format(rule, action, uid));
         }
         // As android now uses kernel resolver for DNS, we have to allow dns to be freed…
         // This is described in issue #60 and was spotted by Mike Perry, from Tor Project.
@@ -587,27 +583,10 @@ public class InitializeIptables {
             // we disable browser, hence we put back DNS redirection.
             rule = "-t nat -D OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN";
         }
-        iptRules.genericRule(rule);
-    }
-
-    public void getTetheredInterfaces(Context context, Set<String> set){
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        for(Method method: cm.getClass().getDeclaredMethods()){
-            if(method.getName().equals("getTetheredIfaces")){
-                try {
-                    String[] intfs = (String[]) method.invoke(cm);
-                    if (intfs != null)
-                        Collections.addAll(set, intfs);
-                    break;
-                } catch (Exception e) {
-                   return;
-                }
-            }
-        }
+        genericRule(rule);
     }
 
     public void tetherUpdate(Context context, Set<String> before, Set<String> after){
-        SharedPreferences prefs = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
 
         if (before != null) {
             for (String item: before){
@@ -621,8 +600,7 @@ public class InitializeIptables {
                 enableDHCP(true, item);
         }
 
-        prefs.edit().putBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, !after.isEmpty()).apply();
-        prefs.edit().putStringSet(Constants.PREF_KEY_TETHER_INTFS, after).apply();
+        Preferences.setTetherInterfaces(context, after);
     }
 
     public void enableDHCP(boolean status, String intf){
@@ -634,41 +612,23 @@ public class InitializeIptables {
                 String.format(
                         "-%c ow_INPUT -i %s -p udp -m udp --dport 67 -j ACCEPT%s",
                         action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
-        ));
+                ));
 
         rules.add(
                 String.format(
                         "-%c ow_OUTPUT -o %s -p udp -m udp --sport 67 -j ACCEPT%s",
                         action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
 
-        ));
+                ));
         for (String rule : rules) {
-            if (!iptRules.genericRule(rule)) {
+            if (!genericRule(rule)) {
                 Log.e("Tethering", "Unable to apply rule");
                 Log.e("Tethering", rule);
             }
         }
     }
 
-/* could be usefull later
-    public String getMask(String intf){
-        try {
-            NetworkInterface ntwrk = NetworkInterface.getByName(intf);
-            Iterator<InterfaceAddress> addrList = ntwrk.getInterfaceAddresses().iterator();
-            while (addrList.hasNext()) {
-                InterfaceAddress addr = addrList.next();
-                InetAddress ip = addr.getAddress();
-                if (ip instanceof Inet4Address) {
-                    String mask = ip.getHostAddress() + "/" +
-                            addr.getNetworkPrefixLength();
-                    return mask;
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 /*
     /* still not work
     public void tether_tor(Context context, boolean status, String intf){
@@ -680,66 +640,159 @@ public class InitializeIptables {
         rules.add(String.format("-t nat -%c PREROUTING -i %s -p udp --dport 53 -j REDIRECT --to-ports %s", action, intf, dns_port));
         rules.add(String.format(" -t nat -%c PREROUTING -i %s -p tcp -j REDIRECT --to-ports %s", action, intf, trans_port));
         for (String rule : rules) {
-            if (!iptRules.genericRule(rule)) {
+            if (!genericRule(rule)) {
                 Log.e("Tor tethering", "Unable to apply rule");
                 Log.e("Tor tethering", rule);
             }
         }
     }
 */
-    /**
-     * Just detect if tethering is enabled or not.
-     * @return boolean, true if enabled.
-     */
-    public boolean isTetherEnabled() {
-        return this.context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(Constants.PREF_KEY_IS_TETHER_ENABLED, false);
-    }
 
     /**
-     * Apply or remove rules for captive portal detection.
-     * Captive portal detection works with DNS and redirection detection.
-     * Once the device is connected, Android will probe the network in order to get a page, located on Google servers.
-     * If it can connect to it, this means we're not in a captive network; otherwise, it will prompt for network login.
-     * @param status boolean, true if we want to enable this probe.
-     * @param context application context
+     * Build an iptables call in order to either create or remove NAT rule
+     *
+     * @param context
+     * @param appUID
+     * @param action
+     * @param appName
      */
-    public void enableCaptiveDetection(boolean status, Context context) {
-        // TODO: find a way to disable it on android <4.4
-        // TODO: we may want to get some setting writer directly through the API.
-        // This seems to be done with a System app only. orWall may become a system app.
-        if (Build.VERSION.SDK_INT > 18) {
+    public void natApp(Context context, final long appUID, final char action, final String appName) {
+        long trans_port = Long.valueOf(Preferences.getTransPort(context));
+        long dns_port = Long.valueOf(Preferences.getDNSPort(context));
+        String[] RULES = {
+                String.format(
+                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        action, appUID, trans_port,
+                        (this.supportComment ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
+                ),
+                String.format(
+                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        action, appUID, dns_port,
+                        (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
+                ),
+                String.format(
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
+                        action, appUID, trans_port,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
+                ),
+                String.format(
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
+                        action, appUID, dns_port,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
+                ),
+        };
 
-            String CMD;
-            if (status) {
-                CMD = new File(context.getDir("bin", 0), "activate_portal.sh").getAbsolutePath();
-            } else {
-                CMD = new File(context.getDir("bin", 0), "deactivate_portal.sh").getAbsolutePath();
+        for (String rule : RULES) {
+            if (!genericRule(rule)) {
+                Log.e(Iptables.class.getName(), rule);
             }
-            Shell shell = null;
-            try {
-                shell = Shell.startRootShell();
-            } catch (IOException e) {
-                Log.e("Shell", "Unable to get shell");
-            }
-
-            if (shell != null) {
-                SimpleCommand command = new SimpleCommand(CMD);
-                try {
-                    shell.add(command).waitForFinish();
-                } catch (IOException e) {
-                    Log.e("Shell", "IO Error");
-                } catch (TimeoutException e) {
-                    Log.e("Shell", "Timeout");
-                } finally {
-                    try {
-                        shell.close();
-                    } catch (IOException e) {
-
-                    }
-                }
-            }
-
         }
     }
+
+    public void LanNoNat(final String lan, final boolean allow) {
+        char action = (allow ? 'I' : 'D');
+
+        String[] rules = {
+                "-%c ow_OUTPUT -d %s -j ow_LAN",
+                "-%c ow_INPUT -s %s -j ow_LAN",
+                "-t nat -%c ow_OUTPUT -d %s -j RETURN",
+        };
+
+        String formatted;
+        for (String rule : rules) {
+            formatted = String.format(rule, action, lan);
+            if (!genericRule(formatted)) {
+                Log.e(
+                        "LanNoNat",
+                        "Unable to add rule: " + formatted
+                );
+            }
+        }
+    }
+
+    public boolean genericRule(final String rule) {
+        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IPTABLES, rule));
+    }
+
+    public boolean genericRuleV6(final String rule) {
+        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IP6TABLES, rule));
+    }
+
+    public void bypass(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'A' : 'D');
+        String[] rules = {
+                String.format(
+                        "-%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
+                ),
+        };
+
+        for (String rule : rules) {
+            if (!genericRule(rule)) {
+                Log.e(
+                        "bypass",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
+    }
+
+    public void localHost(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'A' : 'D');
+
+        String[] rules = {
+                String.format(
+                        "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
+                ),
+                String.format(
+                        "-%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                ),
+                String.format(
+                        "-t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
+                ),
+                String.format(
+                        "-%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                ),
+        };
+
+        for (String rule : rules) {
+            if (!genericRule(rule)) {
+                Log.e(
+                        "localhost",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
+    }
+
+    public void localNetwork(final long appUID, final String appName, final boolean allow) {
+        char action = (allow ? 'I' : 'D');
+
+        String[] rules = {
+                String.format(
+                        "-%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
+                        action, appUID,
+                        (this.supportComment ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
+                )
+        };
+
+        for (String rule : rules) {
+            if (!genericRule(rule)) {
+                Log.e(
+                        "localhost",
+                        "Unable to add rule: " + rule
+                );
+            }
+        }
+    }
+
 }

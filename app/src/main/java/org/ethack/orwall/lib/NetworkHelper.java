@@ -9,6 +9,8 @@ import android.util.Log;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Small helper in order to get some network information
@@ -16,9 +18,6 @@ import java.nio.ByteOrder;
 public class NetworkHelper {
 
     private static String TAG = "NetworkHelper";
-
-    public NetworkHelper() {
-    }
 
     /**
      * Tries to detect if we're sharing the connection or not.
@@ -48,7 +47,7 @@ public class NetworkHelper {
         return (tethered.length != 0);
     }
 
-    private int netmaskToCIDR(int netmask){
+    private static int netmaskToCIDR(int netmask){
         switch (netmask){
             case 0x80000000: return 1;
             case 0xC0000000: return 2;
@@ -87,7 +86,7 @@ public class NetworkHelper {
         }
     }
 
-    private String getNetwork(DhcpInfo dhcp){
+    private static String getNetwork(DhcpInfo dhcp){
         int ip = dhcp.ipAddress;
         int mask = dhcp.netmask;
         if (ip == 0 || mask == 0) return null;
@@ -116,8 +115,45 @@ public class NetworkHelper {
      * @return subnet as a String
      */
 
-    public String getSubnet(Context context) {
+    public static String getSubnet(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         return getNetwork(wifiManager.getDhcpInfo());
     }
+
+    public static void getTetheredInterfaces(Context context, Set<String> set){
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        for(Method method: cm.getClass().getDeclaredMethods()){
+            if(method.getName().equals("getTetheredIfaces")){
+                try {
+                    String[] intfs = (String[]) method.invoke(cm);
+                    if (intfs != null)
+                        Collections.addAll(set, intfs);
+                    break;
+                } catch (Exception e) {
+                    return;
+                }
+            }
+        }
+    }
+
+    /* could be usefull later
+    public String getMask(String intf){
+        try {
+            NetworkInterface ntwrk = NetworkInterface.getByName(intf);
+            Iterator<InterfaceAddress> addrList = ntwrk.getInterfaceAddresses().iterator();
+            while (addrList.hasNext()) {
+                InterfaceAddress addr = addrList.next();
+                InetAddress ip = addr.getAddress();
+                if (ip instanceof Inet4Address) {
+                    String mask = ip.getHostAddress() + "/" +
+                            addr.getNetworkPrefixLength();
+                    return mask;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    */
 }

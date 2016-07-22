@@ -1,6 +1,5 @@
 package org.ethack.orwall.fragments;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -13,12 +12,13 @@ import android.widget.ListView;
 
 import org.ethack.orwall.R;
 import org.ethack.orwall.adapter.AppListAdapter;
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.AppRule;
 import org.ethack.orwall.lib.AppRuleComparator;
 import org.ethack.orwall.lib.Constants;
+import org.ethack.orwall.lib.Iptables;
 import org.ethack.orwall.lib.NatRules;
 import org.ethack.orwall.lib.PackageInfoData;
+import org.ethack.orwall.lib.Preferences;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class AppFragment extends Fragment {
         View view;
 
         view  = inflater.inflate(R.layout.fragment_tabbed_apps, container, false);
-        InitializeIptables initializeIptables = new InitializeIptables(getActivity());
+        Iptables iptables = new Iptables(getActivity());
         // Do we have root access ?
         if (RootCommands.rootAccessGiven()) {
             view.findViewById(R.id.warn_root).setVisibility(View.GONE);
@@ -47,20 +47,19 @@ public class AppFragment extends Fragment {
             view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
-        if (initializeIptables.iptablesExists()) {
+        if (iptables.iptablesExists()) {
             view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
         } else {
             view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);
         }
-        if (initializeIptables.initSupported() && !initializeIptables.isInitialized()) {
+        if (Iptables.initSupported() && !iptables.isInitialized()) {
             view.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
         }
 
         ListView listView = (ListView) view.findViewById(R.id.id_enabled_apps);
 
         // Toggle hint layer
-        boolean hide_hint = getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                .getBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, false);
+        boolean hide_hint = Preferences.isHidePressHint(getActivity());
 
         if (hide_hint) {
             view.findViewById(R.id.hint_press).setVisibility(View.GONE);
@@ -69,9 +68,7 @@ public class AppFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     ((View) view.getParent()).setVisibility(View.GONE);
-                    getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(Constants.PREF_KEY_HIDE_PRESS_HINT, true).apply();
+                    Preferences.setHidePressHint(getActivity(), true);
                 }
             });
         }
@@ -164,7 +161,6 @@ public class AppFragment extends Fragment {
     private boolean isReservedApp(PackageInfo pkg) {
         return (
                 pkg.packageName.equals(Constants.ORBOT_APP_NAME)
-                        //|| pkg.packageName.equals(Constants.I2P_APP_NAME)
         );
     }
 

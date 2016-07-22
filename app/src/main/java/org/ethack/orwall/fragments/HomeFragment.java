@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,9 +27,10 @@ import org.ethack.orwall.PreferencesActivity;
 import org.ethack.orwall.R;
 import org.ethack.orwall.TabbedMain;
 import org.ethack.orwall.WizardActivity;
-import org.ethack.orwall.iptables.InitializeIptables;
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.InstallScripts;
+import org.ethack.orwall.lib.Iptables;
+import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
@@ -43,21 +43,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class HomeFragment extends Fragment {
 
-    private SharedPreferences sharedPreferences;
     private CountDownTimer timer;
     private Long browser_uid;
     private Long sip_uid;
-    private InitializeIptables initializeIptables;
+    private Iptables iptables;
     private View home;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        this.home = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
+        home = inflater.inflate(R.layout.fragment_tabbed_home, container, false);
 
-        this.sharedPreferences = this.getActivity().getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        this.initializeIptables = new InitializeIptables(getActivity());
-        boolean initSupported = initializeIptables.initSupported();
+        iptables = new Iptables(getActivity());
+        boolean initSupported = Iptables.initSupported();
 
         Switch orwallStatus = (Switch) home.findViewById(R.id.orwall_status);
 
@@ -76,12 +74,12 @@ public class HomeFragment extends Fragment {
         // Display a big fat warning if IPTables wasn't initialized properly
         // This warning should be shown only if we aren't expected this situation
         // If we know there is no init-script support, then don't show it.
-        if (initSupported && !initializeIptables.isInitialized()) {
+        if (initSupported && !iptables.isInitialized()) {
             home.findViewById(R.id.warn_init).setVisibility(View.VISIBLE);
         }
 
 
-        orwallStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true));
+        orwallStatus.setChecked(Preferences.isOrwallEnabled(getActivity()));
         // orWall might be deactivated. Let's test it!
         orwallStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +93,7 @@ public class HomeFragment extends Fragment {
         // Init script: try to install it and so on
         InstallScripts installScripts = new InstallScripts(getActivity());
         installScripts.run();
-        boolean enforceInit = sharedPreferences.getBoolean(Constants.PREF_KEY_ENFOCE_INIT, true);
+        boolean enforceInit = Preferences.isEnforceInitScript(getActivity());
         status_initscript.setChecked( (enforceInit && initSupported) );
         status_initscript.setEnabled(initSupported);
         // If init script cannot be enabled, display why
@@ -104,7 +102,7 @@ public class HomeFragment extends Fragment {
             explain.setText(
                     String.format(
                             getString(R.string.explain_no_initscript),
-                            InitializeIptables.dst_file
+                            Iptables.DST_FILE
                     )
             );
             explain.setVisibility(View.VISIBLE);
@@ -115,9 +113,9 @@ public class HomeFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 boolean checked = compoundButton.isChecked();
                 if (checked) {
-                    initializeIptables.installInitScript();
+                    Iptables.installInitScript(getActivity());
                 } else {
-                    initializeIptables.removeIniScript();
+                    Iptables.removeIniScript(getActivity());
                 }
             }
         });
@@ -130,7 +128,7 @@ public class HomeFragment extends Fragment {
             home.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
-        if (initializeIptables.iptablesExists()) {
+        if (Iptables.iptablesExists()) {
             status_iptables.setChecked(true);
             home.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
             home.findViewById(R.id.status_iptables_description).setVisibility(View.GONE);
@@ -140,9 +138,7 @@ public class HomeFragment extends Fragment {
             home.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
         }
 
-        // Does current kernel supports comments in iptables?
-        initializeIptables.supportComments();
-        status_ipt_comments.setChecked(sharedPreferences.getBoolean(Constants.CONFIG_IPT_SUPPORTS_COMMENTS, false));
+        status_ipt_comments.setChecked(iptables.supportComment);
         // Is orbot installed?
         status_orbot.setChecked(Util.isOrbotInstalled(getActivity()));
 
@@ -181,12 +177,12 @@ public class HomeFragment extends Fragment {
         Switch sipStatus = (Switch) home.findViewById(R.id.sip_status);
 
         // We want to ensure we can access this setting if and only if there's a selected browser.
-        this.browser_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SPEC_BROWSER, "0"));
-        if (this.browser_uid != 0  && sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+        this.browser_uid = Long.valueOf(Preferences.getBrowserApp(getActivity()));
+        if (this.browser_uid != 0  && Preferences.isOrwallEnabled(getActivity())) {
             browserStatus.setClickable(true);
             browserStatus.setTextColor(Color.BLACK);
 
-            browserStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false));
+            browserStatus.setChecked(Preferences.isBrowserEnabled(getActivity()));
             browserStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -200,18 +196,18 @@ public class HomeFragment extends Fragment {
         }
 
         // We want to ensure we can access this setting if and only if there's a selected SIP app
-        this.sip_uid = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_SIP_APP, "0"));
-        if (this.sip_uid != 0  && sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true)) {
+        this.sip_uid = Long.valueOf(Preferences.getSIPApp(getActivity()));
+        if (this.sip_uid != 0  && Preferences.isOrwallEnabled(getActivity())) {
             sipStatus.setClickable(false);
             sipStatus.setTextColor(Color.BLACK);
 
-            sipStatus.setChecked(sharedPreferences.getBoolean(Constants.PREF_KEY_SIP_ENABLED, false));
+            sipStatus.setChecked(Preferences.isSIPEnabled(getActivity()));
             sipStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     boolean checked = ((Switch) view).isChecked();
-                    initializeIptables.manageSip(checked, sip_uid);
-                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_SIP_ENABLED, checked).apply();
+                    iptables.manageSip(checked, sip_uid);
+                    Preferences.setSIPEnabled(getActivity(), checked);
                 }
             });
         } else {
@@ -229,10 +225,11 @@ public class HomeFragment extends Fragment {
     public void toggleBrowser(final View view) {
         boolean checked = ((Switch) view).isChecked();
 
-        initializeIptables.manageCaptiveBrowser(checked, this.browser_uid);
+        iptables.manageCaptiveBrowser(checked, this.browser_uid);
 
         if (checked) {
-            long gracetime = Long.valueOf(sharedPreferences.getString(Constants.PREF_KEY_BROWSER_GRACETIME, String.valueOf(Constants.BROWSER_GRACETIME)));
+
+            long gracetime = Long.valueOf(Preferences.getBrowserGraceTime(getActivity()));
 
             this.timer = new CountDownTimer(TimeUnit.MINUTES.toMillis(gracetime), TimeUnit.SECONDS.toMillis(30)) {
                 @Override
@@ -246,8 +243,8 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onFinish() {
-                    initializeIptables.manageCaptiveBrowser(false, browser_uid);
-                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_BROWSER_ENABLED, false).apply();
+                    iptables.manageCaptiveBrowser(false, browser_uid);
+                    Preferences.setBrowserEnabled(getActivity(), false);
                     CharSequence text = getResources().getString(R.string.main_end_of_browser);
                     Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
                 }
@@ -283,7 +280,7 @@ public class HomeFragment extends Fragment {
         if (checked) {
             bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_ENABLE_ORWALL);
             getActivity().startService(bgpProcess);
-            sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true).apply();
+            Preferences.setOrwallEnabled(getActivity(), true);
             updateOptions();
             Toast.makeText(this.getActivity(), getString(R.string.enabling_orwall), Toast.LENGTH_LONG).show();
             notificationManager.cancel(1);
@@ -298,7 +295,7 @@ public class HomeFragment extends Fragment {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     bgpProcess.putExtra(Constants.ACTION, Constants.ACTION_DISABLE_ORWALL);
                     getActivity().startService(bgpProcess);
-                    sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, false).apply();
+                    Preferences.setOrwallEnabled(getActivity(), false);
                     updateOptions();
                     notificationManager.notify(1, notification.build());
                 }
@@ -340,9 +337,9 @@ public class HomeFragment extends Fragment {
 
         Switch orwallSwitch = (Switch) home.findViewById(R.id.orwall_status);
         // checking true orwall status
-        if (sharedPreferences.getBoolean(Constants.PREF_KEY_ORWALL_ENABLED, true) &&
-                !initializeIptables.isOrwallReallyEnabled()){
-            sharedPreferences.edit().putBoolean(Constants.PREF_KEY_ORWALL_ENABLED, false).apply();
+        if (Preferences.isOrwallEnabled(getActivity()) &&
+                !iptables.haveBooted()){
+            Preferences.setOrwallEnabled(getActivity(), false);
             orwallSwitch.setChecked(false);
         }
 
