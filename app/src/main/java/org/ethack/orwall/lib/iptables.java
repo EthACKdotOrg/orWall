@@ -156,8 +156,6 @@ public class Iptables {
      * This method will deactivate the whole orWall iptables stuff.
      * It must:
      * - set INPUT and OUTPUT policy to ACCEPT
-     * - flush all rules we have in filter and nat tables
-     * - put back default accounting rules in INPUT and OUTPUT
      * - remove any chain it created (though we want to keep the "witness" chain).
      */
 
@@ -169,22 +167,12 @@ public class Iptables {
                 "-D OUTPUT -j ow_OUTPUT",
                 "-F ow_OUTPUT",
                 "-X ow_OUTPUT",
-                // remove accounting_OUT chain
-                "-F accounting_OUT",
-                "-X accounting_OUT",
-                // add back default system accounting
-                "-A OUTPUT -j bw_OUTPUT",
                 // set INPUT policy back to ACCEPT
                 "-P INPUT ACCEPT",
                 // flush all INPUT rules
                 "-D INPUT -j ow_INPUT",
                 "-F ow_INPUT",
                 "-X ow_INPUT",
-                // remove accounting_IN chain
-                "-F accounting_IN",
-                "-X accounting_IN",
-                // add back default system accounting
-                "-A INPUT -j bw_INPUT",
                 // flush nat OUTPUT
                 "-t nat -D OUTPUT -j ow_OUTPUT",
                 "-t nat -F ow_OUTPUT",
@@ -352,16 +340,8 @@ public class Iptables {
         Long dns_proxy = Long.valueOf(Preferences.getDNSPort(context));
         String[] rules = {
                 "-P OUTPUT DROP",
-                "-D OUTPUT -j bw_OUTPUT",
                 "-N ow_OUTPUT",
                 "-A OUTPUT -j ow_OUTPUT",
-                "-N accounting_OUT",
-                "-A accounting_OUT -j bw_OUTPUT",
-                "-A accounting_OUT -j ACCEPT",
-                String.format(
-                        "-A ow_OUTPUT -m owner --uid-owner %d -p tcp --dport 9030 -j accounting_OUT%s",
-                        orbot_uid, (this.supportComment ? " -m comment --comment \"Forward Directory traffic to accounting\"" : "")
-                ),
                 String.format(
                         "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
@@ -370,19 +350,20 @@ public class Iptables {
                         "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
+                // NAT
                 "-t nat -N ow_OUTPUT",
                 "-t nat -A OUTPUT -j ow_OUTPUT",
                 String.format(
                         "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
-                // NAT
                 String.format(
                         "-t nat -I ow_OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // LAN
                 "-N ow_LAN",
+                // at the end, deactivate boot locking
                 "-D OUTPUT -g ow_OUTPUT_LOCK"
         };
         for (String rule : rules) {
@@ -400,12 +381,8 @@ public class Iptables {
     public void initInput(final long orbot_uid) {
         String[] rules = {
                 "-P INPUT DROP",
-                "-D INPUT -j bw_INPUT",
                 "-N ow_INPUT",
                 "-A INPUT -j ow_INPUT",
-                "-N accounting_IN",
-                "-A accounting_IN -j bw_INPUT",
-                "-A accounting_IN -j ACCEPT",
                 String.format(
                         "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot inputs\"" : "")
@@ -543,8 +520,8 @@ public class Iptables {
      */
     public void manageSip(boolean status, Long uid) {
         String[] rules = {
-                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j accounting_IN",
-                "-%c ow_OUTPUT -m owner --uid-owner %d -p udp -j accounting_OUT",
+                "-%c ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate RELATED,ESTABLISHED -p udp -j ACCEPT",
+                "-%c ow_OUTPUT -m owner --uid-owner %d -p udp -j ACCEPT",
                 "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -p udp -j RETURN",
         };
         char action = (status ? 'A' : 'D');
@@ -671,12 +648,12 @@ public class Iptables {
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
                 ),
                 String.format(
-                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j accounting_OUT%s",
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT%s",
                         action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
                 String.format(
-                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j accounting_OUT%s",
+                        "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j ACCEPT%s",
                         action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
                 ),

@@ -41,11 +41,9 @@ fi
 sleep 1
 run "$IPTABLES --list"
 
+# OUTPUT
 run "$IPTABLES -P OUTPUT DROP"
-
 run "$IPTABLES -N ow_OUTPUT_LOCK"
-run "$IPTABLES -A ow_OUTPUT_LOCK -m owner --uid-owner $ORBOT_UID -p tcp --dport 9030 -j ACCEPT"
-
 run "$IPTABLES -A ow_OUTPUT_LOCK -m owner --uid-owner $ORBOT_UID -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT"
 run "$IPTABLES -A ow_OUTPUT_LOCK -j REJECT"
 run "$IPTABLES -I OUTPUT -g ow_OUTPUT_LOCK"
