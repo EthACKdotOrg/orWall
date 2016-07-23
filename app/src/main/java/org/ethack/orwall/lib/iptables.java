@@ -343,29 +343,36 @@ public class Iptables {
                 "-P OUTPUT DROP",
                 "-N ow_OUTPUT",
                 "-A OUTPUT -j ow_OUTPUT",
+                // let orbot output
                 String.format(
                         "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
                 ),
+                // accept redirected system dns queries
                 String.format(
                         "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
-                // NAT
+                // name output chaine on nat
                 "-t nat -N ow_OUTPUT",
-                "-t nat -A OUTPUT -j ow_OUTPUT",
+                // do not redirect localhost addresses
+                "-t nat -A ow_OUTPUT -d 127.0.0.1/32 -j RETURN",
+                // do not redirect orbot
+                String.format(
+                        "-t nat -A ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
+                ),
+                // Redirect system dsn queries to TOR
                 String.format(
                         "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
-                String.format(
-                        "-t nat -I ow_OUTPUT 1 -m owner --uid-owner %d -j RETURN%s",
-                        orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
-                ),
-                // LAN
+                // apply rules in the chain
+                "-t nat -A OUTPUT -j ow_OUTPUT",
+                // create a chain for LAN
                 "-N ow_LAN",
                 // at the end, deactivate boot locking
-                "-D OUTPUT -g ow_OUTPUT_LOCK"
+                "-D OUTPUT -j ow_OUTPUT_LOCK",
         };
         for (String rule : rules) {
             if (!genericRule(rule)) {
@@ -392,7 +399,8 @@ public class Iptables {
                         "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
                         (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
                 ),
-                "-D INPUT -g ow_INPUT_LOCK"
+                // at the end, deactivate boot locking
+                "-D INPUT -j ow_INPUT_LOCK"
 
         };
         for (String rule : rules) {

@@ -29,7 +29,7 @@ run() {
 ORBOT_UID=$(cat /data/system/packages.list | sed -n 's/^org.torproject.android //p' | cut -d ' ' -f1)
 
 # paranoia / this script should run one time only
-command ${IPTABLES} -C ow_OUTPUT_LOCK -j REJECT
+command ${IPTABLES} -C ow_OUTPUT_LOCK -j DROP
 if [ $? -eq 0 ]; then
     log "orwall seems to be already initialized"
     exit 0
@@ -45,15 +45,15 @@ run "$IPTABLES --list"
 run "$IPTABLES -P OUTPUT DROP"
 run "$IPTABLES -N ow_OUTPUT_LOCK"
 run "$IPTABLES -A ow_OUTPUT_LOCK -m owner --uid-owner $ORBOT_UID -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT"
-run "$IPTABLES -A ow_OUTPUT_LOCK -j REJECT"
-run "$IPTABLES -I OUTPUT -g ow_OUTPUT_LOCK"
+run "$IPTABLES -A ow_OUTPUT_LOCK -j DROP"
+run "$IPTABLES -I OUTPUT -j ow_OUTPUT_LOCK"
 
 # INPUT
 run "$IPTABLES -P INPUT DROP"
 run "$IPTABLES -N ow_INPUT_LOCK"
 run "$IPTABLES -A ow_INPUT_LOCK -m owner --uid-owner $ORBOT_UID -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT"
-run "$IPTABLES -A ow_INPUT_LOCK -j REJECT"
-run "$IPTABLES -I INPUT -g ow_INPUT_LOCK"
+run "$IPTABLES -A ow_INPUT_LOCK -j DROP"
+run "$IPTABLES -I INPUT -j ow_INPUT_LOCK"
 
 ## Block all traffic at boot ##
 run "$IP6TABLES -P INPUT DROP"
