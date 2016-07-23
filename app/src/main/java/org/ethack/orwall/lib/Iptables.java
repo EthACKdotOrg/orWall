@@ -219,7 +219,7 @@ public class Iptables {
      * @return true if it finds the witness chain.
      */
     public boolean isInitialized() {
-        String rule = "-C ow_OUTPUT_LOCK -j REJECT";
+        String rule = "-C ow_OUTPUT_LOCK -j DROP";
         return genericRule(rule);
     }
 
