@@ -43,17 +43,7 @@ public class Iptables {
      * Saves state in a sharedPreference.
      */
     private void iptablesCapabilities() {
-        String check = "-C INPUT -m comment --comment \"This is a witness comment\"";
-        String rule = "-A INPUT -m comment --comment \"This is a witness comment\"";
-        boolean support = (genericRule(check) || genericRule(rule));
-
-        if (support) {
-            Log.d("IPTables: ", "Comments are supported");
-        } else {
-            Log.d("IPTables: ", "Comments are NOT supported");
-        }
-
-        supportComment = support;
+        supportComment = runCommand("cat /proc/net/ip_tables_matches | grep -q comment");
         supportWait = genericRule("--help | grep -q -e \"--wait\"");
     }
 
