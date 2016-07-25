@@ -20,8 +20,8 @@ ATTENZIONE: ciò autorizza l\'accesso alla LAN per TUTTE le applicazioni.Inoltre
 </string>
     <string name="enable_adb">Autorizzare Android Debug Bridge (ADB)</string>
     <string name="summary_enable_adb">Aprire porta TCP 5555 in bi-direzionale per permettere la connessione del dispositivo sulla rete.</string>
-    <string name="enable_ssh">TODO: Enable SSH incoming connections</string>
-    <string name="summary_enable_ssh">TODO: Opens incoming TCP 22 port so that you may connect to your device through SSH.</string>
+    <string name="enable_ssh">Enable SSH incoming connections</string>
+    <string name="summary_enable_ssh">Opens incoming TCP 22 port so that you may connect to your device through SSH.</string>
 
     <string name="switch_tethering">Abilitare la condivisione di connessione (Tethering)</string>
 
