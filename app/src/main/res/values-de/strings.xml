@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Thanks @ChristianTanner! -->
 <resources>
 
-  <string name="main_counter" formatted="false">%d Minuten, %d Sekunden bevor die Berechtigungen auslaufen.</string>
+  <string name="main_counter" formatted="true">%1$d Minuten, %2$d Sekunden bevor die Berechtigungen auslaufen.</string>
   <string name="main_end_of_browser">Browser Bypass beendet.</string>
 
   <string name="button_settings">Einstellungen</string>
@@ -67,8 +67,8 @@
   </string>
   <string name="alert_install_script_accept">Installieren</string>
   <string name="alert_install_script_refuse">Ablehnen</string>
-  <string name="explain_no_initscript" formatted="false">
-    Diese Anwendung verwendet ein Init-script in %s.\n
+  <string name="explain_no_initscript" formatted="true">
+    Diese Anwendung verwendet ein Init-script in %1$s.\n
     Es sieht so aus, als ob es von Deinem Android Gerät nicht unterstützt wird.\n
     \n
     <b>Das bedeutet, dass während des Bootvorgangs Datenlecks bestehen können.</b>\n
@@ -96,11 +96,11 @@
   <string name="toast_new_rule">Die neuen Regeln werden hinzugefügt</string>
   <string name="toast_remove_rule">Die Regeln werden entfernt</string>
   <string name="toast_update_rule">Rules are being updated</string>
-  <string name="toast_error" formatted="false">Ein Fehler ist aufgetreten, danke an den Entwickler wenden! #%d</string>
+  <string name="toast_error" formatted="true">Ein Fehler ist aufgetreten, danke an den Entwickler wenden! #%1$d</string>
 
   <string name="hint_long_press">Langes Drücken auf eine App wird Dich auf Erweiterte Einstellungen anzeigen</string>
   <string name="hint_close">Schließen</string>
-  <string name="advanced_connection_settings_title" formatted="false">Erweiterte Einstellungen für %s</string>
+  <string name="advanced_connection_settings_title" formatted="true">Erweiterte Einstellungen für %1$s</string>
   <string name="advanced_connection_provider">Connectivity-Anbieter</string>
   <string name="advanced_connection_type">Art der Verbindung</string>
   <string name="advanced_connection_type_force">Erzwingen Verbindung (mit REDIRECT)</string>
@@ -190,7 +190,7 @@
     Ein langer Fingerdruck wird einen Dialog zeigen der die App-Konfigurations-Verbindung anpassen kann.\n
     Die folgenden Optionen stehen zur Verfügung:\n
 
-    - Verbindungsmanager: Lässt dich zwischen Tor und ... Tor wählen (mehr kommt evtl. noch).\n
+    - Verbindungsmanager: Lässt dich zwischen Tor und … Tor wählen (mehr kommt evtl. noch).\n
     - Verbidnungstyp: Entweder die Anwendung kann für einen Lokalen Proxy konfiguriert werden, oder 
     du zwingst sie durch einen Proxy.\n
     - Kompletter Bypass: Diese Option sollte nicht verwendet werden, da diese es erlaubt deine Anwendungen 

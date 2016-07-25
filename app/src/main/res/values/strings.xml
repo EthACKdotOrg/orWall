@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_counter" formatted="false">%d minutes, %d seconds until end of permission.</string>
+    <string name="main_counter" formatted="true">%1$d minutes, %2$d seconds until end of permission.</string>
     <string name="main_end_of_browser">End of Browser bypass.</string>
 
     <string name="button_settings">Settings</string>
@@ -89,11 +89,11 @@
     <string name="toast_new_rule">New rules are being added</string>
     <string name="toast_remove_rule">Rules are being removed</string>
     <string name="toast_update_rule">Rules are being updated</string>
-    <string name="toast_error" formatted="false">An error occurred, please contact the dev! #%d</string>
+    <string name="toast_error" formatted="true">An error occurred, please contact the dev! #%1$d</string>
 
     <string name="hint_long_press">Long press on an app will show you advanced settings</string>
     <string name="hint_close">Close</string>
-    <string name="advanced_connection_settings_title" formatted="false">Advanced settings for %s</string>
+    <string name="advanced_connection_settings_title" formatted="true">Advanced settings for %1$s</string>
     <string name="advanced_connection_provider">Connection provider</string>
     <string name="advanced_connection_type">Connection type</string>
     <string name="advanced_connection_type_force">Force connection (using REDIRECT)</string>
@@ -111,8 +111,8 @@
     <string name="wizard_close">Close wizard</string>
 
     <string name="wizard_init_script_text">Init script activation:</string>
-        <string name="explain_no_initscript" formatted="false">
-        This application uses an init-script in %s.\n
+        <string name="explain_no_initscript" formatted="true">
+        This application uses an init-script in %1$s.\n
         Unfortunately, it seems your Android device doesn\'t support it.\n
         \n
         <b>You may experience data leaks at boot time.</b>\n

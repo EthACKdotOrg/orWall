@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_counter" formatted="false">%d minutos, %d segundos hasta el final del permiso.</string>
+    <string name="main_counter" formatted="true">%1$d minutos, %2$d segundos hasta el final del permiso.</string>
     <string name="main_end_of_browser">Fin de la desviación del navegador.</string>
 
     <string name="button_settings">Ajustes</string>
@@ -89,11 +89,11 @@
     <string name="toast_new_rule">Nuevas normas han sido añadidas</string>
     <string name="toast_remove_rule">Las normas han sido eliminadas</string>
     <string name="toast_update_rule">Rules are being updated</string>
-    <string name="toast_error" formatted="false">¡Ha ocurrido un error, por favor, contacta con el desarrollador! #%d</string>
+    <string name="toast_error" formatted="true">¡Ha ocurrido un error, por favor, contacta con el desarrollador! #%1$d</string>
 
     <string name="hint_long_press">Mantener pulsada la aplicación para que muestre las opciones avanzadas</string>
     <string name="hint_close">Cerrar</string>
-    <string name="advanced_connection_settings_title" formatted="false">Opciones avanzadas para %s</string>
+    <string name="advanced_connection_settings_title" formatted="true">Opciones avanzadas para %1$s</string>
     <string name="advanced_connection_provider">Proveedor de conexión</string>
     <string name="advanced_connection_type">Tipo de conexión</string>
     <string name="advanced_connection_type_force">Forzar la conexión (usando REDIRECCIONAMIENTO)</string>
@@ -111,8 +111,8 @@
     <string name="wizard_close">Cerrar</string>
 
     <string name="wizard_init_script_text">Iniciar script de activación:</string>
-        <string name="explain_no_initscript" formatted="false">
-        Esta aplicación usa un script de iniciación en %s.\n
+        <string name="explain_no_initscript" formatted="true">
+        Esta aplicación usa un script de iniciación en %1$s.\n
         Desafortunadamente, parece que tu dispositivo Android no lo soporta.\n
         \n
         <b>Seguramente experimentes filtraciones de datos en el arranque.</b>\n

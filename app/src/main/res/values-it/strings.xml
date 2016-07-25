@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="main_counter" formatted="false">%d minuti, %d secondi alla fine del permesso accordato.</string>
+    <string name="main_counter" formatted="true">%1$d minuti, %2$d secondi alla fine del permesso accordato.</string>
     <string name="main_end_of_browser">Fine delle eccezioni concesse al browser.</string>
 
     <string name="button_settings">Configurazione</string>
@@ -63,8 +63,8 @@ L\'ubicazione dello script é %s
 </string>
     <string name="alert_install_script_accept">Installare</string>
     <string name="alert_install_script_refuse">Rifiutare</string>
-<string name="explain_no_initscript" formatted="false">
-Questa applicazione fa uso di uno script init ubicato in %s.\n
+<string name="explain_no_initscript" formatted="true">
+Questa applicazione fa uso di uno script init ubicato in %1$s.\n
 Sfortunatamente, a quanto pare il vostro dispositivo Android sembra non supportarlo.\n
 \n
 <b>Potreste quindi correre il rischio di compromettere i vostri dati all\'avvio del dispositivo.</b>\n
@@ -90,10 +90,10 @@ In questo caso non possiamo farci niente :(.
 <string name="toast_new_rule">Le nuove regole sono state aggiunte</string>
 <string name="toast_remove_rule">Le regole sono state rimosse</string>
 <string name="toast_update_rule">Rules are being updated</string>
-<string name="toast_error" formatted="false">Si è verificato un errore, si prega di contattare lo sviluppatore! #%d</string>
+<string name="toast_error" formatted="true">Si è verificato un errore, si prega di contattare lo sviluppatore! #%1$d</string>
 <string name="hint_long_press">Premere a lungo su un app vi mostrerà le impostazioni avanzate</string>
 <string name="hint_close">Chiudere</string>
-<string name="advanced_connection_settings_title" formatted="false">Impostazioni avanzate per %s</string>
+<string name="advanced_connection_settings_title" formatted="true">Impostazioni avanzate per %1$s</string>
 <string name="advanced_connection_provider">Fornitore di connettività</string>
 <string name="advanced_connection_type">Tipo de connessione</string>
 <string name="advanced_connection_type_force">Imporre connessione (utilizza REDIRECT)</string>
