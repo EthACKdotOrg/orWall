@@ -127,7 +127,6 @@ public class AppListAdapter extends ArrayAdapter {
         if (applicationInfo != null || packageInfoData != null) {
 
             appIcon.setBounds(0, 0, 40, 40);
-
             holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
             holder.checkBox.setTag(R.id.id_appTag, appRule);
 
@@ -325,7 +324,9 @@ public class AppListAdapter extends ArrayAdapter {
                 dialogInterface.cancel();
             }
         });
-
+        // get app icon
+        Drawable icon = ((CheckBox)view).getCompoundDrawables()[0];
+        alert.setIcon(icon.getConstantState().newDrawable());
         // Display alert
         alert.setTitle(String.format(
                         this.context.getString(R.string.advanced_connection_settings_title),
