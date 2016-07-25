@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/EthACKdotOrg/orWall.svg?branch=master)](https://travis-ci.org/EthACKdotOrg/orWall)
+
 # orWall
 
 Because real life is a Dystopia
