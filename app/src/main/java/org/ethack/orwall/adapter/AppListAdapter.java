@@ -117,7 +117,7 @@ public class AppListAdapter extends ArrayAdapter {
         } else {
             PackageManager packageManager = this.context.getPackageManager();
             try {
-                applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), PackageManager.GET_PERMISSIONS);
+                applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), 0);
                 appIcon = packageManager.getApplicationIcon(applicationInfo);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.e(TAG, "Application not found: " + appRule.getPkgName());
