@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -105,7 +106,7 @@ public class NetworkHelper {
         int c = (ip >>  8) & 0xFF;
         int d = ip & 0xFF;
 
-        return String.format("%d.%d.%d.%d/%d", a, b, c, d, mask);
+        return String.format(Locale.US, "%d.%d.%d.%d/%d", a, b, c, d, mask);
     }
 
     /**

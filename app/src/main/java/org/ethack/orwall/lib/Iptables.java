@@ -14,6 +14,7 @@ import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -334,12 +335,12 @@ public class Iptables {
                 "-N ow_OUTPUT",
                 "-A OUTPUT -j ow_OUTPUT",
                 // let orbot output
-                String.format(
+                String.format(Locale.US,
                         "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
                 ),
                 // accept redirected system dns queries
-                String.format(
+                String.format(Locale.US,
                         "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
@@ -348,12 +349,12 @@ public class Iptables {
                 // do not redirect localhost addresses
                 "-t nat -A ow_OUTPUT -d 127.0.0.1/32 -j RETURN",
                 // do not redirect orbot
-                String.format(
+                String.format(Locale.US,
                         "-t nat -A ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
                 ),
                 // Redirect system dsn queries to TOR
-                String.format(
+                String.format(Locale.US,
                         "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
                         dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
                 ),
@@ -381,11 +382,11 @@ public class Iptables {
                 "-P INPUT DROP",
                 "-N ow_INPUT",
                 "-A INPUT -j ow_INPUT",
-                String.format(
+                String.format(Locale.US,
                         "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
                         orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot inputs\"" : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
                         (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
                 ),
@@ -656,22 +657,22 @@ public class Iptables {
         long trans_port = Long.valueOf(Preferences.getTransPort(context));
         long dns_port = Long.valueOf(Preferences.getDNSPort(context));
         String[] RULES = {
-                String.format(
+                String.format(Locale.US,
                         "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT%s",
                         action, appUID, trans_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j ACCEPT%s",
                         action, appUID, dns_port,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
@@ -717,7 +718,7 @@ public class Iptables {
     public void bypass(final long appUID, final String appName, final boolean allow) {
         char action = (allow ? 'A' : 'D');
         String[] rules = {
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
@@ -738,22 +739,22 @@ public class Iptables {
         char action = (allow ? 'A' : 'D');
 
         String[] rules = {
-                String.format(
+                String.format(Locale.US,
                         "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
                 ),
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
@@ -774,7 +775,7 @@ public class Iptables {
         char action = (allow ? 'I' : 'D');
 
         String[] rules = {
-                String.format(
+                String.format(Locale.US,
                         "-%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
                         (this.supportComment ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
