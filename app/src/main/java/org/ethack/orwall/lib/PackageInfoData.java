@@ -53,7 +53,7 @@ public class PackageInfoData {
      */
     public static Map<String, PackageInfoData> specialApps() {
         String prefix = Constants.SPECIAL_APPS_PREFIX;
-        Map<String, PackageInfoData> specialApps = new HashMap<String, PackageInfoData>();
+        Map<String, PackageInfoData> specialApps = new HashMap<>();
         specialApps.put(prefix+"media", new PackageInfoData("media", "Media Server", prefix+"media"));
         specialApps.put(prefix+"vpn", new PackageInfoData("vpn", "VPN Service", prefix+"vpn"));
         specialApps.put(prefix+"shell", new PackageInfoData("shell", "Linux Shell", prefix+"shell"));

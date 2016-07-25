@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import org.ethack.orwall.lib.Constants;
 import org.ethack.orwall.lib.Iptables;
-import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.util.Log;
 

@@ -343,7 +343,6 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setAppName(appRule.getAppName());
         updated.setPkgName(appRule.getPkgName());
         updated.setAppUID(appRule.getAppUID());
-        final int position = (Integer) view.getTag();
 
         // none
         if (!checkboxInternet.isChecked()) {
@@ -365,8 +364,7 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setLocalHost(this.checkLocalHost.isChecked());
         updated.setLocalNetwork(this.checkLocalNetwork.isChecked());
 
-        boolean done = false;
-        boolean error = false;
+        boolean done;
 
         // CREATE
         if (!appRule.isStored() && !updated.isEmpty()){

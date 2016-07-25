@@ -31,8 +31,7 @@ public class AppRuleComparator implements Comparator<AppRule> {
                 }
             }
         }
-        String label =  appRule.getAppName();
-        return label;
+        return appRule.getAppName();
     }
 
     @Override

@@ -85,7 +85,6 @@ public class Iptables {
      * It adds new chains, and some rules in order to get iptables up n'running.
      */
     public void boot() {
-        boolean authorized;
         Long app_uid;
         PackageManager packageManager = context.getPackageManager();
 
@@ -446,7 +445,7 @@ public class Iptables {
      * @param dst_file String matching destination init-script
      */
     private static void doInstallScripts(String src_file, String dst_file) {
-        Shell shell = null;
+        Shell shell;
         try {
             shell = Shell.startRootShell();
         } catch (IOException e) {
@@ -484,7 +483,7 @@ public class Iptables {
      * Removes init-script.
      */
     public static void removeIniScript(Context context) {
-        Shell shell = null;
+        Shell shell;
         try {
             shell = Shell.startRootShell();
         } catch (IOException e) {
