@@ -47,7 +47,7 @@ public class AppFragment extends Fragment {
             view.findViewById(R.id.warn_root).setVisibility(View.VISIBLE);
         }
         // Hopefully there IS iptables on this device…
-        if (iptables.iptablesExists()) {
+        if (Iptables.iptablesExists()) {
             view.findViewById(R.id.warn_iptables).setVisibility(View.GONE);
         } else {
             view.findViewById(R.id.warn_iptables).setVisibility(View.VISIBLE);

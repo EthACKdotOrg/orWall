@@ -106,7 +106,7 @@ public class WizardFragment extends Fragment {
             // install init as default behavior
             Iptables.installInitScript(getActivity());
             boolean enforceInit = Preferences.isEnforceInitScript(getActivity());
-            boolean initSupported = iptables.initSupported();
+            boolean initSupported = Iptables.initSupported();
 
             Switch initScript = new Switch(getActivity());
             initScript.setChecked( (enforceInit && initSupported) );
@@ -136,7 +136,7 @@ public class WizardFragment extends Fragment {
 
             // Does iptables exist?
             Switch iptablesStatus = new Switch(getActivity());
-            iptablesStatus.setChecked(iptables.iptablesExists());
+            iptablesStatus.setChecked(Iptables.iptablesExists());
             iptablesStatus.setEnabled(false);
             iptablesStatus.setText(getString(R.string.wizard_init_iptables_text));
             main_content.addView(iptablesStatus);
