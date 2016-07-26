@@ -117,7 +117,7 @@ public class AppListAdapter extends ArrayAdapter {
         } else {
             PackageManager packageManager = this.context.getPackageManager();
             try {
-                applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), PackageManager.GET_PERMISSIONS);
+                applicationInfo = packageManager.getApplicationInfo(appRule.getPkgName(), 0);
                 appIcon = packageManager.getApplicationIcon(applicationInfo);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.e(TAG, "Application not found: " + appRule.getPkgName());
@@ -127,7 +127,6 @@ public class AppListAdapter extends ArrayAdapter {
         if (applicationInfo != null || packageInfoData != null) {
 
             appIcon.setBounds(0, 0, 40, 40);
-
             holder.checkBox.setCompoundDrawables(appIcon, null, null, null);
             holder.checkBox.setTag(R.id.id_appTag, appRule);
 
@@ -325,7 +324,9 @@ public class AppListAdapter extends ArrayAdapter {
                 dialogInterface.cancel();
             }
         });
-
+        // get app icon
+        Drawable icon = ((CheckBox)view).getCompoundDrawables()[0];
+        alert.setIcon(icon.getConstantState().newDrawable());
         // Display alert
         alert.setTitle(String.format(
                         this.context.getString(R.string.advanced_connection_settings_title),
@@ -342,7 +343,6 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setAppName(appRule.getAppName());
         updated.setPkgName(appRule.getPkgName());
         updated.setAppUID(appRule.getAppUID());
-        final int position = (Integer) view.getTag();
 
         // none
         if (!checkboxInternet.isChecked()) {
@@ -364,8 +364,7 @@ public class AppListAdapter extends ArrayAdapter {
         updated.setLocalHost(this.checkLocalHost.isChecked());
         updated.setLocalNetwork(this.checkLocalNetwork.isChecked());
 
-        boolean done = false;
-        boolean error = false;
+        boolean done;
 
         // CREATE
         if (!appRule.isStored() && !updated.isEmpty()){

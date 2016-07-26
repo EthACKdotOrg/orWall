@@ -16,6 +16,8 @@ import org.ethack.orwall.lib.Preferences;
 import org.ethack.orwall.lib.Util;
 import org.sufficientlysecure.rootcommands.RootCommands;
 
+import java.util.Locale;
+
 /**
  * A simple {@link Fragment} subclass.
  * Will display a simple Wizard explaining User what orWall can do.
@@ -69,7 +71,7 @@ public class WizardFragment extends Fragment {
         String step = "Step 1: ";
         if (mPageNumber < titles.length) {
             title = getString(titles[mPageNumber]);
-            step = String.format("Step %d: ", mPageNumber + 1);
+            step = String.format(Locale.US, "Step %d: ", mPageNumber + 1);
         }
         ((TextView) rootView.findViewById(R.id.wizard_step_title))
                 .setText(step + title);
@@ -106,7 +108,7 @@ public class WizardFragment extends Fragment {
             // install init as default behavior
             Iptables.installInitScript(getActivity());
             boolean enforceInit = Preferences.isEnforceInitScript(getActivity());
-            boolean initSupported = iptables.initSupported();
+            boolean initSupported = Iptables.initSupported();
 
             Switch initScript = new Switch(getActivity());
             initScript.setChecked( (enforceInit && initSupported) );
@@ -136,7 +138,7 @@ public class WizardFragment extends Fragment {
 
             // Does iptables exist?
             Switch iptablesStatus = new Switch(getActivity());
-            iptablesStatus.setChecked(iptables.iptablesExists());
+            iptablesStatus.setChecked(Iptables.iptablesExists());
             iptablesStatus.setEnabled(false);
             iptablesStatus.setText(getString(R.string.wizard_init_iptables_text));
             main_content.addView(iptablesStatus);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="main_counter" formatted="false">%d minutes, %d secondes avant la fin des permissions.</string>
+    <string name="main_counter" formatted="true">%1$d minutes, %2$d secondes avant la fin des permissions.</string>
     <string name="main_end_of_browser">Fin des exceptions pour le Navigateur.</string>
 
     <string name="button_settings">Paramètres</string>
@@ -67,8 +67,8 @@
     </string>
     <string name="alert_install_script_accept">Installer</string>
     <string name="alert_install_script_refuse">Refuser</string>
-    <string name="explain_no_initscript" formatted="false">
-        Cette application utilise un script d\'init %s.\n
+    <string name="explain_no_initscript" formatted="true">
+        Cette application utilise un script d\'init %1$s.\n
         Malheureusement, il semble que votre appareil Android ne le supporte pas.\n
         \n
         <b>Vous pourriez être victime de fuite de données au démarrage de l\'appareil.</b>\n
@@ -96,11 +96,11 @@
     <string name="toast_new_rule">Les nouvelles règles sont ajoutées</string>
     <string name="toast_remove_rule">Les règles sont enlevées</string>
     <string name="toast_update_rule">Les règles sont mises à jour</string>
-    <string name="toast_error" formatted="false">Une erreur est survenue, merci de contacter le développeur ! #%d</string>
+    <string name="toast_error" formatted="true">Une erreur est survenue, merci de contacter le développeur ! #%1$d</string>
 
     <string name="hint_long_press">Un appui long sur une application vous montrera les paramètres avancés</string>
     <string name="hint_close">Fermer</string>
-    <string name="advanced_connection_settings_title" formatted="false">Réglages avancés pour %s</string>
+    <string name="advanced_connection_settings_title" formatted="true">Réglages avancés pour %1$s</string>
     <string name="advanced_connection_provider">Fournisseur de connectivité</string>
     <string name="advanced_connection_type">Type de connexion</string>
     <string name="advanced_connection_type_force">Forcer connexion (utilise REDIRECT)</string>
