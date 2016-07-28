@@ -145,7 +145,7 @@ public class WizardFragment extends Fragment {
 
             // Does current kernel support IPTables comments?
             Switch iptablesComments = new Switch(getActivity());
-            iptablesComments.setChecked(iptables.supportComment);
+            iptablesComments.setChecked(iptables.getSupportComment());
             iptablesComments.setEnabled(false);
             iptablesComments.setText(getString(R.string.wizard_init_ipt_comments_text));
             main_content.addView(iptablesComments);

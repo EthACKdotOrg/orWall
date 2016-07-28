@@ -23,6 +23,15 @@ public class Util {
         }
     }
 
+    public static int getOrbotUID(Context context){
+        try {
+            PackageManager pm = context.getPackageManager();
+            return pm.getApplicationInfo(Constants.ORBOT_APP_NAME, 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+            return 0;
+        }
+    }
+
     /**
      * Apply or remove rules for captive portal detection.
      * Captive portal detection works with DNS and redirection detection.

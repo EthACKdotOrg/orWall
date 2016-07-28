@@ -25,8 +25,9 @@ public class Iptables {
     public final static String DST_FILE_1 = String.format("%s/91firewall", DIR_DST_1);
 
     private Context context;
-    public boolean supportComment;
-    public boolean supportWait;
+    private Boolean _supportComment;
+    private Boolean _supportWait;
+    private Integer _orbotUID;
     private Shell shell = null;
 
     /**
@@ -34,18 +35,30 @@ public class Iptables {
      *
      * @param context
      */
-    public Iptables(Context context) {
+        public Iptables(Context context) {
         this.context = context;
-        iptablesCapabilities();
     }
 
-    /**
-     * Checks if current kernel supports comments for iptables.
-     * Saves state in a sharedPreference.
-     */
-    private void iptablesCapabilities() {
-        supportComment = runCommand("cat /proc/net/ip_tables_matches | grep -q comment");
-        supportWait = genericRule("--help | grep -q -e \"--wait\"");
+    public boolean getSupportComment(){
+        if (_supportComment == null)
+            _supportComment = runCommand("cat /proc/net/ip_tables_matches | grep -q comment");
+        return _supportComment;
+    }
+
+    public boolean getSupportWait(){
+        if (_supportWait == null)
+            _supportWait = runCommand("iptables --help | grep -q -e \"--wait\"");
+        return _supportWait;
+    }
+
+    public int getOrbotUID(){
+        if (_orbotUID == null)
+            _orbotUID = Util.getOrbotUID(context);
+        return _orbotUID;
+    }
+
+    public boolean isOrbotInstalled(){
+        return getOrbotUID() > 0;
     }
 
     /**
@@ -85,35 +98,24 @@ public class Iptables {
      * It adds new chains, and some rules in order to get iptables up n'running.
      */
     public void boot() {
-        Long app_uid;
-        PackageManager packageManager = context.getPackageManager();
-
-        try {
-            app_uid = (long) packageManager.getApplicationInfo(Constants.ORBOT_APP_NAME, 0).uid;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(BroadcastReceiver.class.getName(), "Unable to get Orbot real UID — is it still installed?");
-            app_uid = (long) 0; // prevents stupid compiler error… never used.
-            //android.os.Process.killProcess(android.os.Process.myPid());
-        }
-
         Log.d("Boot: ", "Deactivate some stuff at boot time in order to prevent crashes");
         Preferences.setBrowserEnabled(context, false);
         Preferences.setOrwallEnabled(context, true);
 
         // initialize main chains
         initIPv6();
-        initOutputs(app_uid);
-        initInput(app_uid);
+        initOutputs();
+        initInput();
 
         // get lan subnet
         LANPolicy();
 
 
         if (Preferences.isSIPEnabled(this.context)) {
-            app_uid = Long.valueOf(Preferences.getSIPApp(this.context));
-            if (app_uid != 0) {
+            Long sip_uid = Long.valueOf(Preferences.getSIPApp(this.context));
+            if (sip_uid != 0) {
                 Log.d("Boot", "Authorizing SIP");
-                manageSip(true, app_uid);
+                manageSip(true, sip_uid);
             }
         }
 
@@ -325,45 +327,56 @@ public class Iptables {
 
     /**
      * Initialize OUTPUT chain in order to allow orbot network to go out
-     * @param orbot_uid long UID for orbot application
      */
-    public void initOutputs(final long orbot_uid) {
+    public void initOutputs() {
+        int orbot_uid = getOrbotUID();
         Long dns_proxy = Long.valueOf(Preferences.getDNSPort(context));
-        String[] rules = {
-                "-P OUTPUT DROP",
-                "-N ow_OUTPUT",
-                "-A OUTPUT -j ow_OUTPUT",
-                // let orbot output
-                String.format(Locale.US,
-                        "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
-                        orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot outputs\"" : "")
-                ),
-                // accept redirected system dns queries
-                String.format(Locale.US,
-                        "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
-                        dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
-                ),
-                // name output chaine on nat
-                "-t nat -N ow_OUTPUT",
-                // do not redirect localhost addresses
-                "-t nat -A ow_OUTPUT -d 127.0.0.1/32 -j RETURN",
-                // do not redirect orbot
-                String.format(Locale.US,
-                        "-t nat -A ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
-                        orbot_uid, (this.supportComment ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
-                ),
-                // Redirect system dsn queries to TOR
-                String.format(Locale.US,
-                        "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
-                        dns_proxy, (this.supportComment ? " -m comment --comment \"Allow DNS queries\"" : "")
-                ),
-                // apply rules in the chain
-                "-t nat -A OUTPUT -j ow_OUTPUT",
-                // create a chain for LAN
-                "-N ow_LAN",
-                // at the end, deactivate boot locking
-                "-D OUTPUT -j ow_OUTPUT_LOCK",
-        };
+        ArrayList<String> rules = new ArrayList<>();
+        rules.add("-P OUTPUT DROP");
+        rules.add("-N ow_OUTPUT");
+        rules.add("-A OUTPUT -j ow_OUTPUT");
+        if (orbot_uid > 0){
+            // let orbot output
+            rules.add(String.format(Locale.US,
+                    "-A ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                    orbot_uid, (getSupportComment() ? " -m comment --comment \"Allow Orbot outputs\"" : "")
+            ));
+            // accept redirected system dns queries
+            rules.add(String.format(Locale.US,
+                    "-A ow_OUTPUT -m owner --uid-owner 0 -d 127.0.0.1/32 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -p udp -m udp --dport %d -j ACCEPT%s",
+                    dns_proxy, (getSupportComment() ? " -m comment --comment \"Allow System DNS queries\"" : "")
+            ));
+        } else {
+            // can't redirect system dns query, we have to accept them ... for now
+            rules.add(String.format(Locale.US,
+                    "-A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j ACCEPT",
+                    dns_proxy, (getSupportComment() ? " -m comment --comment \"ACCEPT System DNS queries\"" : "")
+            ));
+        }
+        // name output chaine on nat
+        rules.add("-t nat -N ow_OUTPUT");
+        // do not redirect localhost addresses
+        rules.add("-t nat -A ow_OUTPUT -d 127.0.0.1/32 -j RETURN");
+        if (orbot_uid > 0){
+            // do not redirect orbot
+            rules.add(String.format(Locale.US,
+                    "-t nat -A ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                    orbot_uid, (getSupportComment() ? " -m comment --comment \"Orbot bypasses itself.\"" : "")
+            ));
+            // Redirect system dsn queries to TOR
+            rules.add(String.format(Locale.US,
+                    "-t nat -A ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j REDIRECT --to-ports %d%s",
+                    dns_proxy, (getSupportComment() ? " -m comment --comment \"Allow DNS queries\"" : "")
+            ));
+        }
+
+        // apply rules in the chain
+        rules.add("-t nat -A OUTPUT -j ow_OUTPUT");
+        // create a chain for LAN
+        rules.add("-N ow_LAN");
+        // at the end, deactivate boot locking
+        rules.add("-D OUTPUT -j ow_OUTPUT_LOCK");
+
         for (String rule : rules) {
             if (!genericRule(rule)) {
                 Log.e(Iptables.class.getName(), "Unable to initialize");
@@ -374,25 +387,29 @@ public class Iptables {
 
     /**
      * Initialize INPUT chain
-     * @param orbot_uid long UID for orbot application
      */
-    public void initInput(final long orbot_uid) {
-        String[] rules = {
-                "-P INPUT DROP",
-                "-N ow_INPUT",
-                "-A INPUT -j ow_INPUT",
-                String.format(Locale.US,
-                        "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
-                        orbot_uid, (this.supportComment ? " -m comment --comment \"Allow Orbot inputs\"" : "")
-                ),
-                String.format(Locale.US,
-                        "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
-                        (this.supportComment ? " -m comment --comment \"Allow related,established inputs\"" : "")
-                ),
-                // at the end, deactivate boot locking
-                "-D INPUT -j ow_INPUT_LOCK"
+    public void initInput() {
+        int orbot_uid = getOrbotUID();
+        ArrayList<String> rules = new ArrayList<>();
 
-        };
+        rules.add("-P INPUT DROP");
+        rules.add("-N ow_INPUT");
+        rules.add("-A INPUT -j ow_INPUT");
+        if (orbot_uid > 0){
+            // accept orbot inputs
+            rules.add(String.format(Locale.US,
+                    "-A ow_INPUT -m owner --uid-owner %d -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT%s",
+                    orbot_uid, (getSupportComment() ? " -m comment --comment \"Allow Orbot inputs\"" : "")
+            ));
+        }
+        rules.add(String.format(Locale.US,
+                "-A ow_INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT%s",
+                (getSupportComment() ? " -m comment --comment \"Allow related,established inputs\"" : "")
+        ));
+        // at the end, deactivate boot locking
+        rules.add("-D INPUT -j ow_INPUT_LOCK");
+
+
         for (String rule : rules) {
             if (!genericRule(rule)) {
                 Log.e(Iptables.class.getName(), "Unable to initialize");
@@ -542,6 +559,7 @@ public class Iptables {
                 "-%c ow_OUTPUT -m owner --uid-owner %d -j ACCEPT",
                 "-%c ow_OUTPUT -m owner --uid-owner %d -m conntrack --ctstate ESTABLISHED -j ACCEPT",
                 "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN",
+                "-t nat -%c ow_OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN"
         };
         char action = (status ? 'I' : 'D');
 
@@ -549,17 +567,6 @@ public class Iptables {
             Log.d("ManageCaptiveBrowser", String.format(rule, action, uid));
             genericRule(String.format(rule, action, uid));
         }
-        // As android now uses kernel resolver for DNS, we have to allow dns to be freed…
-        // This is described in issue #60 and was spotted by Mike Perry, from Tor Project.
-        String rule;
-        if (status) {
-            // we enable browser, hence we remove the DNS redirection
-            rule = "-t nat -I OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN";
-        } else {
-            // we disable browser, hence we put back DNS redirection.
-            rule = "-t nat -D OUTPUT -m owner --uid-owner 0 -p udp -m udp --dport 53 -j RETURN";
-        }
-        genericRule(rule);
     }
 
     public void tetherUpdate(Context context, Set<String> before, Set<String> after){
@@ -588,12 +595,12 @@ public class Iptables {
         rules.add(
                 String.format(
                         "-%c ow_INPUT -i %s -p udp -m udp --dport 67 -j ACCEPT%s",
-                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+                        action, intf, (getSupportComment() ? " -m comment --comment \"Allow DHCP tethering\"" : "")
                 ));
         rules.add(
                 String.format(
                         "-%c ow_OUTPUT -o %s -p udp -m udp --sport 67 -j ACCEPT%s",
-                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DHCP tethering\"" : "")
+                        action, intf, (getSupportComment() ? " -m comment --comment \"Allow DHCP tethering\"" : "")
 
                 ));
 
@@ -601,19 +608,19 @@ public class Iptables {
         rules.add(
                 String.format(
                         "-%c ow_INPUT -i %s -p udp --dport 53 -j ACCEPT%s",
-                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DNS tethering\"" : "")
+                        action, intf, (getSupportComment() ? " -m comment --comment \"Allow DNS tethering\"" : "")
                 ));
         rules.add(
                 String.format(
                         "-%c ow_OUTPUT -o %s -p udp --sport 53 -j ACCEPT%s",
-                        action, intf, (this.supportComment ? " -m comment --comment \"Allow DNS tethering\"" : "")
+                        action, intf, (getSupportComment() ? " -m comment --comment \"Allow DNS tethering\"" : "")
                 ));
 
         // relay dns query to isp
         rules.add(
                 String.format(
                         "-%c ow_OUTPUT -m owner --gid-owner %s -p udp --dport 53 -j ACCEPT%s",
-                        action, "nobody", (this.supportComment ? " -m comment --comment \"Allow DNS/ISP tethering\"" : "")
+                        action, "nobody", (getSupportComment() ? " -m comment --comment \"Allow DNS/ISP tethering\"" : "")
                 ));
 
         for (String rule : rules) {
@@ -653,28 +660,29 @@ public class Iptables {
      * @param appName
      */
     public void natApp(Context context, final long appUID, final char action, final String appName) {
+        if (!isOrbotInstalled()) return;
         long trans_port = Long.valueOf(Preferences.getTransPort(context));
         long dns_port = Long.valueOf(Preferences.getDNSPort(context));
         String[] RULES = {
                 String.format(Locale.US,
-                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        "-t nat -%c ow_OUTPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         action, appUID, trans_port,
-                        (this.supportComment ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Force %s through TransPort\"", appName) : "")
                 ),
                 String.format(Locale.US,
-                        "-t nat -%c ow_OUTPUT ! -d 127.0.0.1 -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
+                        "-t nat -%c ow_OUTPUT -p udp --dport 53 -m owner --uid-owner %d -j REDIRECT --to-ports %d%s",
                         action, appUID, dns_port,
-                        (this.supportComment ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Force %s through DNSProxy\"", appName) : "")
                 ),
                 String.format(Locale.US,
                         "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -m tcp -p tcp --dport %d -j ACCEPT%s",
                         action, appUID, trans_port,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Allow %s through TransPort\"", appName) : "")
                 ),
                 String.format(Locale.US,
                         "-%c ow_OUTPUT -d 127.0.0.1 -m conntrack --ctstate NEW,ESTABLISHED -m owner --uid-owner %d -p udp --dport %d -j ACCEPT%s",
                         action, appUID, dns_port,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Allow %s through DNSProxy\"", appName) : "")
                 ),
         };
 
@@ -707,11 +715,11 @@ public class Iptables {
     }
 
     public boolean genericRule(final String rule) {
-        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IPTABLES, rule));
+        return runCommand(String.format((getSupportWait())?"%s -w %s":"%s %s", Constants.IPTABLES, rule));
     }
 
     public boolean genericRuleV6(final String rule) {
-        return runCommand(String.format((supportWait)?"%s -w %s":"%s %s", Constants.IP6TABLES, rule));
+        return runCommand(String.format((getSupportWait())?"%s -w %s":"%s %s", Constants.IP6TABLES, rule));
     }
 
     public void bypass(final long appUID, final String appName, final boolean allow) {
@@ -720,7 +728,7 @@ public class Iptables {
                 String.format(Locale.US,
                         "-%c ow_OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Allow %s to bypass Proxies\"", appName) : "")
                 ),
         };
 
@@ -739,24 +747,14 @@ public class Iptables {
 
         String[] rules = {
                 String.format(Locale.US,
-                        "-t nat -%c ow_OUTPUT -m owner --uid-owner %d -j RETURN%s",
+                        "-%c ow_OUTPUT -o lo -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
                 String.format(Locale.US,
-                        "-%c ow_OUTPUT -o lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
+                        "-%c ow_INPUT -i lo -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
-                ),
-                String.format(Locale.US,
-                        "-t nat -%c ow_INPUT -m owner --uid-owner %d -j RETURN%s",
-                        action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Localhost %s\"", appName) : "")
-                ),
-                String.format(Locale.US,
-                        "-%c ow_INPUT -i lo -m conntrack --ctstate NEW,ESTABLISHED,RELATED -m owner --uid-owner %d -j ACCEPT%s",
-                        action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Allow %s to connect on localhost\"", appName) : "")
                 ),
         };
 
@@ -777,14 +775,14 @@ public class Iptables {
                 String.format(Locale.US,
                         "-%c ow_LAN -m owner --uid-owner %d -j ACCEPT%s",
                         action, appUID,
-                        (this.supportComment ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
+                        (getSupportComment() ? String.format(" -m comment --comment \"Local network %s\"", appName) : "")
                 )
         };
 
         for (String rule : rules) {
             if (!genericRule(rule)) {
                 Log.e(
-                        "localhost",
+                        "localnetwork",
                         "Unable to add rule: " + rule
                 );
             }

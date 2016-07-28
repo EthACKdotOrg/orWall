@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment {
             home.findViewById(R.id.status_iptables_description).setVisibility(View.VISIBLE);
         }
 
-        status_ipt_comments.setChecked(iptables.supportComment);
+        status_ipt_comments.setChecked(iptables.getSupportComment());
         // Is orbot installed?
         status_orbot.setChecked(Util.isOrbotInstalled(getActivity()));
 
