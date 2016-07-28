@@ -1,5 +1,6 @@
 package org.ethack.orwall.lib;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -20,6 +21,15 @@ public class Util {
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
+        }
+    }
+
+    public static int getOrbotUID(Context context){
+        try {
+            PackageManager pm = context.getPackageManager();
+            return pm.getApplicationInfo(Constants.ORBOT_APP_NAME, 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+            return 0;
         }
     }
 
