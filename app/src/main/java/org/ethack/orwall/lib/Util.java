@@ -1,6 +1,5 @@
 package org.ethack.orwall.lib;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;

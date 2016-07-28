@@ -192,7 +192,10 @@ public class AppListAdapter extends ArrayAdapter {
         AppRule appRule = apps.get(position);
 
         if (checked) {
-            appRule.setOnionType(Constants.DB_ONION_TYPE_TOR);
+            if (Util.isOrbotInstalled(this.context))
+                appRule.setOnionType(Constants.DB_ONION_TYPE_TOR);
+            else
+                appRule.setOnionType(Constants.DB_ONION_TYPE_BYPASS);
             appRule.setLocalHost(false);
             appRule.setLocalNetwork(false);
             boolean success = this.natRules.addAppToRules(appRule);
