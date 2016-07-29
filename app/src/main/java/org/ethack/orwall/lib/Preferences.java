@@ -26,6 +26,7 @@ public final class Preferences {
     public final static String PREF_KEY_ORWALL_ENABLED = "orwall_enabled";
     public final static String PREF_KEY_CURRENT_SUBNET = "current_subnet";
     public final static String PREF_KEY_HIDE_PRESS_HINT = "hide_press_hint";
+    public final static String PREF_KEY_TETHER_NETWORK = "tether_net_";
 
     public static long ORBOT_TRANSPROXY = 9040;
     public static long ORBOT_DNS_PROXY = 5400;
@@ -152,5 +153,13 @@ public final class Preferences {
 
     public static void setHidePressHint(Context context, boolean value){
         putBoolean(context, PREF_KEY_HIDE_PRESS_HINT, value);
+    }
+
+    public static String getTetherNetwork(Context context, String intf){
+        return getString(context, PREF_KEY_TETHER_NETWORK + intf, null);
+    }
+
+    public static void setTetherNetwork(Context context, String intf, String network){
+        setString(context, PREF_KEY_TETHER_NETWORK + intf, network);
     }
 }
