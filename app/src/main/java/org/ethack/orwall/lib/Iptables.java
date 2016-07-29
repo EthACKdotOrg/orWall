@@ -629,6 +629,9 @@ public class Iptables {
                 Log.e("Tethering", rule);
             }
         }
+
+        // this is a local network
+        LanNoNat(NetworkHelper.getMask(intf), status);
     }
 
 

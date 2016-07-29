@@ -8,8 +8,14 @@ import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.ByteOrder;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -137,8 +143,7 @@ public class NetworkHelper {
         }
     }
 
-    /* could be usefull later
-    public String getMask(String intf){
+    public static String getMask(String intf){
         try {
             NetworkInterface ntwrk = NetworkInterface.getByName(intf);
             Iterator<InterfaceAddress> addrList = ntwrk.getInterfaceAddresses().iterator();
@@ -156,5 +161,5 @@ public class NetworkHelper {
         }
         return null;
     }
-    */
+
 }
