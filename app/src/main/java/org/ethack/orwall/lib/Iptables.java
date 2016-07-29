@@ -570,6 +570,7 @@ public class Iptables {
     }
 
     public void tetherUpdate(Context context, Set<String> before, Set<String> after){
+        Preferences.setTetherInterfaces(context, after);
 
         if (before != null) {
             for (String item: before){
@@ -582,8 +583,6 @@ public class Iptables {
             if (before == null || !before.contains(item))
                 tether(true, item);
         }
-
-        Preferences.setTetherInterfaces(context, after);
     }
 
     public void tether(boolean status, String intf){
@@ -631,7 +630,15 @@ public class Iptables {
         }
 
         // this is a local network
-        LanNoNat(NetworkHelper.getMask(intf), status);
+
+        String mask;
+        if (status){
+            mask = NetworkHelper.getMask(intf);
+            Preferences.setTetherNetwork(context, intf, mask);
+        }
+        else
+            mask = Preferences.getTetherNetwork(context, intf);
+        LanNoNat(mask, status);
     }
 
 
