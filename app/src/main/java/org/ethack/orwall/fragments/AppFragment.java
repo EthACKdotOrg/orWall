@@ -114,7 +114,9 @@ public class AppFragment extends Fragment {
         for (PackageInfo pkgInfo : pkgInstalled) {
             if (needInternet(pkgInfo) && !isReservedApp(pkgInfo)) {
                 if (index.indexOfKey((long) pkgInfo.applicationInfo.uid) < 0) {
-                    pkgList.add(new AppRule(false, pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, Constants.DB_ONION_TYPE_NONE, false, false));
+                    AppRule app = new AppRule(false, pkgInfo.packageName, (long) pkgInfo.applicationInfo.uid, Constants.DB_ONION_TYPE_NONE, false, false);
+                    app.setAppName(packageManager.getApplicationLabel(pkgInfo.applicationInfo).toString());
+                    pkgList.add(app);
                 }
             }
         }
@@ -127,7 +129,9 @@ public class AppFragment extends Fragment {
 
         for (PackageInfoData pkgInfo: specialApps.values()) {
             if (index.indexOfKey(pkgInfo.getUid()) < 0) {
-                pkgList.add(new AppRule(false, pkgInfo.getPkgName(), pkgInfo.getUid(), Constants.DB_ONION_TYPE_NONE, false, false));
+                AppRule app = new AppRule(false, pkgInfo.getPkgName(), pkgInfo.getUid(), Constants.DB_ONION_TYPE_NONE, false, false);
+                app.setAppName(pkgInfo.getName());
+                pkgList.add(app);
             }
         }
 
@@ -160,7 +164,8 @@ public class AppFragment extends Fragment {
      */
     private boolean isReservedApp(PackageInfo pkg) {
         return (
-                pkg.packageName.equals(Constants.ORBOT_APP_NAME)
+                pkg.packageName.equals(Constants.ORBOT_APP_NAME) ||
+                pkg.packageName.equals("org.ethack.orwall")
         );
     }
 
